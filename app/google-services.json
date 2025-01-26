@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1048248016833",
+    "project_id": "homeplantcare",
+    "storage_bucket": "homeplantcare.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1048248016833:android:6e27890d8fb955f0a15940",
+        "android_client_info": {
+          "package_name": "com.project.homeplantcare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBln01sarkcxzdpD60c1tr38o3Sa0L5--M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

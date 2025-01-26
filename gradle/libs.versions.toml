@@ -1,0 +1,100 @@
+[versions]
+# Android SDK
+compileSdk = "34"
+minSdk = "24"
+onboarder = "1.0.4"
+targetSdk = "34"
+
+# Version Numbers
+appcompat = "1.6.1"
+material = "1.11.0"
+constraintlayout = "2.1.4"
+navigation = "2.7.5"
+lifecycle = "2.6.2"
+glide = "4.15.1"
+lottie = "6.3.0"
+imagepicker = "2.1"
+imageslideshow = "0.1.2"
+hilt = "2.48"
+retrofit = "2.9.0"
+okhttp = "5.0.0-alpha.11"
+kotlin = "1.9.22"
+rxandroid = "3.0.0"
+datastore = "1.0.0"
+junit = "4.13.2"
+testextjunit = "1.1.5"
+espresso = "3.5.1"
+fragment = "1.6.2"
+activity = "1.8.2"
+firebaseBom = "32.7.3"
+firebaseAuth = "22.3.1"
+firebaseFirestore = "24.10.3"
+firebaseCrashlytics = "18.3.3"
+firebaseStorage = "19.2.2"
+activityVersion = "1.10.0"
+
+[plugins]
+androidApplication = { id = "com.android.application" }
+firebaseCrashlytics = { id = "com.google.firebase.crashlytics" }
+kotlinKapt = { id = "kotlin-kapt" }
+kotlinAndroid = { id = "kotlin-android" }
+hilt = { id = "com.google.dagger.hilt.android" }
+navigationSafeArgs = { id = "androidx.navigation.safeargs.kotlin" }
+googleServices = { id = "com.google.gms.google-services" }
+
+[libraries]
+# Core Libraries
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
+# Firebase
+firebaseBom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebaseAuth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+firebaseFirestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+firebaseCrashlytics = { group = "com.google.firebase", name = "firebase-crashlytics", version.ref = "firebaseCrashlytics" }
+firebaseStorage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
+
+# Navigation
+navigationFragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
+navigationUi = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
+
+# Lifecycle
+lifecycleRuntime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycleViewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycleLivedata = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+
+# Images and Animations
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+imagepicker = { group = "com.github.dhaval2404", name = "imagepicker", version.ref = "imagepicker" }
+imageslideshow = { group = "com.github.denzcoskun", name = "ImageSlideshow", version.ref = "imageslideshow" }
+
+# Hilt
+hiltAndroid = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hiltCompiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+
+# Networking
+onboarder = { module = "com.codemybrainsout.onboarding:onboarder", version.ref = "onboarder" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofitGson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+retrofitRxjava3 = { group = "com.squareup.retrofit2", name = "adapter-rxjava3", version.ref = "retrofit" }
+okhttpLogging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+# Kotlin and Coroutines
+kotlinStdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+rxandroid = { group = "io.reactivex.rxjava3", name = "rxandroid", version.ref = "rxandroid" }
+
+# DataStore
+datastorePreferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+datastorePreferencesCore = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "datastore" }
+
+# Testing
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+testextjunit = { group = "androidx.test.ext", name = "junit", version.ref = "testextjunit" }
+espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+
+# Fragment and Activity
+fragment = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
+activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
+androidxActivity = { group = "androidx.activity", name = "activity", version.ref = "activityVersion" }
