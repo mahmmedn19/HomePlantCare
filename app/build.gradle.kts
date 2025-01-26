@@ -9,7 +9,7 @@ plugins {
 }
 android {
     namespace = "com.project.homeplantcare"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.project.homeplantcare"

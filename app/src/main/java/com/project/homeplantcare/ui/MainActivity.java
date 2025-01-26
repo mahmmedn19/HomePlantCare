@@ -1,4 +1,4 @@
-package com.project.homeplantcare;
+package com.project.homeplantcare.ui;
 
 import static com.project.homeplantcare.utils.LocalLang.setLocale;
 
@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
 
+import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.ActivityMainBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
