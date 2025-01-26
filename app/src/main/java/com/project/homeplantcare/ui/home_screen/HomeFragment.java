@@ -13,6 +13,8 @@ import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentHomeBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
 
+import java.util.Objects;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -37,6 +39,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding> {
     @Override
     protected void setup() {
         super.setup();
+        setToolbarVisibility(false); // Hide the toolbar for this fragment
 
     }
 }
