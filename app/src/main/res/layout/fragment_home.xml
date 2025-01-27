@@ -51,7 +51,10 @@
                 android:id="@+id/search_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                app:boxBackgroundMode="filled"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_search"
@@ -69,6 +72,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/plants_section"
                 android:textSize="18sp"
+                android:textColor="@color/md_theme_primary"
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -87,6 +91,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/quick_access_section"
                 android:textSize="18sp"
+                android:textColor="@color/md_theme_primary"
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView

@@ -28,6 +28,7 @@
                 android:id="@+id/icon_quick_access"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:contentDescription="TODO"
                 android:src="@drawable/plant_logo" />
 
             <!-- Label -->
@@ -37,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/plants"
                 android:layout_marginTop="8dp"
+                android:textColor="@color/md_theme_secondary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>

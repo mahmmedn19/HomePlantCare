@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Tool
     public void showBackButton(boolean show) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(show);
+
             binding.toolbar.setNavigationOnClickListener(v -> {
                 if (show) {
                     onBackPressed();

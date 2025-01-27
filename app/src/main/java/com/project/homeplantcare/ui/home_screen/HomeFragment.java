@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -67,6 +68,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
     @Override
     public void onCartClicked(PlantItem item) {
         // Handle cart click
+        Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment);
     }
 
     // QuickAccessAdapter interaction listener
@@ -92,9 +94,9 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
     // Generate fake plant data
     private List<PlantItem> generateFakePlantData() {
         List<PlantItem> plants = new ArrayList<>();
-        plants.add(new PlantItem("Aloe Vera", "Great for skincare and easy to maintain.", R.drawable.hoya4));
-        plants.add(new PlantItem("Snake Plant", "Perfect for air purification.", R.drawable.plant_logo));
-        plants.add(new PlantItem("Money Plant", "Symbol of good fortune.", R.drawable.hoya4));
+        plants.add(new PlantItem("Aloe Vera", "Great for skincare and easy to maintain.", 10.0, R.drawable.hoya4));
+        plants.add(new PlantItem("Snake Plant", "Perfect for air purification.", 45.2, R.drawable.plant_logo));
+        plants.add(new PlantItem("Money Plant", "Symbol of good fortune.",45.2, R.drawable.hoya4));
         return plants;
     }
 

@@ -11,7 +11,7 @@
     </data>
 
     <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         app:cardElevation="4dp"
@@ -27,9 +27,8 @@
             <ImageView
                 android:id="@+id/img_plant"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/hoya4" />
+                android:layout_height="200dp"
+                android:src="@drawable/plant_2" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -61,8 +60,16 @@
                     android:text="@{item.description}"
                     android:textColor="@color/md_theme_onSurface"
                     tools:text="item.description"
-                    android:textSize="14sp"
- />
+                    android:textSize="14sp" />
+                    <!--Plant Price -->
+                <TextView
+                    android:id="@+id/tv_plant_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$10.0"
+                    android:textColor="@color/md_theme_onSurface"
+                    tools:text="item.price"
+                    android:textSize="14sp" />
                 </LinearLayout>
                 <ImageView
                     android:id="@+id/fav_icon"
