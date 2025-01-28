@@ -133,5 +133,6 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
     @Override
     public void onCartClicked(ArticleItem item) {
         // Handle article click
+        Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_articlesDetailsFragment);
     }
 }

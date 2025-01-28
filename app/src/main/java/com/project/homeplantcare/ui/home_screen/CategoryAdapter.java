@@ -37,7 +37,7 @@ public class CategoryAdapter extends BaseAdapter<CategoryItem, ItemCategoryTabBi
         if (selectedPosition == position) {
             binding.tvCategory.setTextColor(binding.getRoot().getContext().getColor(R.color.md_theme_primary));
         } else {
-            binding.tvCategory.setTextColor(binding.getRoot().getContext().getColor(R.color.grey_300));
+            binding.tvCategory.setTextColor(binding.getRoot().getContext().getColor(R.color.green_3));
         }
 
         // Click Listener to change selection dynamically

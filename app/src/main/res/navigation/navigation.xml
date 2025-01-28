@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_homeFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_articlesDetailsFragment"
+            app:destination="@id/articlesDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -38,4 +41,8 @@
         android:id="@+id/plantDetailsFragment"
         android:name="com.project.homeplantcare.ui.plant_details.PlantDetailsFragment"
         android:label="PlantDetailsFragment" />
+    <fragment
+        android:id="@+id/articlesDetailsFragment"
+        android:name="com.project.homeplantcare.ui.article_details.ArticlesDetailsFragment"
+        android:label="ArticlesDetailsFragment" />
 </navigation>
