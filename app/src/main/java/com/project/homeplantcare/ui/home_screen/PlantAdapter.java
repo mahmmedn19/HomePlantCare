@@ -3,6 +3,7 @@ package com.project.homeplantcare.ui.home_screen;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.project.homeplantcare.databinding.ItemPlantCardBinding;
 import com.project.homeplantcare.models.PlantItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
@@ -30,7 +31,11 @@ public class PlantAdapter extends BaseAdapter<PlantItem, ItemPlantCardBinding> {
     public void onBindViewHolder(BaseViewHolder<ItemPlantCardBinding> holder, int position, PlantItem currentItem) {
         ItemPlantCardBinding binding = holder.binding;
         binding.setItem(currentItem);
-        binding.favIcon.setOnClickListener(view -> listener.onFavoriteClicked(currentItem));
+        // Load Image using Glide
+        Glide.with(holder.binding.getRoot().getContext())
+                .load(currentItem.getImageResId())
+                .into(holder.binding.imgPlant);
+        binding.btnAddToFav.setOnClickListener(view -> listener.onFavoriteClicked(currentItem));
         binding.imgPlant.setOnClickListener(view -> listener.onCartClicked(currentItem));
         binding.executePendingBindings();
     }

@@ -40,12 +40,14 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
                 1,
                 "Aloe Vera",
                 "Aloe Vera is a species of plant well known for its medicinal and skincare uses. It is easy to maintain and grows well indoors.",
-                "Indoor",
-                "Medium",
-                "Easy",
-                56.0,
-                R.drawable.plant_2 // Replace with your plant drawable resource
+                "Indoor",      // Light Requirements
+                "Medium",      // Water Requirements
+                "Well-Drained", // Soil Requirements
+                "Warm",        // Weather Requirements
+                "2024-01-01",  // Growth Date (Sample Date)
+                R.drawable.plant_6 // Replace with actual drawable resource
         );
+
 
         // Bind the PlantItem to the layout
         binding.setPlant(fakePlant);

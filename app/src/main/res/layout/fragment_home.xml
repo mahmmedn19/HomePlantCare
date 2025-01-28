@@ -3,106 +3,128 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-        <!-- ViewModel binding if needed -->
-    </data>
-
-    <androidx.core.widget.NestedScrollView
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
         tools:context=".ui.home.HomeFragment">
 
-        <LinearLayout
+        <!-- Scrollable Content -->
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-            <!-- App Bar with Logo and Profile Icon -->
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/md_theme_background"
-                android:elevation="4dp">
-
-                <ImageView
-                    android:id="@+id/img_logo"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/plant_logo"
-                    android:contentDescription="@string/app_name"
-                    android:layout_gravity="start"
-                    android:layout_marginStart="16dp" />
-
-                <ImageView
-                    android:id="@+id/img_profile"
-                    android:layout_width="24dp"
-                    android:layout_height="32dp"
-                    android:src="@drawable/ic_profile"
-                    android:contentDescription="@string/profile_icon"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="16dp" />
-            </androidx.appcompat.widget.Toolbar>
-
-            <!-- Search Bar -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/search_bar"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:boxBackgroundMode="filled"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp">
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_search"
+                <!-- App Bar with Logo and Profile Icon -->
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@color/md_theme_background"
+                    android:elevation="4dp">
+
+                    <ImageView
+                        android:id="@+id/img_logo"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/plant_logo"
+                        android:contentDescription="@string/app_name"
+                        android:layout_gravity="start"
+                        android:layout_marginStart="16dp" />
+
+                    <ImageView
+                        android:id="@+id/img_profile"
+                        android:layout_width="24dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_profile"
+                        android:contentDescription="@string/profile_icon"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="16dp" />
+                </androidx.appcompat.widget.Toolbar>
+
+                <!-- Search Bar -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/search_bar"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/search_hint"
-                    android:drawableEnd="@drawable/ic_search"
-                    android:inputType="text" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxBackgroundColor="@android:color/white"
+                    app:boxStrokeWidth="0dp">
 
-            <!-- Plant List -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/plants_section"
-                android:textSize="18sp"
-                android:textColor="@color/md_theme_primary"
-                android:textStyle="bold" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_search"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Search Product"
+                        android:textColorHint="@color/grey_300"
+                        android:drawableStart="@drawable/ic_search"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_plant_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                tools:listitem="@layout/item_plant_card" />
+                <!-- Category Tabs -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_categories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="horizontal"
+                    tools:listitem="@layout/item_category_tab" />
 
-            <!-- Quick Access Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/quick_access_section"
-                android:textSize="18sp"
-                android:textColor="@color/md_theme_primary"
-                android:textStyle="bold" />
+                <!-- Plants List -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_plant_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    tools:listitem="@layout/item_plant_card" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_quick_access"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                android:layout_marginTop="8dp"
-                app:spanCount="2"
-                tools:listitem="@layout/item_quick_access_card" />
+                <!-- New Articles Section -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/new_articles"
+                    android:textSize="16sp"
+                    android:textColor="@color/md_theme_primary"
+                    android:textStyle="bold" />
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_new_articles"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    tools:listitem="@layout/item_new_articles_card" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- Floating Action Button (FAB) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_camera"
+            android:contentDescription="Camera"
+            android:tint="@android:color/white"
+            app:backgroundTint="@color/white"
+            android:layout_margin="16dp"
+            app:elevation="8dp"
+            android:layout_gravity="bottom|end"/>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

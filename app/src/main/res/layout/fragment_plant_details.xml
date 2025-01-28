@@ -60,15 +60,6 @@
                     android:textStyle="bold"
                     android:textColor="@android:color/black" />
 
-                <TextView
-                    android:id="@+id/plant_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@{`$` + plant.price}"
-                    android:textSize="18sp"
-                    android:textColor="@android:color/holo_green_dark" />
-
                 <!-- Description Section -->
                 <TextView
                     android:layout_width="wrap_content"
@@ -84,7 +75,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@{plant.description}"
+                    android:text="@{plant.name}"
                     android:textSize="16sp"
                     android:textColor="@android:color/darker_gray" />
 
@@ -112,7 +103,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{plant.lightRequirements}"
+                            android:text="@{plant.name}"
                             android:textSize="14sp"
                             android:gravity="center" />
                     </LinearLayout>
@@ -134,7 +125,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{plant.waterRequirements}"
+                            android:text="@{plant.name}"
                             android:textSize="14sp"
                             android:gravity="center" />
                     </LinearLayout>
@@ -156,7 +147,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{plant.difficulty}"
+                            android:text="@{plant.name}"
                             android:textSize="14sp"
                             android:gravity="center" />
                     </LinearLayout>
