@@ -34,7 +34,7 @@
             app:cardCornerRadius="16dp"
             app:cardElevation="6dp"
             android:translationY="80dp"
-            android:backgroundTint="@color/md_theme_primary">
+            android:backgroundTint="@color/green_2">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

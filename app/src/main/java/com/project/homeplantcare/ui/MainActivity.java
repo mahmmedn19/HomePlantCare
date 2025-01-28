@@ -2,12 +2,11 @@ package com.project.homeplantcare.ui;
 
 import static com.project.homeplantcare.utils.LocalLang.setLocale;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -17,7 +16,6 @@ import androidx.navigation.NavController;
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.ActivityMainBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
-import com.project.homeplantcare.ui.onboarding.OnBoardingActivity;
 
 import java.util.Objects;
 
@@ -27,8 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class MainActivity extends AppCompatActivity implements BaseFragment.ToolbarHandler {
     private ActivityMainBinding binding;
     private NavController navController;
-    private static final String PREFS_NAME = "HomePlantCarePrefs";
-    private static final String KEY_FIRST_TIME = "isFirstTime";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +41,16 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Tool
         });
         setSupportActionBar(binding.toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
-
+        // Change back button icon dynamically
+        if (navController != null) {
+            navController.addOnDestinationChangedListener((@NonNull NavController controller, @NonNull androidx.navigation.NavDestination destination, Bundle arguments) -> {
+                if (destination.getId() == R.id.homeFragment) {
+                    binding.toolbar.setNavigationIcon(null); // Hide back button on home
+                } else {
+                    binding.toolbar.setNavigationIcon(R.drawable.ic_back);
+                }
+            });
+        }
     }
 
     @Override
@@ -61,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Tool
     public void showBackButton(boolean show) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(show);
-
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back); // Set Custom Back Icon
             binding.toolbar.setNavigationOnClickListener(v -> {
                 if (show) {
                     onBackPressed();

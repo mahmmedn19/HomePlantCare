@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="350dp"
             android:gravity="center"
-            android:background="@color/md_theme_primary">
+            android:background="@color/green_2">
 
             <!-- Green Circle Background -->
             <ImageView
@@ -258,7 +258,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     tools:listitem="@layout/item_disease_card"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:spanCount="2" />

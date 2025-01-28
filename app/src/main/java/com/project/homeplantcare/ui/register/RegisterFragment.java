@@ -38,6 +38,7 @@ public class RegisterFragment extends BaseFragment<FragmentRegisterBinding> {
     @Override
     protected void setup() {
         super.setup();
+        setToolbarVisibility(true);
         // Set toolbar title
         setToolbarTitle("Register");
         // Show back button

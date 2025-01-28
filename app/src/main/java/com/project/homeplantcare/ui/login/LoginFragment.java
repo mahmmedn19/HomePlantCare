@@ -33,6 +33,7 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
     @Override
     protected void setup() {
         super.setup();
+        setToolbarVisibility(true);
         // Set toolbar title
         setToolbarTitle("Login");
         // Show back button

@@ -64,15 +64,15 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
 
     private List<DiseaseItem> generateFakeDiseases() {
         List<DiseaseItem> diseases = new ArrayList<>();
-        diseases.add(new DiseaseItem(1, "Leaf Spot", "Dark spots on leaves", "Remove affected leaves, apply fungicide"));
-        diseases.add(new DiseaseItem(2, "Root Rot", "Wilting and yellowing leaves", "Improve drainage, reduce watering"));
+        diseases.add(new DiseaseItem(1, "Leaf Spot", "Dark spots on leaves", "Remove affected leaves\napply fungicide"));
+        diseases.add(new DiseaseItem(2, "Root Rot", "Wilting and yellowing leaves", "Improve drainage\nreduce watering"));
         diseases.add(new DiseaseItem(3, "Powdery Mildew", "White powdery substance on leaves", "Increase airflow, apply fungicide"));
         return diseases;
     }
 
     private void setupDiseasesRecyclerView() {
         DiseasesAdapter diseasesAdapter = new DiseasesAdapter(diseaseList);
-        binding.recyclerDiseases.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.recyclerDiseases.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         binding.recyclerDiseases.setAdapter(diseasesAdapter);
     }
 }
