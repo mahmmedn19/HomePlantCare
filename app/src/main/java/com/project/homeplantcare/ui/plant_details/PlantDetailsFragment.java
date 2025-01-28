@@ -1,16 +1,23 @@
 package com.project.homeplantcare.ui.plant_details;
 
 import androidx.lifecycle.ViewModel;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentPlantDetailsBinding;
+import com.project.homeplantcare.models.DiseaseItem;
 import com.project.homeplantcare.models.PlantItem;
 import com.project.homeplantcare.ui.base.BaseFragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBinding> {
+
+    private List<DiseaseItem> diseaseList;
 
     @Override
     protected String getTAG() {
@@ -31,10 +38,9 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
     protected void setup() {
         super.setup();
         setToolbarVisibility(true);
-        // Set toolbar title
         setToolbarTitle("Plant Details");
-        // Show back button
         showBackButton(true);
+
         // Create a fake PlantItem object
         PlantItem fakePlant = new PlantItem(
                 1,
@@ -48,11 +54,25 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
                 R.drawable.plant_6 // Replace with actual drawable resource
         );
 
-
         // Bind the PlantItem to the layout
         binding.setPlant(fakePlant);
 
-        // Optional: Set toolbar title if needed
-        setToolbarTitle(fakePlant.getName());
+        // Load Diseases
+        diseaseList = generateFakeDiseases();
+        setupDiseasesRecyclerView();
+    }
+
+    private List<DiseaseItem> generateFakeDiseases() {
+        List<DiseaseItem> diseases = new ArrayList<>();
+        diseases.add(new DiseaseItem(1, "Leaf Spot", "Dark spots on leaves", "Remove affected leaves, apply fungicide"));
+        diseases.add(new DiseaseItem(2, "Root Rot", "Wilting and yellowing leaves", "Improve drainage, reduce watering"));
+        diseases.add(new DiseaseItem(3, "Powdery Mildew", "White powdery substance on leaves", "Increase airflow, apply fungicide"));
+        return diseases;
+    }
+
+    private void setupDiseasesRecyclerView() {
+        DiseasesAdapter diseasesAdapter = new DiseasesAdapter(diseaseList);
+        binding.recyclerDiseases.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.recyclerDiseases.setAdapter(diseasesAdapter);
     }
 }

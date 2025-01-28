@@ -64,7 +64,7 @@
                         android:id="@+id/et_search"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Search Product"
+                        android:hint="Search..."
                         android:textColorHint="@color/grey_300"
                         android:drawableStart="@drawable/ic_search"
                         android:paddingStart="12dp"

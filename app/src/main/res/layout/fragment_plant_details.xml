@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -11,80 +12,118 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.details.PlantDetailsFragment">
+        tools:context=".ui.plant_details.PlantDetailsFragment">
 
-        <!-- Background with Rounded Corner -->
-        <LinearLayout
+        <!-- Green Background -->
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:orientation="vertical"
-            android:background="@color/md_theme_primary"
-            android:padding="16dp">
+            android:gravity="center"
+            android:background="@color/md_theme_primary">
 
+            <!-- Green Circle Background -->
+            <ImageView
+                android:id="@+id/circle_bg"
+                android:layout_width="300dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:scaleType="fitXY"
+                android:translationY="-10dp"
+                android:translationX="-80dp"
+                android:src="@drawable/circle_background_green"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <!-- Plant Image -->
             <ImageView
-                android:id="@+id/plant_image"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:id="@+id/img_plant"
+                android:layout_width="200dp"
+                android:layout_height="240dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/plant_2" />
+                android:scaleType="centerInside"
+                android:src="@drawable/plant_6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/plant_2" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </LinearLayout>
-
-        <!-- Content Section with Rounded Corners -->
+        <!-- Details Card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="200dp"
-            android:layout_marginHorizontal="16dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="250dp"
             app:cardCornerRadius="24dp"
-            app:cardElevation="8dp"
-            android:background="@android:color/white">
+            app:cardElevation="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Plant Title and Price -->
-                <TextView
-                    android:id="@+id/plant_title"
-                    android:layout_width="wrap_content"
+                <!-- Plant Name & Favorite -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@{plant.name}"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <!-- Description Section -->
+                    <TextView
+                        android:id="@+id/tv_plant_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@{plant.name}"
+                        tools:text="Plant Name"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:id="@+id/fav_icon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_fav"
+                        app:tint="@color/md_theme_primary" />
+                </LinearLayout>
+                <!-- Date Added -->
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tv_growth_added"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:text="@{plant.growthDate}"
+                    tools:text="Growth Added: 2021-01-01"
+                    android:textSize="16sp"
+                    android:textColor="@color/md_theme_primary"
+                    android:layout_marginTop="6dp" />
+
+                <!-- Description -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="Description"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_marginTop="12dp" />
 
                 <TextView
-                    android:id="@+id/plant_description"
+                    android:id="@+id/tv_plant_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@{plant.name}"
+                    android:text="@{plant.description}"
+                    tools:text="This plant is a great addition to your home."
                     android:textSize="16sp"
-                    android:textColor="@android:color/darker_gray" />
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_marginTop="6dp" />
 
                 <!-- Plant Details -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="16dp">
+                    android:layout_marginTop="32dp">
 
                     <!-- Light Requirement -->
                     <LinearLayout
@@ -101,9 +140,11 @@
                             android:contentDescription="Light Requirement" />
 
                         <TextView
+                            android:id="@+id/tv_light_requirement"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{plant.name}"
+                            android:text="@{plant.lightRequirements}"
+                            tools:text="Random"
                             android:textSize="14sp"
                             android:gravity="center" />
                     </LinearLayout>
@@ -123,14 +164,24 @@
                             android:contentDescription="Water Requirement" />
 
                         <TextView
+                            android:id="@+id/tv_water_requirement"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{plant.name}"
+                            android:text="@{plant.waterRequirements}"
+                            tools:text="Random"
                             android:textSize="14sp"
                             android:gravity="center" />
                     </LinearLayout>
 
-                    <!-- Difficulty -->
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="32dp">
+
+                    <!-- Light Requirement -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -141,27 +192,64 @@
                         <ImageView
                             android:layout_width="32dp"
                             android:layout_height="32dp"
-                            android:src="@drawable/ic_difficulty"
-                            android:contentDescription="Difficulty" />
+                            android:src="@drawable/ic_weather"
+                            android:contentDescription="Weather Requirement" />
 
                         <TextView
+                            android:id="@+id/tv_weather_requirement"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{plant.name}"
+                            android:text="@{plant.weatherRequirements}"
+                            tools:text="Random"
                             android:textSize="14sp"
                             android:gravity="center" />
                     </LinearLayout>
-                </LinearLayout>
 
-                <!-- Add to Cart Button -->
-                <Button
-                    android:id="@+id/add_to_cart_button"
+                    <!-- Water Requirement -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_solid"
+                            android:contentDescription="Solid Requirements" />
+
+                        <TextView
+                            android:id="@+id/tv_solid_requirement"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{plant.soilRequirements}"
+                            tools:text="Random"
+                            android:textSize="14sp"
+                            android:gravity="center" />
+                    </LinearLayout>
+
+                </LinearLayout>
+                <!-- Diseases Section -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Related Diseases"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="24dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_diseases"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:backgroundTint="@color/md_theme_primary"
-                    android:text="Add to Favorites"
-                    android:textColor="@android:color/white" />
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    tools:listitem="@layout/item_disease_card"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:spanCount="2" />
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
