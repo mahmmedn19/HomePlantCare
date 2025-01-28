@@ -23,25 +23,10 @@ public class OnBoardingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Check if onboarding has been shown
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        boolean isFirstTime = preferences.getBoolean(KEY_FIRST_TIME, true);
-
-        if (!isFirstTime) {
-            // If not the first time, redirect to MainActivity
-            navigateToMain();
-            return;
-        }
         setContentView(R.layout.activity_on_boarding);
 
 
         findViewById(R.id.btn_get_started).setOnClickListener(v -> {
-            // Save preference to indicate onboarding is complete
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean(KEY_FIRST_TIME, false);
-            editor.apply();
-
             // Navigate to MainActivity
             navigateToMain();
         });

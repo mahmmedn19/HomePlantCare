@@ -30,8 +30,8 @@
 
                     <ImageView
                         android:id="@+id/img_logo"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
                         android:src="@drawable/plant_logo"
                         android:contentDescription="@string/app_name"
                         android:layout_gravity="start"
@@ -50,15 +50,20 @@
                 <!-- Search Bar -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/search_bar"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:boxCornerRadiusTopEnd="12dp"
+                    android:shadowRadius="6"
+                    app:boxStrokeColor="@color/md_theme_primary"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/white"
                     app:boxCornerRadiusTopStart="12dp"
                     app:boxCornerRadiusBottomEnd="12dp"
                     app:boxCornerRadiusBottomStart="12dp"
                     app:boxBackgroundColor="@android:color/white"
-                    app:boxStrokeWidth="0dp">
+                    app:boxStrokeWidth="2dp">
+
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_search"
@@ -66,11 +71,15 @@
                         android:layout_height="wrap_content"
                         android:hint="Search..."
                         android:textColorHint="@color/grey_300"
-                        android:drawableStart="@drawable/ic_search"
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp"
-                        android:inputType="text" />
+                        android:inputType="text"
+                        android:background="@android:color/transparent"
+                        android:drawableStart="@drawable/ic_search"
+                        android:gravity="center_vertical"
+                        />
                 </com.google.android.material.textfield.TextInputLayout>
+
 
                 <!-- Category Tabs -->
                 <androidx.recyclerview.widget.RecyclerView

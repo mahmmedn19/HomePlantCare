@@ -45,16 +45,6 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Tool
         });
         setSupportActionBar(binding.toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
-        // Check if onboarding should be shown
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        boolean isFirstTime = preferences.getBoolean(KEY_FIRST_TIME, true);
-
-        if (isFirstTime) {
-            // Redirect to OnBoardingActivity
-            Intent intent = new Intent(this, OnBoardingActivity.class);
-            startActivity(intent);
-            finish();
-        }
 
     }
 

@@ -20,7 +20,7 @@
         <ImageView
             android:id="@+id/img_plant"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="260dp"
             android:scaleType="centerInside"
             android:src="@drawable/plant_2"
             android:elevation="8dp"
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="16dp"
             app:cardElevation="6dp"
-            android:translationY="60dp"
+            android:translationY="80dp"
             android:backgroundTint="@color/md_theme_primary">
 
             <androidx.constraintlayout.widget.ConstraintLayout

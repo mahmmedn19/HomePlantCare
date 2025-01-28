@@ -36,7 +36,7 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
         // Set toolbar title
         setToolbarTitle("Login");
         // Show back button
-        showBackButton(false);
+        showBackButton(true);
         // Checkbox logic
         binding.cbAdmin.setChecked(true);
         binding.cbUser.setOnCheckedChangeListener((buttonView, isChecked) -> {

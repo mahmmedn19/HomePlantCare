@@ -40,6 +40,9 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
     protected void setup() {
         super.setup();
         setToolbarVisibility(false);
+        binding.imgProfile.setOnClickListener(view -> {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_loginFragment);
+        });
 
         // Generate fake plant data and set up PlantAdapter
         fakePlants = generateFakePlantData();
@@ -118,6 +121,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
     @Override
     public void onFavoriteClicked(PlantItem item) {
         // Handle favorite click
+        Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment);
     }
 
     @Override
