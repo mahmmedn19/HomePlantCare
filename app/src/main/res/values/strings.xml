@@ -20,4 +20,9 @@
     <string name="articles">Articles</string>
     <string name="plants_section">Featured Plants</string>
     <string name="new_articles">New Articles</string>
+    <string name="image_preview">Image Preview</string>
+    <string name="ai_analysis_description">Take a picture or upload an image to analyze the plants health and detect diseases.</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="capture">Capture</string>
+    <string name="analyze">Analyze</string>
 </resources>

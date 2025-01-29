@@ -17,6 +17,12 @@
         <action
             android:id="@+id/action_homeFragment_to_articlesDetailsFragment"
             app:destination="@id/articlesDetailsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_plantsViewAllFragment"
+            app:destination="@id/plantsViewAllFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -45,4 +51,16 @@
         android:id="@+id/articlesDetailsFragment"
         android:name="com.project.homeplantcare.ui.article_details.ArticlesDetailsFragment"
         android:label="ArticlesDetailsFragment" />
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.project.homeplantcare.ui.camera_screen.CameraFragment"
+        android:label="CameraFragment" />
+    <fragment
+        android:id="@+id/plantsViewAllFragment"
+        android:name="com.project.homeplantcare.ui.plants_view_all.PlantsViewAllFragment"
+        android:label="PlantsViewAllFragment" >
+        <action
+            android:id="@+id/action_plantsViewAllFragment_to_articlesDetailsFragment"
+            app:destination="@id/articlesDetailsFragment" />
+    </fragment>
 </navigation>

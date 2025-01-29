@@ -44,6 +44,13 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
             Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_loginFragment);
         });
 
+        binding.fabCamera.setOnClickListener(view -> {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_cameraFragment);
+        });
+        binding.tvViewAllArticles.setOnClickListener(view -> {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantsViewAllFragment);
+        });
+
         // Generate fake plant data and set up PlantAdapter
         fakePlants = generateFakePlantData();
         setupPlantRecyclerView();

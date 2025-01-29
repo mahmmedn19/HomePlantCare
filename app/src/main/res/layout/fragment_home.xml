@@ -100,15 +100,35 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_plant_card" />
 
-                <!-- New Articles Section -->
-                <TextView
-                    android:layout_width="wrap_content"
+
+                <!-- Horizontal Layout -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/new_articles"
-                    android:textColor="@color/md_theme_primary"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="24dp"
+                    android:orientation="horizontal">
+                    <!-- New Articles Section -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/new_articles"
+                        android:textColor="@color/md_theme_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <!-- View All Button -->
+                    <TextView
+                        android:id="@+id/tvViewAllArticles"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="View All"
+                        android:textSize="14sp"
+                        android:textColor="@color/md_theme_primary"
+                        android:layout_gravity="center"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_new_articles"
