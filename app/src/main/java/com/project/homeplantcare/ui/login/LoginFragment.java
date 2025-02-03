@@ -1,5 +1,6 @@
 package com.project.homeplantcare.ui.login;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -8,6 +9,7 @@ import androidx.navigation.Navigation;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentLoginBinding;
+import com.project.homeplantcare.ui.admin_screen.AdminMainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -60,8 +62,14 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
                 showToast("Please select a user type");
                 return;
             }
-            // Login logic
-            Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_homeFragment);
+            if (binding.cbAdmin.isChecked()) {
+                Intent intent = new Intent(requireContext(), AdminMainActivity.class);
+                startActivity(intent);
+                requireActivity().finish();
+            } else {
+                // User login logic
+                showToast("User login");
+            }
         });
 
         binding.btnRegister.setOnClickListener(v -> {

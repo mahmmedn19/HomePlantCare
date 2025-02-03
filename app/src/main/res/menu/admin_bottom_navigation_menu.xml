@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_manage_plants"
+        android:icon="@drawable/ic_plant"
+        android:title="Plants" />
+
+    <item
+        android:id="@+id/nav_manage_diseases"
+        android:icon="@drawable/ic_disease"
+        android:title="Diseases" />
+
+    <item
+        android:id="@+id/nav_manage_articles"
+        android:icon="@drawable/ic_articles"
+        android:title="Articles" />
+    <item
+        android:id="@+id/nav_add_link"
+        android:icon="@drawable/ic_add_link"
+        android:title="Add Link" />
+
+</menu>
