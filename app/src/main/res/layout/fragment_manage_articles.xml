@@ -10,7 +10,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.articles.ArticlesFragment">
+        >
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerArticles"
@@ -20,5 +20,18 @@
             android:scrollbars="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_manage_article"/>
+
+        <!-- Floating Action Button (FAB) to add a new article -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_article"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Add Article"
+            android:src="@drawable/ic_add"
+            app:tint="@color/white"
+            app:backgroundTint="@color/md_theme_primary"
+            android:layout_margin="16dp"
+            app:elevation="8dp"
+            android:layout_gravity="bottom|end"/>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

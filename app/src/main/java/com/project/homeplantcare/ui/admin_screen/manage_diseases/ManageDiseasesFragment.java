@@ -1,16 +1,28 @@
 package com.project.homeplantcare.ui.admin_screen.manage_diseases;
 
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentManageDiseasesBinding;
+import com.project.homeplantcare.models.DiseaseItem;
 import com.project.homeplantcare.ui.base.BaseFragment;
+
+import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class ManageDiseasesFragment extends BaseFragment<FragmentManageDiseasesBinding> {
+public class ManageDiseasesFragment extends BaseFragment<FragmentManageDiseasesBinding> implements DiseaseItemAdapter.DiseaseInteractionListener {
 
+    private DiseasesViewModel viewModel;
+    private DiseaseItemAdapter adapter;
 
     @Override
     protected String getTAG() {
@@ -24,15 +36,52 @@ public class ManageDiseasesFragment extends BaseFragment<FragmentManageDiseasesB
 
     @Override
     protected ViewModel getViewModel() {
-        return null;
+        viewModel = new ViewModelProvider(this).get(DiseasesViewModel.class);
+        return viewModel;
     }
 
     @Override
     protected void setup() {
         super.setup();
+
         setToolbarVisibility(true);
         setToolbarTitle("Manage Diseases");
         showBackButton(false);
 
+        setupFab();
+
+
+        setupRecyclerView();
+        observeDiseases();
+    }
+    private void setupFab() {
+        binding.fabAddDisease.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_nav_manage_diseases_to_nav_add_disease);
+        });
+    }
+
+    private void setupRecyclerView() {
+        binding.recyclerDiseases.setLayoutManager(new LinearLayoutManager(requireContext()));
+        adapter = new DiseaseItemAdapter(viewModel.getMockDiseases(), this);
+        binding.recyclerDiseases.setAdapter(adapter);
+    }
+
+    private void observeDiseases() {
+        viewModel.getDiseasesLiveData().observe(getViewLifecycleOwner(), diseases -> {
+        });
+    }
+
+
+    @Override
+    public void onEditDiseaseClicked(DiseaseItem item) {
+
+    }
+
+    public void onDeleteDiseaseClicked(DiseaseItem disease) {
+        showToast("Deleted: " + disease.getName());
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

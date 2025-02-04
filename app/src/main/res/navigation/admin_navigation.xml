@@ -18,13 +18,27 @@
         android:id="@+id/nav_manage_diseases"
         android:name="com.project.homeplantcare.ui.admin_screen.manage_diseases.ManageDiseasesFragment"
         android:label="Manage Diseases"
-        tools:layout="@layout/fragment_manage_diseases" />
+        tools:layout="@layout/fragment_manage_diseases" >
+        <action
+            android:id="@+id/action_nav_manage_diseases_to_nav_add_disease"
+            app:destination="@id/nav_add_disease" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_manage_articles"
         android:name="com.project.homeplantcare.ui.admin_screen.manage_articles.ManageArticlesFragment"
         android:label="Manage Articles"
-        tools:layout="@layout/fragment_manage_articles" />
+        tools:layout="@layout/fragment_manage_articles" >
+        <action
+            android:id="@+id/action_nav_manage_articles_to_nav_add_articles"
+            app:destination="@id/nav_add_articles" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_add_articles"
+        android:name="com.project.homeplantcare.ui.admin_screen.add_articles.AddArticlesFragment"
+        android:label="Add Articles"
+        tools:layout="@layout/fragment_add_articles" />
 
     <fragment
         android:id="@+id/nav_add_link"
@@ -35,5 +49,11 @@
         android:id="@+id/addPlaintAdminFragment"
         android:name="com.project.homeplantcare.ui.admin_screen.add_plant_admin.AddPlaintAdminFragment"
         android:label="AddPlaintAdminFragment" />
+
+    <fragment
+        android:id="@+id/nav_add_disease"
+        android:name="com.project.homeplantcare.ui.admin_screen.add_disease.AddDiseasesFragment"
+        android:label="Add Disease"
+        tools:layout="@layout/fragment_add_diseases" />
 
 </navigation>

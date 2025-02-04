@@ -4,6 +4,7 @@ import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
@@ -44,9 +45,16 @@ public class ManageArticlesFragment extends BaseFragment<FragmentManageArticlesB
         setToolbarVisibility(true);
         setToolbarTitle("Manage Articles");
         showBackButton(false);
+        setupFab();
 
         setupRecyclerView();
         observeArticles();
+    }
+
+    private void setupFab() {
+        binding.fabAddArticle.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_nav_manage_articles_to_nav_add_articles);
+        });
     }
 
     private void setupRecyclerView() {
