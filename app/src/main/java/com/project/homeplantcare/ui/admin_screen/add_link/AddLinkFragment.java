@@ -41,7 +41,7 @@ public class AddLinkFragment extends BaseFragment<FragmentAddLinkBinding> {
         super.setup();
         setToolbarVisibility(true);
         setToolbarTitle("Add Link");
-        showBackButton(false);
+        showBackButton(true);
         setupUI();
     }
 

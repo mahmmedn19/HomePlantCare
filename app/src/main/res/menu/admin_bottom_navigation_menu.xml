@@ -15,8 +15,8 @@
         android:icon="@drawable/ic_articles"
         android:title="Articles" />
     <item
-        android:id="@+id/nav_add_link"
-        android:icon="@drawable/ic_add_link"
-        android:title="Add Link" />
+        android:id="@+id/nav_manage_profile"
+        android:icon="@drawable/ic_profile"
+        android:title="Profile" />
 
 </menu>

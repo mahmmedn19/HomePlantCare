@@ -56,4 +56,23 @@
         android:label="Add Disease"
         tools:layout="@layout/fragment_add_diseases" />
 
+    <fragment
+        android:id="@+id/nav_manage_profile"
+        android:name="com.project.homeplantcare.ui.admin_screen.manage_profile.ManageProfileFragment"
+        android:label="Manage Profile"
+        tools:layout="@layout/fragment_manage_profile" >
+        <action
+            android:id="@+id/action_nav_manage_profile_to_nav_add_link"
+            app:destination="@id/nav_add_link" />
+        <action
+            android:id="@+id/action_nav_manage_profile_to_nav_admin_profile_details"
+            app:destination="@id/nav_admin_profile_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_admin_profile_details"
+        android:name="com.project.homeplantcare.ui.admin_screen.profile_details.AdminProfileDetailsFragment"
+        android:label="Admin Profile Details"
+        tools:layout="@layout/fragment_admin_profile_details" />
+
 </navigation>

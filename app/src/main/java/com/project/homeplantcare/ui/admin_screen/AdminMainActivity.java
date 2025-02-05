@@ -70,7 +70,7 @@ public class AdminMainActivity extends AppCompatActivity implements BaseFragment
             if (destination.getId() != R.id.nav_manage_plants &&
                     destination.getId() != R.id.nav_manage_diseases &&
                     destination.getId() != R.id.nav_manage_articles &&
-                    destination.getId() != R.id.nav_add_link) {
+                    destination.getId() != R.id.nav_manage_profile) {
                 binding.bottomNavAdmin.setVisibility(View.GONE);
             } else {
                 binding.bottomNavAdmin.setVisibility(View.VISIBLE);
@@ -85,8 +85,8 @@ public class AdminMainActivity extends AppCompatActivity implements BaseFragment
                 navController.navigate(R.id.nav_manage_diseases);
             } else if (item.getItemId() == R.id.nav_manage_articles) {
                 navController.navigate(R.id.nav_manage_articles);
-            }else if (item.getItemId() == R.id.nav_add_link) {
-                navController.navigate(R.id.nav_add_link);
+            }else if (item.getItemId() == R.id.nav_manage_profile) {
+                navController.navigate(R.id.nav_manage_profile);
             }
             return true;
         });
