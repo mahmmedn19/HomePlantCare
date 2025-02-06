@@ -176,17 +176,31 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Select Related Diseases"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     android:layout_marginTop="12dp"
-                    android:textColor="@android:color/black" />
+                    android:text="Select Related Diseases"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_select_diseases"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="64dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Select Diseases"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@color/md_theme_primary" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_diseases"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:longClickable="false"
+                    android:descendantFocusability="blocksDescendants"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_disease_checkbox" />

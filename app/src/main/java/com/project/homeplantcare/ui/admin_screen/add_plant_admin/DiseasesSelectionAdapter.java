@@ -7,16 +7,21 @@ import com.project.homeplantcare.databinding.ItemDiseaseCheckboxBinding;
 import com.project.homeplantcare.models.DiseaseItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class DiseasesSelectionAdapter extends BaseAdapter<DiseaseItem, ItemDiseaseCheckboxBinding> {
 
     private final AddPlantViewModel viewModel;
+    private final boolean isDialogAdapter;
+    private List<DiseaseItem> fullList;
 
-    public DiseasesSelectionAdapter(List<DiseaseItem> itemList, AddPlantViewModel viewModel) {
+    public DiseasesSelectionAdapter(List<DiseaseItem> itemList, AddPlantViewModel viewModel, boolean isDialogAdapter) {
         super(itemList);
         this.viewModel = viewModel;
+        this.isDialogAdapter = isDialogAdapter;
+        this.fullList = new ArrayList<>(itemList);
     }
 
     @Override
@@ -29,14 +34,36 @@ public class DiseasesSelectionAdapter extends BaseAdapter<DiseaseItem, ItemDisea
         ItemDiseaseCheckboxBinding binding = holder.binding;
         binding.setDisease(currentItem);
 
-        // Observe and update checkbox selection state
-        binding.checkboxDisease.setChecked(viewModel.getSelectedDiseases().getValue().contains(currentItem));
+        boolean isSelected = Objects.requireNonNull(viewModel.getSelectedDiseases().getValue()).contains(currentItem);
+        binding.checkboxDisease.setChecked(isSelected);
 
-        binding.checkboxDisease.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            viewModel.toggleDiseaseSelection(currentItem);
-        });
+        if (isDialogAdapter) {
+            // ✅ Allow clicking in dialog
+            binding.checkboxDisease.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                viewModel.toggleDiseaseSelection(currentItem);
+            });
+        } else {
+            // ❌ Disable clicking in fragment
+            binding.checkboxDisease.setEnabled(false);
+        }
 
         binding.executePendingBindings();
     }
-}
 
+    // 🔎 Filter method for searching diseases
+    public void filter(String query) {
+        List<DiseaseItem> filteredList = new ArrayList<>();
+        for (DiseaseItem disease : fullList) {
+            if (disease.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(disease);
+            }
+        }
+        updateList(filteredList);
+    }
+
+    // 🔎 Update list method
+    void updateList(List<DiseaseItem> newList) {
+        items = newList;
+        notifyDataSetChanged();
+    }
+}
