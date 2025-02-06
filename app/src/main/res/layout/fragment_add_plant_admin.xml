@@ -172,7 +172,24 @@
                         android:hint="Growth Date"
                         android:text="@={viewModel.growthDate}" />
                 </com.google.android.material.textfield.TextInputLayout>
+                <!-- Select Diseases -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Select Related Diseases"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="12dp"
+                    android:textColor="@android:color/black" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_diseases"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_disease_checkbox" />
                 <!-- Save Button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/save"

@@ -5,11 +5,15 @@ import android.widget.Toast;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentAddPlantAdminBinding;
+import com.project.homeplantcare.ui.admin_screen.manage_articles.ArticlesAdapter;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.utils.DialogUtils;
+
+import java.util.ArrayList;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -17,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class AddPlaintAdminFragment extends BaseFragment<FragmentAddPlantAdminBinding> {
 
     private AddPlantViewModel viewModel;
-
+    private DiseasesSelectionAdapter adapter;
     @Override
     protected String getTAG() {
         return "AddPlantFragment";
@@ -43,11 +47,20 @@ public class AddPlaintAdminFragment extends BaseFragment<FragmentAddPlantAdminBi
         viewModel = new ViewModelProvider(this).get(AddPlantViewModel.class);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
+        setupRecyclerView();
+        // Set up RecyclerView
+        viewModel.getDiseaseList().observe(getViewLifecycleOwner(), diseases -> {
+            binding.recyclerDiseases.setAdapter(new DiseasesSelectionAdapter(diseases, viewModel));
+        });
 
         setupListeners();
         observeViewModel();
     }
-
+    private void setupRecyclerView() {
+        binding.recyclerDiseases.setLayoutManager(new LinearLayoutManager(requireContext() , LinearLayoutManager.HORIZONTAL, false));
+        adapter = new DiseasesSelectionAdapter(new ArrayList<>(), viewModel);
+        binding.recyclerDiseases.setAdapter(adapter);
+    }
     private void setupListeners() {
         binding.save.setOnClickListener(v -> {
             viewModel.savePlant();

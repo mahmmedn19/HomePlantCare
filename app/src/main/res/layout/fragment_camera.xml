@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/ai_analysis_description"
                 android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@color/md_theme_secondary"
                 android:gravity="center"
                 app:layout_constraintTop_toBottomOf="@id/img_preview"
                 app:layout_constraintStart_toStartOf="parent"
@@ -96,17 +96,8 @@
                     app:icon="@drawable/ic_upload"
                     app:backgroundTint="@color/md_theme_primary"
                     android:textColor="@android:color/white"
-                    android:layout_marginEnd="12dp"/>
+                    />
 
-                <!-- Capture Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_capture"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/capture"
-                    app:icon="@drawable/ic_camera"
-                    app:backgroundTint="@color/md_theme_primary"
-                    android:textColor="@android:color/white"/>
             </LinearLayout>
 
             <!-- Analyze Button -->
