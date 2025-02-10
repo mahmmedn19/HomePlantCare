@@ -42,6 +42,10 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
         showBackButton(true);
         // Checkbox logic
         binding.cbAdmin.setChecked(true);
+        binding.tvForgotPassword.setOnClickListener(v -> {
+            // Forgot password logic
+            Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_forgetPasswordFragment);
+        });
         binding.cbUser.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 binding.cbAdmin.setChecked(false);
@@ -78,6 +82,7 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
         });
 
     }
+
     private void showToast(String message) {
         // Show toast
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();

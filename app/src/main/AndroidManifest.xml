@@ -18,7 +18,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".ui.onboarding.OnBoardingActivity"
             android:exported="true">

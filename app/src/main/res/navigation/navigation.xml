@@ -34,6 +34,9 @@
         <action
             android:id="@+id/action_loginFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_forgetPasswordFragment"
+            app:destination="@id/forgetPasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -63,4 +66,8 @@
             android:id="@+id/action_plantsViewAllFragment_to_articlesDetailsFragment"
             app:destination="@id/articlesDetailsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/forgetPasswordFragment"
+        android:name="com.project.homeplantcare.ui.forget_pass.ForgetPasswordFragment"
+        android:label="ForgetPasswordFragment" />
 </navigation>
