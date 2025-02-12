@@ -48,7 +48,8 @@
                     android:id="@+id/etAdminEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Admin Email" />
+                    android:hint="Admin Email"
+                    android:enabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Save Profile Button -->
@@ -58,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:backgroundTint="@color/md_theme_primary"
-                android:text="Save Profile"
+                android:text="Update Profile"
                 android:textColor="@android:color/white"
                 app:layout_constraintTop_toBottomOf="@id/admin_email" />
 

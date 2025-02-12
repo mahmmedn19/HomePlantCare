@@ -56,7 +56,7 @@
         android:label="ArticlesDetailsFragment" />
     <fragment
         android:id="@+id/cameraFragment"
-        android:name="com.project.homeplantcare.ui.camera_screen.CameraFragment"
+        android:name="com.project.homeplantcare.ui.user_screen.camera_screen.CameraFragment"
         android:label="CameraFragment" />
     <fragment
         android:id="@+id/plantsViewAllFragment"

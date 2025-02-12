@@ -1,16 +1,22 @@
 package com.project.homeplantcare.ui.home_screen;
 
+import android.view.View;
+
 import androidx.lifecycle.ViewModel;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentHomeBinding;
 import com.project.homeplantcare.models.ArticleItem;
 import com.project.homeplantcare.models.CategoryItem;
 import com.project.homeplantcare.models.PlantItem;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.utils.DialogUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -40,12 +46,34 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
     protected void setup() {
         super.setup();
         setToolbarVisibility(false);
-        binding.imgProfile.setOnClickListener(view -> {
-            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_loginFragment);
-        });
+
+        if (isLogging()) {
+            binding.imgProfile.setVisibility(View.VISIBLE);
+        } else {
+            binding.imgProfile.setOnClickListener(view -> {
+                Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_loginFragment);
+            });
+        }
 
         binding.fabCamera.setOnClickListener(view -> {
-            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_cameraFragment);
+            // check if user is logged in if not show dialog to login
+            if (isLogging()) {
+                Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_cameraFragment);
+            } else {
+                DialogUtils
+                        .showConfirmationDialog(
+                                requireContext(),
+                                "Login Required",
+                                "Please login to access this feature",
+                                "Login",
+                                "Cancel",
+                                (dialogInterface, i) -> {
+                                    Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_loginFragment);
+                                },
+                                null
+                        );
+            }
+
         });
         binding.tvViewAllArticles.setOnClickListener(view -> {
             Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantsViewAllFragment);
@@ -118,6 +146,11 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
         binding.recyclerCategories.setAdapter(categoryAdapter);
         // Set default category selection (First item selected)
         binding.recyclerCategories.post(() -> categoryAdapter.setDefaultCategory(0));
+    }
+
+    private boolean isLogging() {
+        // Check if user is logged in
+        return false;
     }
 
     @Override

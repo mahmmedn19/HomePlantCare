@@ -1,4 +1,4 @@
-package com.project.homeplantcare.ui.camera_screen;
+package com.project.homeplantcare.ui.user_screen.camera_screen;
 
 import android.os.Bundle;
 
@@ -38,7 +38,7 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
     protected void setup() {
         super.setup();
         setToolbarVisibility(true);
-        setToolbarTitle("Camera");
-        showBackButton(true);
+        setToolbarTitle("AI Camera");
+        showBackButton(false);
     }
 }

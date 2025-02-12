@@ -1,4 +1,4 @@
-package com.project.homeplantcare.ui.camera_screen;
+package com.project.homeplantcare.ui.user_screen.camera_screen;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
