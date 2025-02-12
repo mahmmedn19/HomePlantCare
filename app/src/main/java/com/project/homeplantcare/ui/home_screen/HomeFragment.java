@@ -44,6 +44,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
 
     @Override
     protected void setup() {
+
         super.setup();
         setToolbarVisibility(false);
 

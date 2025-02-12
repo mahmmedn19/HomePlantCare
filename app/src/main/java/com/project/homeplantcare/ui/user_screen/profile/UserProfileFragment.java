@@ -35,7 +35,7 @@ public class UserProfileFragment extends BaseFragment<FragmentUserProfileBinding
         super.setup();
         setToolbarVisibility(true);
         setToolbarTitle("User Profile");
-        showBackButton(true);
+        showBackButton(false);
 
         // Enable real-time error removal for text fields
         InputValidator.clearErrorOnTextChange(binding.userName);

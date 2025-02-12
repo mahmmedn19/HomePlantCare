@@ -14,6 +14,9 @@
         android:theme="@style/Theme.HomePlantCare"
         tools:targetApi="31">
         <activity
+            android:name=".ui.user_screen.UserMainActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.admin_screen.AdminMainActivity"
             android:exported="false" />
         <activity

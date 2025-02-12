@@ -11,6 +11,7 @@ import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentLoginBinding;
 import com.project.homeplantcare.ui.admin_screen.AdminMainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.ui.user_screen.UserMainActivity;
 import com.project.homeplantcare.utils.InputValidator;
 
 import java.util.Objects;
@@ -92,6 +93,9 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
             startActivity(intent);
             requireActivity().finish();
         } else {
+            Intent intent = new Intent(requireContext(), UserMainActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
             showToast("User login");
         }
     }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.project.homeplantcare.ui.home_screen.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.project.homeplantcare.ui.user_screen.camera_screen.CameraFragment"
+        android:label="Camera" />
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.project.homeplantcare.ui.user_screen.fav_screen.FavFragment"
+        android:label="Favorites" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.project.homeplantcare.ui.user_screen.profile.UserProfileFragment"
+        android:label="Profile" />
+
+</navigation>
