@@ -11,7 +11,9 @@ import com.project.homeplantcare.databinding.FragmentHomeBinding;
 import com.project.homeplantcare.models.ArticleItem;
 import com.project.homeplantcare.models.CategoryItem;
 import com.project.homeplantcare.models.PlantItem;
+import com.project.homeplantcare.ui.MainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.ui.user_screen.UserMainActivity;
 import com.project.homeplantcare.utils.DialogUtils;
 
 import java.util.ArrayList;
@@ -49,8 +51,11 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
         setToolbarVisibility(false);
 
         if (isLogging()) {
-            binding.imgProfile.setVisibility(View.VISIBLE);
+            binding.imgProfile.setVisibility(View.GONE);
+            binding.fabCamera.setVisibility(View.GONE);
         } else {
+            binding.imgProfile.setVisibility(View.VISIBLE);
+            binding.fabCamera.setVisibility(View.VISIBLE);
             binding.imgProfile.setOnClickListener(view -> {
                 Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_loginFragment);
             });
@@ -150,9 +155,14 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
     }
 
     private boolean isLogging() {
-        // Check if user is logged in
-        return false;
+        if (getActivity() instanceof UserMainActivity) {
+            return true; // User is logged in
+        } else if (getActivity() instanceof MainActivity) {
+            return false; // User is not logged in
+        }
+        return false; // Default case
     }
+
 
     @Override
     public void onCategoryClicked(CategoryItem category) {

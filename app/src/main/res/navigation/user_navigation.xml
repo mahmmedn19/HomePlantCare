@@ -16,11 +16,19 @@
     <fragment
         android:id="@+id/favoritesFragment"
         android:name="com.project.homeplantcare.ui.user_screen.fav_screen.FavFragment"
-        android:label="Favorites" />
+        android:label="Favorites" >
+        <action
+            android:id="@+id/action_favoritesFragment_to_plantDetailsFragment2"
+            app:destination="@id/plantDetailsFragment2" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.project.homeplantcare.ui.user_screen.profile.UserProfileFragment"
         android:label="Profile" />
+    <fragment
+        android:id="@+id/plantDetailsFragment2"
+        android:name="com.project.homeplantcare.ui.plant_details.PlantDetailsFragment"
+        android:label="PlantDetailsFragment" />
 
 </navigation>

@@ -34,9 +34,11 @@ public class PlantItem {
     }
 
     // Minimal constructor for new plants
-    public PlantItem(String name, String description) {
+    public PlantItem(String lightRequirements,String name, String description , int imageResId) {
         this.name = name;
         this.description = description;
+        this.lightRequirements = lightRequirements;
+        this.imageResId = imageResId;
     }
 
     // Getters & Setters

@@ -1,11 +1,15 @@
 package com.project.homeplantcare.ui.user_screen.profile;
 
-import android.view.View;
+import android.content.Intent;
 import android.widget.Toast;
+
 import androidx.lifecycle.ViewModel;
+
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentUserProfileBinding;
+import com.project.homeplantcare.ui.MainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.utils.DialogUtils;
 import com.project.homeplantcare.utils.InputValidator;
 
 import java.util.Objects;
@@ -45,6 +49,20 @@ public class UserProfileFragment extends BaseFragment<FragmentUserProfileBinding
 
         binding.btnUpdateProfile.setOnClickListener(v -> handleUpdateProfile());
         binding.btnSaveNewPassword.setOnClickListener(v -> handleChangePassword());
+        binding.btnLogout.setOnClickListener(v -> {
+            DialogUtils.showConfirmationDialog(
+                    requireContext(),
+                    "Logout",
+                    "Are you sure you want to logout?",
+                    "Yes",
+                    "No",
+                    (dialog, which) -> {
+                        Intent intent = new Intent(requireContext(), MainActivity.class);
+                        startActivity(intent);
+                        requireActivity().finish();
+                    }
+            );
+        });
     }
 
     private void handleUpdateProfile() {
