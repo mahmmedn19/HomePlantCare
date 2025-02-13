@@ -87,7 +87,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
 
         // Generate fake plant data and set up PlantAdapter
         fakePlants = generateFakePlantData();
-        setupPlantRecyclerView();
+        setupPlantRecyclerView(); 
 
         // Generate Article Items and set up ArticleAdapter
         itemList = generateFakeArticles();
