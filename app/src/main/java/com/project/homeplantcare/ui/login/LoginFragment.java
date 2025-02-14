@@ -77,7 +77,7 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
     private void handleLogin() {
         // Validate email and password before proceeding
         boolean isEmailValid = InputValidator.validateEmail(binding.emailInputLayout, Objects.requireNonNull(binding.etEmail.getText()).toString().trim());
-        boolean isPasswordValid = InputValidator.validatePassword(binding.passwordInputLayout, Objects.requireNonNull(binding.etPassword.getText()).toString().trim());
+        boolean isPasswordValid = InputValidator.validateData(binding.passwordInputLayout, Objects.requireNonNull(binding.etPassword.getText()).toString().trim());
 
         if (!isEmailValid || !isPasswordValid) {
             return; // Stop login if validation fails

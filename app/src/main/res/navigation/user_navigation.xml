@@ -11,7 +11,11 @@
     <fragment
         android:id="@+id/cameraFragment"
         android:name="com.project.homeplantcare.ui.user_screen.camera_screen.CameraFragment"
-        android:label="Camera" />
+        android:label="Camera" >
+        <action
+            android:id="@+id/action_cameraFragment_to_plantDetailsFragment2"
+            app:destination="@id/plantDetailsFragment2" />
+    </fragment>
 
     <fragment
         android:id="@+id/favoritesFragment"
@@ -30,5 +34,13 @@
         android:id="@+id/plantDetailsFragment2"
         android:name="com.project.homeplantcare.ui.plant_details.PlantDetailsFragment"
         android:label="PlantDetailsFragment" />
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.project.homeplantcare.ui.user_screen.history.HistoryScreenFragment"
+        android:label="HistoryScreenFragment" >
+        <action
+            android:id="@+id/action_historyScreenFragment_to_plantDetailsFragment2"
+            app:destination="@id/plantDetailsFragment2" />
+    </fragment>
 
 </navigation>

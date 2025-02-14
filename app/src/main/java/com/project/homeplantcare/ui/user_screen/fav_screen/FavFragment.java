@@ -59,7 +59,6 @@ public class FavFragment extends BaseFragment<FragmentFavBinding> implements Fav
     private void removeFromFavorites(PlantItem plant) {
         favoritePlants.remove(plant);
         adapter.updateList(new ArrayList<>(favoritePlants));
-        showToast(plant.getName() + " removed from favorites");
     }
 
 

@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,5 +41,10 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
         setToolbarVisibility(true);
         setToolbarTitle("AI Camera");
         showBackButton(false);
+        binding.btnAnalyze.setOnClickListener(
+                v -> {
+                    Navigation.findNavController(v).navigate(R.id.action_cameraFragment_to_plantDetailsFragment2);
+                }
+        );
     }
 }

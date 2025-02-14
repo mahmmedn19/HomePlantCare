@@ -79,11 +79,8 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
                                 null
                         );
             }
-
         });
-        binding.tvViewAllArticles.setOnClickListener(view -> {
-            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantsViewAllFragment);
-        });
+        binding.tvViewAllArticles.setOnClickListener(view -> Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantsViewAllFragment));
 
         // Generate fake plant data and set up PlantAdapter
         fakePlants = generateFakePlantData();

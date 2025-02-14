@@ -66,6 +66,7 @@ public class UserMainActivity extends AppCompatActivity implements BaseFragment.
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             if (destination.getId() != R.id.homeFragment &&
                     destination.getId() != R.id.cameraFragment &&
+                    destination.getId() != R.id.historyFragment &&
                     destination.getId() != R.id.favoritesFragment &&
                     destination.getId() != R.id.profileFragment) {
                 binding.bottomNav.setVisibility(View.GONE);
@@ -80,23 +81,14 @@ public class UserMainActivity extends AppCompatActivity implements BaseFragment.
                 navController.navigate(R.id.homeFragment);
             } else if (item.getItemId() == R.id.cameraFragment) {
                 navController.navigate(R.id.cameraFragment);
+            }  else if (item.getItemId() == R.id.historyFragment) {
+                navController.navigate(R.id.historyFragment);
             } else if (item.getItemId() == R.id.favoritesFragment) {
                 navController.navigate(R.id.favoritesFragment);
             } else if (item.getItemId() == R.id.profileFragment) {
                 navController.navigate(R.id.profileFragment);
             }
             return true;
-        });
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (navController.getCurrentDestination() != null &&
-                        navController.getCurrentDestination().getId() == R.id.homeFragment) {
-                    finishAffinity(); // Exit app on home screen
-                } else {
-                    navController.navigate(R.id.homeFragment); // Go back to Home
-                }
-            }
         });
     }
 
