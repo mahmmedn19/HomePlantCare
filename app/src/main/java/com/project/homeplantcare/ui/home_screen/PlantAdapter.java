@@ -35,15 +35,15 @@ public class PlantAdapter extends BaseAdapter<PlantItem, ItemPlantCardBinding> {
         Glide.with(holder.binding.getRoot().getContext())
                 .load(currentItem.getImageResId())
                 .into(holder.binding.imgPlant);
-        binding.btnAddToFav.setOnClickListener(view -> listener.onFavoriteClicked(currentItem));
-        binding.imgPlant.setOnClickListener(view -> listener.onCartClicked(currentItem));
+        binding.btnShowDetails.setOnClickListener(view -> listener.onShowDetailsClicked(currentItem));
+        binding.imgPlant.setOnClickListener(view -> listener.onPlantClicked(currentItem));
         binding.executePendingBindings();
     }
 
 
 
     public interface HomeInteractionListener extends BaseInteractionListener {
-        void onFavoriteClicked(PlantItem  item);
-        void onCartClicked(PlantItem item);
+        void onShowDetailsClicked(PlantItem  item);
+        void onPlantClicked(PlantItem item);
     }
 }

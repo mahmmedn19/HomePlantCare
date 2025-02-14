@@ -80,11 +80,17 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
                         );
             }
         });
-        binding.tvViewAllArticles.setOnClickListener(view -> Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantsViewAllFragment));
+        binding.tvViewAllArticles.setOnClickListener(view -> {
+            if (isLogging()) {
+                Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantsViewAllFragment2);
+            } else {
+                Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantsViewAllFragment);
+            }
+        });
 
         // Generate fake plant data and set up PlantAdapter
         fakePlants = generateFakePlantData();
-        setupPlantRecyclerView(); 
+        setupPlantRecyclerView();
 
         // Generate Article Items and set up ArticleAdapter
         itemList = generateFakeArticles();
@@ -167,20 +173,31 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
     }
 
     @Override
-    public void onFavoriteClicked(PlantItem item) {
+    public void onShowDetailsClicked(PlantItem item) {
         // Handle favorite click
-        Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment);
-    }
+        if (isLogging()) {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment2);
+        } else {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment);
+        }    }
 
     @Override
-    public void onCartClicked(PlantItem item) {
+    public void onPlantClicked(PlantItem item) {
         // Handle cart click (Navigate to details page)
-        Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment);
+        if (isLogging()) {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment2);
+        } else {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment);
+        }
     }
 
     @Override
-    public void onCartClicked(ArticleItem item) {
+    public void onArticleClicked(ArticleItem item) {
         // Handle article click
-        Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_articlesDetailsFragment);
+        if (isLogging()) {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_articlesDetailsFragment2);
+        } else {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_articlesDetailsFragment);
+        }
     }
 }

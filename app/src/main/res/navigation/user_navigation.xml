@@ -6,7 +6,17 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.project.homeplantcare.ui.home_screen.HomeFragment"
-        android:label="Home" />
+        android:label="Home" >
+        <action
+            android:id="@+id/action_homeFragment_to_plantDetailsFragment2"
+            app:destination="@id/plantDetailsFragment2" />
+        <action
+            android:id="@+id/action_homeFragment_to_articlesDetailsFragment2"
+            app:destination="@id/articlesDetailsFragment2" />
+        <action
+            android:id="@+id/action_homeFragment_to_plantsViewAllFragment2"
+            app:destination="@id/plantsViewAllFragment2" />
+    </fragment>
 
     <fragment
         android:id="@+id/cameraFragment"
@@ -42,5 +52,13 @@
             android:id="@+id/action_historyScreenFragment_to_plantDetailsFragment2"
             app:destination="@id/plantDetailsFragment2" />
     </fragment>
+    <fragment
+        android:id="@+id/articlesDetailsFragment2"
+        android:name="com.project.homeplantcare.ui.article_details.ArticlesDetailsFragment"
+        android:label="ArticlesDetailsFragment" />
+    <fragment
+        android:id="@+id/plantsViewAllFragment2"
+        android:name="com.project.homeplantcare.ui.plants_view_all.PlantsViewAllFragment"
+        android:label="PlantsViewAllFragment" />
 
 </navigation>

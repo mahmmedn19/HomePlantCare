@@ -81,9 +81,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginTop="8dp" />
 
-                <!-- Cart Button -->
                 <ImageView
-                    android:id="@+id/btn_add_to_fav"
+                    android:id="@+id/btn_show_details"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:layout_marginEnd="16dp"

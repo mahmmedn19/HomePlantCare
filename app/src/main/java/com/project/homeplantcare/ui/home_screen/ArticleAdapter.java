@@ -36,12 +36,12 @@ public class ArticleAdapter extends BaseAdapter<ArticleItem, ItemNewArticlesCard
                 .load(currentItem.getImageResId())
                 .into(holder.binding.imgArticle);
 
-        binding.cardArticle.setOnClickListener(view -> listener.onCartClicked(currentItem));
+        binding.cardArticle.setOnClickListener(view -> listener.onArticleClicked(currentItem));
         binding.executePendingBindings();
     }
 
 
     public interface HomeInteractionListener extends BaseInteractionListener {
-        void onCartClicked(ArticleItem item);
+        void onArticleClicked(ArticleItem item);
     }
 }
