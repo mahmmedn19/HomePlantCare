@@ -1,6 +1,4 @@
-package com.project.homeplantcare.ui.article_details;
-
-import android.os.Bundle;
+package com.project.homeplantcare.ui.user_screen;
 
 import androidx.lifecycle.ViewModel;
 

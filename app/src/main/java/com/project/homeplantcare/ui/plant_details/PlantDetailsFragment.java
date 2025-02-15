@@ -1,5 +1,7 @@
 package com.project.homeplantcare.ui.plant_details;
 
+import android.view.View;
+
 import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -40,6 +42,17 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
         setToolbarVisibility(true);
         setToolbarTitle("Plant Details");
         showBackButton(true);
+
+        // Retrieve argument
+        boolean isAnalysis = getArguments() != null && getArguments().getBoolean("isAnaylsis", false);
+
+        if (isAnalysis) {
+            // Perform AI Analysis specific logic
+            binding.addToHistory.setVisibility(View.VISIBLE);
+        }else {
+            // Hide the Add to History button
+            binding.addToHistory.setVisibility(View.GONE);
+        }
 
         // Create a fake PlantItem object
         PlantItem fakePlant = new PlantItem(

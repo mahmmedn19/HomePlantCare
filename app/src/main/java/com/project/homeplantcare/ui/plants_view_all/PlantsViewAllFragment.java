@@ -1,22 +1,15 @@
 package com.project.homeplantcare.ui.plants_view_all;
 
-import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentPlantsViewAllBinding;
 import com.project.homeplantcare.models.ArticleItem;
-import com.project.homeplantcare.models.PlantItem;
+import com.project.homeplantcare.ui.MainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
-import com.project.homeplantcare.ui.home_screen.ArticleAdapter;
+import com.project.homeplantcare.ui.user_screen.UserMainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +46,7 @@ public class PlantsViewAllFragment extends BaseFragment<FragmentPlantsViewAllBin
         setupNewArticlesRecyclerView();
 
     }
+
     // Generate Fake Article Items
     private List<ArticleItem> generateFakeArticles() {
         List<ArticleItem> articles = new ArrayList<>();
@@ -61,16 +55,32 @@ public class PlantsViewAllFragment extends BaseFragment<FragmentPlantsViewAllBin
         articles.add(new ArticleItem("Watering Tips for Beginners", "Overwatering is a common mistake...", "Mar 5, 2024", R.drawable.plant_3));
         return articles;
     }
+
     // Set up the NewArticlesAdapter with horizontal scrolling
     private void setupNewArticlesRecyclerView() {
         ViewAllArticleAdapter articleAdapter = new ViewAllArticleAdapter(itemList, this);
         binding.recyclerNewArticles.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         binding.recyclerNewArticles.setAdapter(articleAdapter);
     }
+
     @Override
     public void onCartClicked(ArticleItem item) {
         // Handle cart click
         // Navigate to details page
-        Navigation.findNavController(requireView()).navigate(R.id.action_plantsViewAllFragment_to_articlesDetailsFragment);
+        if (isLogging()) {
+            Navigation.findNavController(requireView()).navigate(R.id.action_plantsViewAllFragment2_to_articlesDetailsFragment2);
+        } else {
+            // User is not logged in
+            Navigation.findNavController(requireView()).navigate(R.id.action_plantsViewAllFragment_to_articlesDetailsFragment);
+        }
+    }
+
+    private boolean isLogging() {
+        if (getActivity() instanceof UserMainActivity) {
+            return true; // User is logged in
+        } else if (getActivity() instanceof MainActivity) {
+            return false; // User is not logged in
+        }
+        return false; // Default case
     }
 }

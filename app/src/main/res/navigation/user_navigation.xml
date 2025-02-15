@@ -25,6 +25,10 @@
         <action
             android:id="@+id/action_cameraFragment_to_plantDetailsFragment2"
             app:destination="@id/plantDetailsFragment2" />
+        <argument
+            android:name="isAnaylsis"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 
     <fragment
@@ -54,11 +58,15 @@
     </fragment>
     <fragment
         android:id="@+id/articlesDetailsFragment2"
-        android:name="com.project.homeplantcare.ui.article_details.ArticlesDetailsFragment"
+        android:name="com.project.homeplantcare.ui.user_screen.ArticlesDetailsFragment"
         android:label="ArticlesDetailsFragment" />
     <fragment
         android:id="@+id/plantsViewAllFragment2"
         android:name="com.project.homeplantcare.ui.plants_view_all.PlantsViewAllFragment"
-        android:label="PlantsViewAllFragment" />
+        android:label="PlantsViewAllFragment" >
+        <action
+            android:id="@+id/action_plantsViewAllFragment2_to_articlesDetailsFragment2"
+            app:destination="@id/articlesDetailsFragment2" />
+    </fragment>
 
 </navigation>

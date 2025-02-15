@@ -25,6 +25,7 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
         return "CameraFragment";
     }
 
+
     @Override
     protected int getLayoutIdFragment() {
         return R.layout.fragment_camera;
@@ -41,10 +42,12 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
         setToolbarVisibility(true);
         setToolbarTitle("AI Camera");
         showBackButton(false);
-        binding.btnAnalyze.setOnClickListener(
-                v -> {
-                    Navigation.findNavController(v).navigate(R.id.action_cameraFragment_to_plantDetailsFragment2);
-                }
-        );
+
+        binding.btnAnalyze.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("isAnaylsis", true);
+            Navigation.findNavController(v).navigate(R.id.action_cameraFragment_to_plantDetailsFragment2, bundle);
+        });
     }
+
 }
