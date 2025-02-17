@@ -15,7 +15,8 @@ public class InputValidator {
 
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$";
     private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
-    private static final String USERNAME_REGEX = "^[a-zA-Z]+$"; // Only letters allowed
+    // Chars only and 4-20 characters long
+    private static final String USERNAME_REGEX  = "^[a-zA-Z]{4,20}$";
     private static final Map<EditText, TextWatcher> textWatcherMap = new HashMap<>();
 
     public static boolean validateData(TextInputLayout textInputLayout, String text) {
@@ -71,7 +72,7 @@ public class InputValidator {
             setError(nameTextInputLayout, "Name field cannot be empty");
             return false;
         } else if (!isValidUsernameFormat(name)) {
-            setError(nameTextInputLayout, "Name can only contain letters");
+            setError(nameTextInputLayout, "Name can only contain 4 letters");
             return false;
         }
         clearError(nameTextInputLayout);

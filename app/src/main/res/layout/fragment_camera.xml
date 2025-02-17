@@ -4,9 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="viewModel"
-            type="com.project.homeplantcare.ui.user_screen.camera_screen.CameraViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -49,7 +46,7 @@
                     android:text="@string/ai_analysis_description"
                     android:textSize="14sp"
                     android:textColor="@color/md_theme_secondary"
-                    android:gravity="center"
+                    android:gravity="start"
                     app:layout_constraintTop_toBottomOf="@id/img_preview"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
