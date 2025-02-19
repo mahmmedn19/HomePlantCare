@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentHomeBinding;
-import com.project.homeplantcare.models.ArticleItem;
-import com.project.homeplantcare.models.CategoryItem;
-import com.project.homeplantcare.models.PlantItem;
+import com.project.homeplantcare.data.models.ArticleItem;
+import com.project.homeplantcare.data.models.CategoryItem;
+import com.project.homeplantcare.data.models.PlantItem;
 import com.project.homeplantcare.ui.MainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.ui.user_screen.UserMainActivity;

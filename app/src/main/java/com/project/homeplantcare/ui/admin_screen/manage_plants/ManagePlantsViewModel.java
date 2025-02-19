@@ -3,7 +3,7 @@ package com.project.homeplantcare.ui.admin_screen.manage_plants;
 import androidx.lifecycle.ViewModel;
 
 import com.project.homeplantcare.R;
-import com.project.homeplantcare.models.PlantItem;
+import com.project.homeplantcare.data.models.PlantItem;
 
 import java.util.ArrayList;
 import java.util.List;

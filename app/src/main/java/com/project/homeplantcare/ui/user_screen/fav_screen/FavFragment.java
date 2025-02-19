@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentFavBinding;
-import com.project.homeplantcare.models.PlantItem;
+import com.project.homeplantcare.data.models.PlantItem;
 import com.project.homeplantcare.ui.base.BaseFragment;
 
 import java.util.ArrayList;

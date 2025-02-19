@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.ItemCategoryTabBinding;
-import com.project.homeplantcare.databinding.ItemPlantCardBinding;
-import com.project.homeplantcare.models.CategoryItem;
-import com.project.homeplantcare.models.PlantItem;
+import com.project.homeplantcare.data.models.CategoryItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
 import com.project.homeplantcare.ui.base.BaseInteractionListener;
 import java.util.List;

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="historyItem"
-            type="com.project.homeplantcare.models.HistoryItem" />
+            type="com.project.homeplantcare.data.models.HistoryItem" />
         </data>
 
     <LinearLayout

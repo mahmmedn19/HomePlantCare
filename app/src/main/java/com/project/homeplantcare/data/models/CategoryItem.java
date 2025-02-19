@@ -1,4 +1,4 @@
-package com.project.homeplantcare.models;
+package com.project.homeplantcare.data.models;
 
 public class CategoryItem {
     private String name;

@@ -1,7 +1,5 @@
 package com.project.homeplantcare.ui.admin_screen.manage_diseases;
 
-import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
@@ -11,10 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentManageDiseasesBinding;
-import com.project.homeplantcare.models.DiseaseItem;
+import com.project.homeplantcare.data.models.DiseaseItem;
 import com.project.homeplantcare.ui.base.BaseFragment;
-
-import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 

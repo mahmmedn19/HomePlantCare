@@ -8,7 +8,7 @@ import android.widget.PopupMenu;
 import com.bumptech.glide.Glide;
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.ItemManageArticleBinding;
-import com.project.homeplantcare.models.ArticleItem;
+import com.project.homeplantcare.data.models.ArticleItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
 
 import java.util.List;

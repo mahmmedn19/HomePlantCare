@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.project.homeplantcare.R;
+import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentLoginBinding;
 import com.project.homeplantcare.ui.admin_screen.AdminMainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
@@ -21,6 +24,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
 
+    private LoginViewModel viewModel;
+
+
     @Override
     protected String getTAG() {
         return "LoginFragment";
@@ -33,7 +39,8 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
 
     @Override
     protected ViewModel getViewModel() {
-        return null;
+        viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
+        return viewModel;
     }
 
     @Override
@@ -75,29 +82,39 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
     }
 
     private void handleLogin() {
-        // Validate email and password before proceeding
-        boolean isEmailValid = InputValidator.validateEmail(binding.emailInputLayout, Objects.requireNonNull(binding.etEmail.getText()).toString().trim());
-        boolean isPasswordValid = InputValidator.validateData(binding.passwordInputLayout, Objects.requireNonNull(binding.etPassword.getText()).toString().trim());
+        String email = Objects.requireNonNull(binding.etEmail.getText()).toString().trim();
+        String password = Objects.requireNonNull(binding.etPassword.getText()).toString().trim();
 
-        if (!isEmailValid || !isPasswordValid) {
-            return; // Stop login if validation fails
-        }
-
-        if (!binding.cbAdmin.isChecked() && !binding.cbUser.isChecked()) {
-            showToast("Please select a user type");
+        if (!InputValidator.validateEmail(binding.emailInputLayout, email) ||
+                !InputValidator.validateData(binding.passwordInputLayout, password)) {
             return;
         }
 
         if (binding.cbAdmin.isChecked()) {
-            Intent intent = new Intent(requireContext(), AdminMainActivity.class);
-            startActivity(intent);
-            requireActivity().finish();
+            observeLogin(viewModel.loginAdmin(email, password), AdminMainActivity.class, "Admin login successful!");
+        } else if (binding.cbUser.isChecked()) {
+            observeLogin(viewModel.loginUser(email, password), UserMainActivity.class, "User login successful!");
         } else {
-            Intent intent = new Intent(requireContext(), UserMainActivity.class);
-            startActivity(intent);
-            requireActivity().finish();
-            showToast("User login");
+            showToast("Please select a user type");
         }
+    }
+
+    private void observeLogin(LiveData<Result<String>> loginResult, Class<?> targetActivity, String successMessage) {
+        loginResult.observe(getViewLifecycleOwner(), result -> {
+            switch (result.getStatus()) {
+                case SUCCESS:
+                    showToast(successMessage);
+                    startActivity(new Intent(requireContext(), targetActivity));
+                    requireActivity().finish();
+                    break;
+                case ERROR:
+                    showToast(result.getErrorMessage());
+                    break;
+                case LOADING:
+                    showToast("Logging in...");
+                    break;
+            }
+        });
     }
 
     private void showToast(String message) {

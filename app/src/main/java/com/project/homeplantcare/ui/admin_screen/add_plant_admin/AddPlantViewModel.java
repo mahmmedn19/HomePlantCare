@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.project.homeplantcare.models.DiseaseItem;
+import com.project.homeplantcare.data.models.DiseaseItem;
 
 import java.util.ArrayList;
 import java.util.List;

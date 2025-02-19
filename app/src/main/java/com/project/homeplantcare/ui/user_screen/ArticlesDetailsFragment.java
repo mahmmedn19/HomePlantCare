@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentArticlesDetailsBinding;
-import com.project.homeplantcare.models.ArticleItem;
+import com.project.homeplantcare.data.models.ArticleItem;
 import com.project.homeplantcare.ui.base.BaseFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;

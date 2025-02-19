@@ -4,7 +4,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.project.homeplantcare.databinding.ItemDiseaseCheckboxBinding;
-import com.project.homeplantcare.models.DiseaseItem;
+import com.project.homeplantcare.data.models.DiseaseItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
 
 import java.util.ArrayList;

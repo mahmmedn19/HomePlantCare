@@ -7,7 +7,7 @@
 
         <variable
             name="plant"
-            type="com.project.homeplantcare.models.PlantItem" />
+            type="com.project.homeplantcare.data.models.PlantItem" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.project.homeplantcare.databinding.ItemPlantCardBinding;
-import com.project.homeplantcare.models.PlantItem;
+import com.project.homeplantcare.data.models.PlantItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
 import com.project.homeplantcare.ui.base.BaseInteractionListener;
 

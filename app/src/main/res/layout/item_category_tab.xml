@@ -6,7 +6,7 @@
     <data>
         <variable
             name="category"
-            type="com.project.homeplantcare.models.CategoryItem" />
+            type="com.project.homeplantcare.data.models.CategoryItem" />
     </data>
 
     <TextView

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="article"
-            type="com.project.homeplantcare.models.ArticleItem" />
+            type="com.project.homeplantcare.data.models.ArticleItem" />
     </data>
 
     <androidx.cardview.widget.CardView

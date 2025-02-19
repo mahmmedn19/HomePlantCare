@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentPlantsViewAllBinding;
-import com.project.homeplantcare.models.ArticleItem;
+import com.project.homeplantcare.data.models.ArticleItem;
 import com.project.homeplantcare.ui.MainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.ui.user_screen.UserMainActivity;

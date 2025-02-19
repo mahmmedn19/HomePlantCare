@@ -3,15 +3,9 @@ package com.project.homeplantcare.ui.plant_details;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.project.homeplantcare.R;
-import com.project.homeplantcare.databinding.ItemCategoryTabBinding;
 import com.project.homeplantcare.databinding.ItemDiseaseCardBinding;
-import com.project.homeplantcare.models.CategoryItem;
-import com.project.homeplantcare.models.DiseaseItem;
+import com.project.homeplantcare.data.models.DiseaseItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
-import com.project.homeplantcare.ui.base.BaseInteractionListener;
 
 import java.util.List;
 

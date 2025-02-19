@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.project.homeplantcare.databinding.ItemHistoryBinding;
-import com.project.homeplantcare.models.HistoryItem;
+import com.project.homeplantcare.data.models.HistoryItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
 
 import java.util.List;

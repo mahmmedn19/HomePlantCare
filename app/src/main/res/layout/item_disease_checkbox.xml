@@ -6,7 +6,7 @@
     <data>
         <variable
             name="disease"
-            type="com.project.homeplantcare.models.DiseaseItem" />
+            type="com.project.homeplantcare.data.models.DiseaseItem" />
     </data>
 
     <LinearLayout

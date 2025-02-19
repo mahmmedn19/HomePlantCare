@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentHistoryScreenBinding;
-import com.project.homeplantcare.models.HistoryItem;
+import com.project.homeplantcare.data.models.HistoryItem;
 import com.project.homeplantcare.ui.base.BaseFragment;
 
 import java.util.ArrayList;

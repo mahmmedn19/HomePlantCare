@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.ItemDiseaseBinding;
-import com.project.homeplantcare.models.DiseaseItem;
+import com.project.homeplantcare.data.models.DiseaseItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
 
 import java.util.ArrayList;

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentManagePlantsBinding;
-import com.project.homeplantcare.models.PlantItem;
+import com.project.homeplantcare.data.models.PlantItem;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.utils.DialogUtils;
 
