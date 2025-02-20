@@ -1,29 +1,42 @@
 package com.project.homeplantcare.ui.admin_screen.manage_plants;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.models.PlantItem;
+import com.project.homeplantcare.data.repo.app_repo.AppRepository;
+import com.project.homeplantcare.data.repo.app_repo.AppRepositoryImpl;
+import com.project.homeplantcare.data.utils.Result;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
 public class ManagePlantsViewModel extends ViewModel {
 
-    private final List<PlantItem> mockPlants;
+    private final AppRepository appRepository;
 
-    public ManagePlantsViewModel() {
-        mockPlants = new ArrayList<>();
-        mockPlants.add(new PlantItem(1, "Aloe Vera", "Medicinal plant", "Indoor", "Medium", "Well-Drained", "Warm", "2024-01-01", R.drawable.plant_7));
-        mockPlants.add(new PlantItem(2, "Snake Plant", "Air purifier", "Low Light", "Low", "Any", "Warm", "2023-12-15", R.drawable.plant_2));
-        mockPlants.add(new PlantItem(3, "Money Plant", "Symbol of fortune", "Bright Indirect", "Medium", "Well-Drained", "Moderate", "2023-11-10", R.drawable.plant_6));
+    @Inject
+    public ManagePlantsViewModel(AppRepositoryImpl appRepository) {
+        this.appRepository = appRepository;
     }
 
-    public List<PlantItem> getMockPlants() {
-        return mockPlants;
+    // Get all plants from Firestore
+    public LiveData<Result<List<PlantItem>>> getAllPlants() {
+        return appRepository.getAllPlants();
     }
 
-    public void deletePlant(PlantItem plant) {
-        mockPlants.remove(plant);
+    // Delete a plant
+    public void deletePlant(PlantItem plantItem) {
+        appRepository.deletePlant(plantItem.getPlantId()).observeForever(result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                // Reload plants after deleting
+                getAllPlants();
+            }
+        }
+        );
     }
 }

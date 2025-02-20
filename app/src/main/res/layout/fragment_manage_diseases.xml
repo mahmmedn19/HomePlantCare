@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         tools:context=".ui.admin_screen.manage_diseases.ManageDiseasesFragment">
 
+        <!-- RecyclerView for displaying diseases -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerDiseases"
             android:layout_width="match_parent"
@@ -17,7 +18,25 @@
             android:padding="16dp"
             android:scrollbars="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_disease"/>
+            tools:listitem="@layout/item_disease" />
+
+        <!-- ProgressBar for loading state -->
+        <android.widget.ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:indeterminate="true" />
+
+        <!-- Placeholder Image when no plants are available -->
+        <ImageView
+            android:id="@+id/placeholder_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/no_image_found"
+            android:visibility="gone" />
 
         <!-- Floating Action Button (FAB) to add a new disease -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -30,6 +49,6 @@
             app:backgroundTint="@color/md_theme_primary"
             android:layout_margin="16dp"
             app:elevation="8dp"
-            android:layout_gravity="bottom|end"/>
+            android:layout_gravity="bottom|end" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

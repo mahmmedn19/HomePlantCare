@@ -34,7 +34,6 @@
                     android:layout_width="80dp"
                     android:layout_height="match_parent"
                     android:scaleType="centerInside"
-                    android:src="@{plant.imageResId}"
                     tools:src="@drawable/plant_2" />
 
                 <!-- Plant Details -->

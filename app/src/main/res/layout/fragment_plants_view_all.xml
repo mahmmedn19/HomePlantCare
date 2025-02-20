@@ -20,6 +20,25 @@
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_view_all_articles_card" />
+
+        <!-- ProgressBar for articles loading state -->
+        <android.widget.ProgressBar
+            android:id="@+id/progressBarArticles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+
+        <!-- Placeholder Image for articles when no data is available -->
+        <ImageView
+            android:id="@+id/placeholder_image_articles"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:src="@drawable/no_image_found"
+            android:visibility="gone" />
     </FrameLayout>
 
 </layout>

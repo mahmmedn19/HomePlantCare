@@ -7,9 +7,8 @@ import android.widget.Toast;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.project.homeplantcare.R;
+import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentAddLinkBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
 
@@ -66,7 +65,15 @@ public class AddLinkFragment extends BaseFragment<FragmentAddLinkBinding> {
         // Button Click Listener
         binding.btnAddLink.setOnClickListener(v -> {
             if (viewModel.validateUrl()) {
-                Toast.makeText(getContext(), "URL is valid", Toast.LENGTH_SHORT).show();
+                viewModel.addAILink().observe(getViewLifecycleOwner(), result -> {
+                    if (result.getStatus() == Result.Status.SUCCESS) {
+                        Toast.makeText(getContext(), "URL is valid and added successfully", Toast.LENGTH_SHORT).show();
+                    } else if (result.getStatus() == Result.Status.ERROR) {
+                        Toast.makeText(getContext(), "Error: " + result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    } else if (result.getStatus() == Result.Status.LOADING) {
+                        Toast.makeText(getContext(), "Loading...", Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else {
                 binding.urlInputLayout.setError("Invalid URL format");
             }

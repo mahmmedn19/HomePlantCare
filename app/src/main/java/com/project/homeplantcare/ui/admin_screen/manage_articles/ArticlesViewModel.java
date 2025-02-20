@@ -1,12 +1,13 @@
 package com.project.homeplantcare.ui.admin_screen.manage_articles;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.project.homeplantcare.R;
-import com.project.homeplantcare.data.models.ArticleItem;
 
-import java.util.ArrayList;
+import com.project.homeplantcare.data.models.ArticleItem;
+import com.project.homeplantcare.data.repo.app_repo.AppRepository;
+import com.project.homeplantcare.data.repo.app_repo.AppRepositoryImpl;
+import com.project.homeplantcare.data.utils.Result;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -15,29 +16,28 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
 public class ArticlesViewModel extends ViewModel {
-    private final MutableLiveData<List<ArticleItem>> articlesLiveData = new MutableLiveData<>();
-    private final List<ArticleItem> mockArticles = new ArrayList<>();
+
+    private final AppRepository appRepository;
 
     @Inject
-    public ArticlesViewModel() {
-        loadMockData();
+    public ArticlesViewModel(AppRepositoryImpl appRepository) {
+        this.appRepository = appRepository;
     }
 
-    private void loadMockData() {
-        mockArticles.add(new ArticleItem("How to Take Care of Indoor Plants", "Learn the best ways to take care of indoor plants.", "12 Jan 2024", R.drawable.plant_3));
-        mockArticles.add(new ArticleItem("Best Plants for Small Spaces", "Discover plants that thrive in compact areas.", "10 Feb 2024", R.drawable.hoya4));
-        mockArticles.add(new ArticleItem("Watering Tips for Beginners", "Avoid overwatering with these expert tips.", "5 March 2024", R.drawable.plant_4));
 
-        articlesLiveData.setValue(mockArticles);
+    // Fetch all articles from Firestore
+    public LiveData<Result<List<ArticleItem>>> getAllArticles() {
+        return appRepository.getAllArticles();
     }
 
-    public LiveData<List<ArticleItem>> getArticlesLiveData() {
-        return articlesLiveData;
-    }
 
-    public void deleteArticle(ArticleItem article) {
-        mockArticles.remove(article);
-        articlesLiveData.setValue(new ArrayList<>(mockArticles));
+    // Delete an article
+    public void deleteArticle(String articleId) {
+        appRepository.deleteArticle(articleId).observeForever(result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                // Reload articles after deleting
+                getAllArticles();
+            }
+        });
     }
 }
-

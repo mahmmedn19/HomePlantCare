@@ -1,7 +1,10 @@
 package com.project.homeplantcare.data.models;
 
+import java.util.List;
+
 public class PlantItem {
-    private int plantId;
+
+    private String plantId;
     private String name;
     private String description;
     private String lightRequirements;
@@ -9,19 +12,16 @@ public class PlantItem {
     private String soilRequirements;
     private String weatherRequirements;
     private String growthDate;
-    private int imageResId;
+    private String imageResId; // Image stored as a Base64 string
+    private List<DiseaseItem> diseases; // List of diseases related to this plant
 
-    // Constructor with minimal fields
-    public PlantItem(String lightRequirements, String name, int imageResId) {
-        this.lightRequirements = lightRequirements;
-        this.name = name;
-        this.imageResId = imageResId;
-    }
+    // Empty constructor
+    public PlantItem() {}
 
     // Constructor with all fields
-    public PlantItem(int plantId, String name, String description, String lightRequirements,
+    public PlantItem(String plantId, String name, String description, String lightRequirements,
                      String waterRequirements, String soilRequirements, String weatherRequirements,
-                     String growthDate, int imageResId) {
+                     String growthDate, String imageResId, List<DiseaseItem> diseases) {
         this.plantId = plantId;
         this.name = name;
         this.description = description;
@@ -31,22 +31,25 @@ public class PlantItem {
         this.weatherRequirements = weatherRequirements;
         this.growthDate = growthDate;
         this.imageResId = imageResId;
+        this.diseases = diseases;
     }
 
-    // Minimal constructor for new plants
-    public PlantItem(String lightRequirements,String name, String description , int imageResId) {
+    // Constructor for new plants (without plantId)
+    public PlantItem(String name, String description, String lightRequirements,
+                     String imageResId, List<DiseaseItem> diseases) {
         this.name = name;
         this.description = description;
         this.lightRequirements = lightRequirements;
         this.imageResId = imageResId;
+        this.diseases = diseases;
     }
 
-    // Getters & Setters
-    public int getPlantId() {
+    // Getters and Setters
+    public String getPlantId() {
         return plantId;
     }
 
-    public void setPlantId(int plantId) {
+    public void setPlantId(String plantId) {
         this.plantId = plantId;
     }
 
@@ -106,11 +109,19 @@ public class PlantItem {
         this.growthDate = growthDate;
     }
 
-    public int getImageResId() {
+    public String getImageResId() {
         return imageResId;
     }
 
-    public void setImageResId(int imageResId) {
+    public void setImageResId(String imageResId) {
         this.imageResId = imageResId;
+    }
+
+    public List<DiseaseItem> getDiseases() {
+        return diseases;
+    }
+
+    public void setDiseases(List<DiseaseItem> diseases) {
+        this.diseases = diseases;
     }
 }

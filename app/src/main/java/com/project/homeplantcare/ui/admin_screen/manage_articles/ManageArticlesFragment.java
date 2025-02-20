@@ -1,5 +1,7 @@
 package com.project.homeplantcare.ui.admin_screen.manage_articles;
 
+import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
@@ -8,11 +10,13 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
-import com.project.homeplantcare.databinding.FragmentManageArticlesBinding;
 import com.project.homeplantcare.data.models.ArticleItem;
+import com.project.homeplantcare.data.utils.Result;
+import com.project.homeplantcare.databinding.FragmentManageArticlesBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.utils.DialogUtils;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -48,7 +52,33 @@ public class ManageArticlesFragment extends BaseFragment<FragmentManageArticlesB
         setupFab();
 
         setupRecyclerView();
-        observeArticles();
+
+        // Observe the loading, success, and error states
+        viewModel.getAllArticles().observe(getViewLifecycleOwner(), result -> {
+            switch (result.getStatus()) {
+                case LOADING:
+                    binding.progressBar.setVisibility(View.VISIBLE); // Show progress bar
+                    binding.recyclerArticles.setVisibility(View.GONE); // Hide recycler
+                    binding.placeholderImage.setVisibility(View.GONE); // Hide placeholder image
+                    break;
+                case SUCCESS:
+                    binding.progressBar.setVisibility(View.GONE); // Hide progress bar
+                    List<ArticleItem> itemList = result.getData();
+                    if (itemList != null && !itemList.isEmpty()) {
+                        binding.recyclerArticles.setVisibility(View.VISIBLE); // Show recycler
+                        binding.placeholderImage.setVisibility(View.GONE); // Hide placeholder image
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        binding.recyclerArticles.setVisibility(View.GONE); // Hide recycler if empty
+                        binding.placeholderImage.setVisibility(View.VISIBLE); // Show placeholder image
+                    }
+                    break;
+                case ERROR:
+                    binding.progressBar.setVisibility(View.GONE); // Hide progress bar
+                    Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
     }
 
     private void setupFab() {
@@ -58,16 +88,12 @@ public class ManageArticlesFragment extends BaseFragment<FragmentManageArticlesB
     }
 
     private void setupRecyclerView() {
-        binding.recyclerArticles.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new ArticlesAdapter(new ArrayList<>(), this); // Start with empty list
-        binding.recyclerArticles.setAdapter(adapter);
-    }
-
-
-    private void observeArticles() {
-        viewModel.getArticlesLiveData().observe(getViewLifecycleOwner(), articles -> {
-            if (articles != null && !articles.isEmpty()) {
-                adapter.updateList(articles);
+        viewModel.getAllArticles().observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                List<ArticleItem> itemList = result.getData();
+                adapter = new ArticlesAdapter(itemList, this);
+                binding.recyclerArticles.setLayoutManager(new LinearLayoutManager(requireContext()));
+                binding.recyclerArticles.setAdapter(adapter);
             }
         });
     }
@@ -75,18 +101,34 @@ public class ManageArticlesFragment extends BaseFragment<FragmentManageArticlesB
 
     @Override
     public void onArticleClicked(ArticleItem article) {
-        showToast("Article Clicked: " + article.getTitle());
     }
 
     @Override
     public void onEditArticleClicked(ArticleItem article) {
-        showToast("Edit: " + article.getTitle());
+        // implement edit article
+        Bundle bundle = new Bundle();
+        bundle.putString("articleId", article.getArticleId());
+        Navigation.findNavController(requireView()).navigate(R.id.action_nav_manage_articles_to_nav_add_articles, bundle);
     }
 
     @Override
     public void onDeleteArticleClicked(ArticleItem article) {
-        viewModel.deleteArticle(article);
-        showToast("Deleted: " + article.getTitle());
+        DialogUtils.showConfirmationDialog(
+                requireContext(),
+                "Delete Article",
+                "Are you sure you want to delete this article?",
+                "Delete",
+                "Cancel",
+                (dialog, which) -> {
+                    viewModel.deleteArticle(article.getArticleId());
+                    showToast("Article deleted successfully");
+                    adapter.notifyDataSetChanged();
+                },
+                (dialog, which) -> {
+                    dialog.dismiss();
+                }
+        );
+
     }
 
     private void showToast(String message) {

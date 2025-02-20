@@ -1,22 +1,24 @@
 package com.project.homeplantcare.ui.home_screen;
 
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
-import com.project.homeplantcare.databinding.FragmentHomeBinding;
 import com.project.homeplantcare.data.models.ArticleItem;
 import com.project.homeplantcare.data.models.CategoryItem;
 import com.project.homeplantcare.data.models.PlantItem;
+import com.project.homeplantcare.data.utils.Result;
+import com.project.homeplantcare.databinding.FragmentHomeBinding;
 import com.project.homeplantcare.ui.MainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.ui.user_screen.UserMainActivity;
 import com.project.homeplantcare.utils.DialogUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -25,9 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class HomeFragment extends BaseFragment<FragmentHomeBinding>
         implements PlantAdapter.HomeInteractionListener, ArticleAdapter.HomeInteractionListener, CategoryAdapter.CategoryInteractionListener {
 
-    private List<PlantItem> fakePlants;
-    private List<ArticleItem> itemList;
-    private List<CategoryItem> categoryItems;
+    private HomeViewModel viewModel;
 
     @Override
     protected String getTAG() {
@@ -41,12 +41,12 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
 
     @Override
     protected ViewModel getViewModel() {
-        return null;
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        return viewModel;
     }
 
     @Override
     protected void setup() {
-
         super.setup();
         setToolbarVisibility(false);
 
@@ -87,75 +87,77 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
                 Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantsViewAllFragment);
             }
         });
+        // Observe data loading for Plants
+        observePlantsData();
 
-        // Generate fake plant data and set up PlantAdapter
-        fakePlants = generateFakePlantData();
-        setupPlantRecyclerView();
+        // Observe data loading for Articles
+        observeArticlesData();
 
-        // Generate Article Items and set up ArticleAdapter
-        itemList = generateFakeArticles();
-        setupNewArticlesRecyclerView();
-
-        // Generate Category Items and set up CategoryAdapter
-        categoryItems = generateFakeCategories();
-        setupCategoryRecyclerView();
     }
 
-    private List<PlantItem> generateFakePlantData() {
-        List<PlantItem> plants = new ArrayList<>();
-
-        plants.add(new PlantItem("Top", "Aloe Vera", R.drawable.plant_2));
-        plants.add(new PlantItem("Indoor", "Snake Plant", R.drawable.plant_6));
-        plants.add(new PlantItem("Garden", "Money Plant", R.drawable.plant_7));
-        plants.add(new PlantItem("Outdoor", "Peace Lily", R.drawable.plant_7));
-        plants.add(new PlantItem("Low Light", "Spider Plant", R.drawable.plant_2));
-
-        return plants;
+    private void observePlantsData() {
+        viewModel.getAllPlants().observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.LOADING) {
+                binding.progressBarPlants.setVisibility(View.VISIBLE);
+                binding.recyclerPlantList.setVisibility(View.GONE);
+                binding.placeholderImagePlants.setVisibility(View.GONE);
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
+                binding.progressBarPlants.setVisibility(View.GONE);
+                List<PlantItem> plants = result.getData();
+                if (plants != null && !plants.isEmpty()) {
+                    binding.recyclerPlantList.setVisibility(View.VISIBLE);
+                    binding.placeholderImagePlants.setVisibility(View.GONE);
+                    setupPlantRecyclerView(plants);
+                } else {
+                    binding.recyclerPlantList.setVisibility(View.GONE);
+                    binding.placeholderImagePlants.setVisibility(View.VISIBLE);
+                }
+            } else {
+                binding.progressBarPlants.setVisibility(View.GONE);
+                binding.placeholderImagePlants.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
+    private void observeArticlesData() {
+        viewModel.getAllArticles().observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.LOADING) {
+                binding.progressBarArticles.setVisibility(View.VISIBLE);
+                binding.recyclerNewArticles.setVisibility(View.GONE);
+                binding.placeholderImageArticles.setVisibility(View.GONE);
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
+                binding.progressBarArticles.setVisibility(View.GONE);
+                List<ArticleItem> articles = result.getData();
+                if (articles != null && !articles.isEmpty()) {
+                    binding.recyclerNewArticles.setVisibility(View.VISIBLE);
+                    binding.placeholderImageArticles.setVisibility(View.GONE);
+                    setupNewArticlesRecyclerView(articles);
+                } else {
+                    binding.recyclerNewArticles.setVisibility(View.GONE);
+                    binding.placeholderImageArticles.setVisibility(View.VISIBLE);
+                }
+            } else {
+                binding.progressBarArticles.setVisibility(View.GONE);
+                binding.placeholderImageArticles.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-    // Set up the PlantAdapter with horizontal scrolling
-    private void setupPlantRecyclerView() {
-        PlantAdapter plantAdapter = new PlantAdapter(fakePlants, this);
+    private void setupPlantRecyclerView(List<PlantItem> plants) {
+        PlantAdapter plantAdapter = new PlantAdapter(plants, this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
         binding.recyclerPlantList.setLayoutManager(layoutManager);
         binding.recyclerPlantList.setAdapter(plantAdapter);
     }
 
-    // Generate Fake Article Items
-    private List<ArticleItem> generateFakeArticles() {
-        List<ArticleItem> articles = new ArrayList<>();
-        articles.add(new ArticleItem("How to Care for Indoor Plants", "Indoor plants improve air quality...", "Jan 20, 2024", R.drawable.plant_3));
-        articles.add(new ArticleItem("Best Plants for Low Light", "Not all plants need bright sunlight...", "Feb 15, 2024", R.drawable.plant_4));
-        articles.add(new ArticleItem("Watering Tips for Beginners", "Overwatering is a common mistake...", "Mar 5, 2024", R.drawable.plant_3));
-        return articles;
-    }
-
-    // Set up the NewArticlesAdapter with horizontal scrolling
-    private void setupNewArticlesRecyclerView() {
-        ArticleAdapter articleAdapter = new ArticleAdapter(itemList, this);
+    private void setupNewArticlesRecyclerView(List<ArticleItem> articles) {
+        ArticleAdapter articleAdapter = new ArticleAdapter(articles, this);
         binding.recyclerNewArticles.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         binding.recyclerNewArticles.setAdapter(articleAdapter);
     }
 
-    // Generate Fake Category Items
-    private List<CategoryItem> generateFakeCategories() {
-        List<CategoryItem> categories = new ArrayList<>();
-        categories.add(new CategoryItem("Top", true));
-        categories.add(new CategoryItem("Outdoor", false));
-        categories.add(new CategoryItem("Indoor", false));
-        categories.add(new CategoryItem("Garden", false));
-        return categories;
-    }
-
-    // Set up the CategoryAdapter with horizontal scrolling
-    private void setupCategoryRecyclerView() {
-        CategoryAdapter categoryAdapter = new CategoryAdapter(categoryItems, this);
-        binding.recyclerCategories.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        binding.recyclerCategories.setAdapter(categoryAdapter);
-        // Set default category selection (First item selected)
-        binding.recyclerCategories.post(() -> categoryAdapter.setDefaultCategory(0));
-    }
 
     private boolean isLogging() {
         if (getActivity() instanceof UserMainActivity) {
@@ -179,7 +181,8 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
             Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment2);
         } else {
             Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment);
-        }    }
+        }
+    }
 
     @Override
     public void onPlantClicked(PlantItem item) {
@@ -200,4 +203,5 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
             Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_articlesDetailsFragment);
         }
     }
+
 }

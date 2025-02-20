@@ -1,9 +1,11 @@
+// AddDiseasesFragment.java
 package com.project.homeplantcare.ui.admin_screen.add_disease;
 
 import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentAddDiseasesBinding;
@@ -15,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding> {
 
     private AddDiseasesViewModel viewModel;
+    private String diseaseId = null;
 
     @Override
     protected String getTAG() {
@@ -37,13 +40,50 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
         super.setup();
 
         setToolbarVisibility(true);
-        setToolbarTitle("Add Disease");
-        showBackButton(true);
+        diseaseId = getArguments() != null ? getArguments().getString("diseaseId") : null;
 
+        if (diseaseId != null) {
+            setToolbarTitle("Edit Disease");
+            binding.btnSave.setText("Update Disease");
+            viewModel.getDiseaseById(diseaseId);
+        } else {
+            setToolbarTitle("Add Disease");
+            binding.btnSave.setText("Save Disease");
+        }
+
+        showBackButton(true);
         binding.setLifecycleOwner(this);
 
-        binding.btnSave.setOnClickListener(view -> {
+        setupListeners();
+        observeViewModel();
+    }
 
+    private void setupListeners() {
+        binding.btnSave.setOnClickListener(view -> {
+            if (diseaseId != null) {
+                viewModel.updateDisease(diseaseId);
+            } else {
+                viewModel.addDisease();
+            }
+        });
+    }
+
+    private void observeViewModel() {
+        viewModel.getIsDiseaseSaved().observe(getViewLifecycleOwner(), isSaved -> {
+            if (isSaved) {
+                showToast(diseaseId != null ? "Disease updated successfully!" : "Disease added successfully!");
+                Navigation.findNavController(requireView()).navigateUp();
+            } else {
+                showToast("Please fill all fields correctly.");
+            }
+        });
+
+        viewModel.getDiseaseItemLiveData().observe(getViewLifecycleOwner(), diseaseItem -> {
+            if (diseaseItem != null) {
+                binding.etDiseaseName.setText(diseaseItem.getName());
+                binding.etDiseaseSymptoms.setText(diseaseItem.getSymptoms());
+                binding.etDiseaseRemedies.setText(diseaseItem.getRemedies());
+            }
         });
     }
 

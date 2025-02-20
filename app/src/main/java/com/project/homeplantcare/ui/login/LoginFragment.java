@@ -90,6 +90,9 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
             return;
         }
 
+        // Show loading spinner before making the login request
+        binding.progressBar.setVisibility(View.VISIBLE);
+
         if (binding.cbAdmin.isChecked()) {
             observeLogin(viewModel.loginAdmin(email, password), AdminMainActivity.class, "Admin login successful!");
         } else if (binding.cbUser.isChecked()) {
@@ -101,6 +104,9 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
 
     private void observeLogin(LiveData<Result<String>> loginResult, Class<?> targetActivity, String successMessage) {
         loginResult.observe(getViewLifecycleOwner(), result -> {
+            // Hide loading spinner after login attempt finishes
+            binding.progressBar.setVisibility(View.GONE);
+
             switch (result.getStatus()) {
                 case SUCCESS:
                     showToast(successMessage);
@@ -120,4 +126,5 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
     private void showToast(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
+
 }

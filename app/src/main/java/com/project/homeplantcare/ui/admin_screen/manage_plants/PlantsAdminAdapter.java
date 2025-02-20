@@ -1,5 +1,6 @@
 package com.project.homeplantcare.ui.admin_screen.manage_plants;
 
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.PopupMenu;
 
 import com.bumptech.glide.Glide;
 import com.project.homeplantcare.R;
+import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.databinding.ItemPlantAdminBinding;
 import com.project.homeplantcare.data.models.PlantItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
@@ -32,10 +34,19 @@ public class PlantsAdminAdapter extends BaseAdapter<PlantItem, ItemPlantAdminBin
         ItemPlantAdminBinding binding = holder.binding;
         binding.setPlant(currentItem);
 
-        Glide.with(holder.binding.getRoot().getContext())
-                .load(currentItem.getImageResId())
-                .placeholder(R.drawable.rounded_background_black)
-                .into(binding.image);
+        // Decode Base64 string to Bitmap and set to ImageView
+        String base64Image = currentItem.getImageResId();
+        if (base64Image != null && !base64Image.isEmpty()) {
+            try {
+                Bitmap bitmap = ImageUtils.decodeBase64ToImage(base64Image);
+                binding.image.setImageBitmap(bitmap);
+            } catch (IllegalArgumentException e) {
+                // Handle invalid Base64 string (set a placeholder image)
+                binding.image.setImageResource(R.drawable.plant_2);
+            }
+        } else {
+            binding.image.setImageResource(R.drawable.plant_2);
+        }
 
         // Handle More Options Click (Edit/Delete)
         binding.btnOptions.setOnClickListener(view -> showPopupMenu(view, currentItem));
@@ -46,7 +57,7 @@ public class PlantsAdminAdapter extends BaseAdapter<PlantItem, ItemPlantAdminBin
     // Show Edit/Delete Popup Menu
     private void showPopupMenu(View view, PlantItem item) {
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
-        popupMenu.inflate(R.menu.menu_admin_plant_options); // Ensure `menu_admin_plant_options.xml` exists
+        popupMenu.inflate(R.menu.menu_admin_plant_options);
 
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             if (menuItem.getItemId() == R.id.action_edit) {

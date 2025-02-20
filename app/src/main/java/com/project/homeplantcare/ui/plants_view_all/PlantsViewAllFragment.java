@@ -1,17 +1,22 @@
 package com.project.homeplantcare.ui.plants_view_all;
 
+import android.view.View;
+import android.widget.Toast;
+
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
-import com.project.homeplantcare.databinding.FragmentPlantsViewAllBinding;
 import com.project.homeplantcare.data.models.ArticleItem;
+import com.project.homeplantcare.data.utils.Result;
+import com.project.homeplantcare.databinding.FragmentPlantsViewAllBinding;
 import com.project.homeplantcare.ui.MainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.ui.home_screen.HomeViewModel;
 import com.project.homeplantcare.ui.user_screen.UserMainActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -19,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class PlantsViewAllFragment extends BaseFragment<FragmentPlantsViewAllBinding> implements ViewAllArticleAdapter.ViewAllInteractionListener {
     private List<ArticleItem> itemList;
+    private HomeViewModel viewModel;
 
     @Override
     protected String getTAG() {
@@ -32,7 +38,8 @@ public class PlantsViewAllFragment extends BaseFragment<FragmentPlantsViewAllBin
 
     @Override
     protected ViewModel getViewModel() {
-        return null;
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        return viewModel;
     }
 
     @Override
@@ -41,25 +48,38 @@ public class PlantsViewAllFragment extends BaseFragment<FragmentPlantsViewAllBin
         setToolbarVisibility(true);
         setToolbarTitle("All Articles");
         showBackButton(true);
-        // Generate Article Items and set up ArticleAdapter
-        itemList = generateFakeArticles();
-        setupNewArticlesRecyclerView();
-
+        // Observe data loading for Articles
+        observeArticlesData();
     }
 
-    // Generate Fake Article Items
-    private List<ArticleItem> generateFakeArticles() {
-        List<ArticleItem> articles = new ArrayList<>();
-        articles.add(new ArticleItem("How to Care for Indoor Plants", "Indoor plants improve air quality...", "Jan 20, 2024", R.drawable.plant_3));
-        articles.add(new ArticleItem("Best Plants for Low Light", "Not all plants need bright sunlight...", "Feb 15, 2024", R.drawable.plant_4));
-        articles.add(new ArticleItem("Watering Tips for Beginners", "Overwatering is a common mistake...", "Mar 5, 2024", R.drawable.plant_3));
-        return articles;
+    private void observeArticlesData() {
+        viewModel.getAllArticles().observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.LOADING) {
+                binding.progressBarArticles.setVisibility(View.VISIBLE);
+                binding.recyclerNewArticles.setVisibility(View.GONE);
+                binding.placeholderImageArticles.setVisibility(View.GONE);
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
+                binding.progressBarArticles.setVisibility(View.GONE);
+                List<ArticleItem> articles = result.getData();
+                if (articles != null && !articles.isEmpty()) {
+                    binding.recyclerNewArticles.setVisibility(View.VISIBLE);
+                    binding.placeholderImageArticles.setVisibility(View.GONE);
+                    setupNewArticlesRecyclerView(articles);
+                } else {
+                    binding.recyclerNewArticles.setVisibility(View.GONE);
+                    binding.placeholderImageArticles.setVisibility(View.VISIBLE);
+                }
+            } else {
+                binding.progressBarArticles.setVisibility(View.GONE);
+                binding.placeholderImageArticles.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    // Set up the NewArticlesAdapter with horizontal scrolling
-    private void setupNewArticlesRecyclerView() {
-        ViewAllArticleAdapter articleAdapter = new ViewAllArticleAdapter(itemList, this);
-        binding.recyclerNewArticles.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+    private void setupNewArticlesRecyclerView(List<ArticleItem> articles) {
+        ViewAllArticleAdapter articleAdapter = new ViewAllArticleAdapter(articles, this);
+        binding.recyclerNewArticles.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         binding.recyclerNewArticles.setAdapter(articleAdapter);
     }
 

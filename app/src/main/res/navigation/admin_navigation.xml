@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_nav_manage_plants_to_addPlaintAdminFragment"
             app:destination="@id/addPlaintAdminFragment" />
+        <argument
+            android:name="plantId"
+            app:argType="string" />
     </fragment>
 
     <fragment
@@ -22,6 +25,9 @@
         <action
             android:id="@+id/action_nav_manage_diseases_to_nav_add_disease"
             app:destination="@id/nav_add_disease" />
+        <argument
+            android:name="diseaseId"
+            app:argType="string" />
     </fragment>
 
     <fragment

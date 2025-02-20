@@ -1,5 +1,6 @@
 package com.project.homeplantcare.ui.admin_screen.manage_articles;
 
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.PopupMenu;
 
 import com.bumptech.glide.Glide;
 import com.project.homeplantcare.R;
+import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.databinding.ItemManageArticleBinding;
 import com.project.homeplantcare.data.models.ArticleItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
@@ -34,11 +36,20 @@ public class ArticlesAdapter extends BaseAdapter<ArticleItem, ItemManageArticleB
         ItemManageArticleBinding binding = holder.binding;
         binding.setArticle(currentItem);
 
-        // Load image using Glide
-        Glide.with(holder.binding.getRoot().getContext())
-                .load(currentItem.getImageResId())
-                .placeholder(R.drawable.plant_3)
-                .into(binding.imageArticle);
+        // Decode Base64 string to Bitmap and set to ImageView
+        String base64Image = currentItem.getImageResId();
+        if (base64Image != null && !base64Image.isEmpty()) {
+            try {
+                Bitmap bitmap = ImageUtils.decodeBase64ToImage(base64Image);
+                binding.imageArticle.setImageBitmap(bitmap);
+            } catch (IllegalArgumentException e) {
+                // Handle invalid Base64 string (set a placeholder image)
+                binding.imageArticle.setImageResource(R.drawable.hoya4);
+            }
+        } else {
+            binding.imageArticle.setImageResource(R.drawable.hoya4);
+        }
+
 
         // Handle item click
         binding.getRoot().setOnClickListener(view -> listener.onArticleClicked(currentItem));

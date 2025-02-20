@@ -1,9 +1,12 @@
 package com.project.homeplantcare.ui.home_screen;
 
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.project.homeplantcare.R;
+import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.databinding.ItemPlantCardBinding;
 import com.project.homeplantcare.data.models.PlantItem;
 import com.project.homeplantcare.ui.base.BaseAdapter;
@@ -32,9 +35,18 @@ public class PlantAdapter extends BaseAdapter<PlantItem, ItemPlantCardBinding> {
         ItemPlantCardBinding binding = holder.binding;
         binding.setItem(currentItem);
         // Load Image using Glide
-        Glide.with(holder.binding.getRoot().getContext())
-                .load(currentItem.getImageResId())
-                .into(holder.binding.imgPlant);
+        String base64Image = currentItem.getImageResId();
+        if (base64Image != null && !base64Image.isEmpty()) {
+            try {
+                Bitmap bitmap = ImageUtils.decodeBase64ToImage(base64Image);
+                binding.imgPlant.setImageBitmap(bitmap);
+            } catch (IllegalArgumentException e) {
+                // Handle invalid Base64 string (set a placeholder image)
+                binding.imgPlant.setImageResource(R.drawable.plant_2);
+            }
+        } else {
+            binding.imgPlant.setImageResource(R.drawable.plant_2);
+        }
         binding.btnShowDetails.setOnClickListener(view -> listener.onShowDetailsClicked(currentItem));
         binding.imgPlant.setOnClickListener(view -> listener.onPlantClicked(currentItem));
         binding.executePendingBindings();

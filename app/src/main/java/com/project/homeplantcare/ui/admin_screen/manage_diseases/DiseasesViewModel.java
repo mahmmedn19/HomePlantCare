@@ -1,36 +1,37 @@
 package com.project.homeplantcare.ui.admin_screen.manage_diseases;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.project.homeplantcare.data.models.DiseaseItem;
+import com.project.homeplantcare.data.repo.app_repo.AppRepository;
+import com.project.homeplantcare.data.utils.Result;
 
-import java.util.Arrays;
 import java.util.List;
 
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
 public class DiseasesViewModel extends ViewModel {
-    private final MutableLiveData<List<DiseaseItem>> diseasesLiveData = new MutableLiveData<>();
 
-    public DiseasesViewModel() {
-        loadMockData();
+    private final AppRepository appRepository;
+
+    public DiseasesViewModel(AppRepository appRepository) {
+        this.appRepository = appRepository;
     }
 
-    public LiveData<List<DiseaseItem>> getDiseasesLiveData() {
-        return diseasesLiveData;
+
+    public LiveData<Result<List<DiseaseItem>>> getAllDiseases() {
+        return appRepository.getAllDiseases();
     }
 
-    public List<DiseaseItem> getMockDiseases() {
-        return diseasesLiveData.getValue();
-    }
-
-    private void loadMockData() {
-        List<DiseaseItem> mockDiseases = Arrays.asList(
-                new DiseaseItem(1, "Powdery Mildew", "White powdery spots on leaves", "Apply fungicide, remove infected leaves"),
-                new DiseaseItem(2, "Leaf Spot", "Brown spots with yellow halo", "Improve air circulation, use copper-based fungicide"),
-                new DiseaseItem(3, "Root Rot", "Wilting, yellowing leaves, mushy roots", "Reduce watering, apply fungicide")
-        );
-
-        diseasesLiveData.setValue(mockDiseases);
+    // Delete a disease
+    public void deleteDisease(DiseaseItem disease) {
+        appRepository.deleteDisease(disease.getDiseaseId()).observeForever(result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                // Reload diseases after deleting
+                getAllDiseases();
+            }
+        });
     }
 }

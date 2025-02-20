@@ -1,5 +1,7 @@
 package com.project.homeplantcare.ui.admin_screen.manage_plants;
 
+import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
@@ -8,8 +10,9 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
-import com.project.homeplantcare.databinding.FragmentManagePlantsBinding;
 import com.project.homeplantcare.data.models.PlantItem;
+import com.project.homeplantcare.data.utils.Result;
+import com.project.homeplantcare.databinding.FragmentManagePlantsBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.utils.DialogUtils;
 
@@ -50,13 +53,44 @@ public class ManagePlantsFragment extends BaseFragment<FragmentManagePlantsBindi
 
         setupRecyclerView();
         setupListeners();
+
+        // Observe the loading, success, and error states
+        viewModel.getAllPlants().observe(getViewLifecycleOwner(), result -> {
+            switch (result.getStatus()) {
+                case LOADING:
+                    binding.progressBar.setVisibility(View.VISIBLE); // Show progress bar
+                    binding.recyclerPlants.setVisibility(View.GONE); // Hide recycler
+                    binding.placeholderImage.setVisibility(View.GONE); // Hide placeholder image
+                    break;
+                case SUCCESS:
+                    binding.progressBar.setVisibility(View.GONE); // Hide progress bar
+                    List<PlantItem> plantList = result.getData();
+                    if (plantList != null && !plantList.isEmpty()) {
+                        binding.recyclerPlants.setVisibility(View.VISIBLE); // Show recycler
+                        binding.placeholderImage.setVisibility(View.GONE); // Hide placeholder image
+                        adapter.notifyDataSetChanged(); // Update the list with new data
+                    } else {
+                        binding.recyclerPlants.setVisibility(View.GONE); // Hide recycler if empty
+                        binding.placeholderImage.setVisibility(View.VISIBLE); // Show placeholder image
+                    }
+                    break;
+                case ERROR:
+                    binding.progressBar.setVisibility(View.GONE); // Hide progress bar
+                    Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        });
     }
 
     private void setupRecyclerView() {
-        List<PlantItem> plantList = viewModel.getMockPlants();
-        adapter = new PlantsAdminAdapter(plantList, this);
-        binding.recyclerPlants.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.recyclerPlants.setAdapter(adapter);
+        viewModel.getAllPlants().observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                List<PlantItem> plantList = result.getData();
+                adapter = new PlantsAdminAdapter(plantList, this);
+                binding.recyclerPlants.setLayoutManager(new LinearLayoutManager(requireContext()));
+                binding.recyclerPlants.setAdapter(adapter);
+            }
+        });
     }
 
     private void setupListeners() {
@@ -67,8 +101,10 @@ public class ManagePlantsFragment extends BaseFragment<FragmentManagePlantsBindi
 
     @Override
     public void onEditPlantClicked(PlantItem item) {
-        Toast.makeText(getContext(), "Edit Plant: " + " " + item.getName(), Toast.LENGTH_SHORT).show();
-        // Implement navigation to edit plant
+        // Navigate to Edit Plant with the plantId
+        Bundle bundle = new Bundle();
+        bundle.putString("plantId", item.getPlantId()); // Pass plantId as an argument
+        Navigation.findNavController(requireView()).navigate(R.id.action_nav_manage_plants_to_addPlaintAdminFragment, bundle);
     }
 
     @Override
@@ -79,9 +115,8 @@ public class ManagePlantsFragment extends BaseFragment<FragmentManagePlantsBindi
                 "Delete",
                 "Cancel",
                 (dialog, which) -> {
-                    viewModel.deletePlant(item);
-                    adapter.notifyDataSetChanged();
+                    viewModel.deletePlant(item); // Use plantId for deletion
+                    adapter.notifyDataSetChanged(); // You might need to update the adapter data here.
                 });
-        adapter.notifyDataSetChanged();
     }
 }
