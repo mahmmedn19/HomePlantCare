@@ -1,4 +1,3 @@
-// AddDiseasesViewModel.java
 package com.project.homeplantcare.ui.admin_screen.add_disease;
 
 import androidx.lifecycle.LiveData;
@@ -7,7 +6,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.project.homeplantcare.data.models.DiseaseItem;
 import com.project.homeplantcare.data.repo.app_repo.AppRepository;
-import com.project.homeplantcare.data.repo.app_repo.AppRepositoryImpl;
 import com.project.homeplantcare.data.utils.Result;
 
 import javax.inject.Inject;
@@ -18,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class AddDiseasesViewModel extends ViewModel {
 
     private final AppRepository appRepository;
+
     private final MutableLiveData<String> diseaseName = new MutableLiveData<>("");
     private final MutableLiveData<String> diseaseSymptoms = new MutableLiveData<>("");
     private final MutableLiveData<String> diseaseRemedies = new MutableLiveData<>("");
@@ -25,10 +24,11 @@ public class AddDiseasesViewModel extends ViewModel {
     private final MutableLiveData<DiseaseItem> diseaseItemLiveData = new MutableLiveData<>();
 
     @Inject
-    public AddDiseasesViewModel(AppRepositoryImpl appRepository) {
+    public AddDiseasesViewModel(AppRepository appRepository) {
         this.appRepository = appRepository;
     }
 
+    // Add disease
     public void addDisease() {
         if (validateFields()) {
             DiseaseItem diseaseItem = new DiseaseItem(
@@ -49,6 +49,7 @@ public class AddDiseasesViewModel extends ViewModel {
         }
     }
 
+    // Update disease
     public void updateDisease(String diseaseId) {
         if (validateFields()) {
             DiseaseItem diseaseItem = new DiseaseItem(
@@ -70,8 +71,7 @@ public class AddDiseasesViewModel extends ViewModel {
         }
     }
 
-
-    // Fetch plant by ID
+    // Get disease by ID
     public void getDiseaseById(String diseaseId) {
         appRepository.getAllDiseases().observeForever(result -> {
             if (result.getStatus() == Result.Status.SUCCESS) {
@@ -85,12 +85,12 @@ public class AddDiseasesViewModel extends ViewModel {
         });
     }
 
+    // Validate fields
     private boolean validateFields() {
-        return diseaseName.getValue() != null && !diseaseName.getValue().isEmpty()
-                && diseaseSymptoms.getValue() != null && !diseaseSymptoms.getValue().isEmpty()
-                && diseaseRemedies.getValue() != null && !diseaseRemedies.getValue().isEmpty();
+        return !diseaseName.getValue().isEmpty() && !diseaseSymptoms.getValue().isEmpty() && !diseaseRemedies.getValue().isEmpty();
     }
 
+    // Getter methods for LiveData
     public LiveData<String> getDiseaseName() {
         return diseaseName;
     }
@@ -109,5 +109,18 @@ public class AddDiseasesViewModel extends ViewModel {
 
     public LiveData<DiseaseItem> getDiseaseItemLiveData() {
         return diseaseItemLiveData;
+    }
+
+    // Setter methods for input fields
+    public void setDiseaseName(String name) {
+        diseaseName.setValue(name);
+    }
+
+    public void setDiseaseSymptoms(String symptoms) {
+        diseaseSymptoms.setValue(symptoms);
+    }
+
+    public void setDiseaseRemedies(String remedies) {
+        diseaseRemedies.setValue(remedies);
     }
 }

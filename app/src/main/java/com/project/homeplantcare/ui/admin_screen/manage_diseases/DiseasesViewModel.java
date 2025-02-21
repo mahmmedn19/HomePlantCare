@@ -9,6 +9,8 @@ import com.project.homeplantcare.data.utils.Result;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
@@ -16,6 +18,7 @@ public class DiseasesViewModel extends ViewModel {
 
     private final AppRepository appRepository;
 
+    @Inject
     public DiseasesViewModel(AppRepository appRepository) {
         this.appRepository = appRepository;
     }

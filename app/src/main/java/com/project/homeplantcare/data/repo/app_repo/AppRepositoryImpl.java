@@ -3,12 +3,14 @@ package com.project.homeplantcare.data.repo.app_repo;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.project.homeplantcare.data.models.ArticleItem;
 import com.project.homeplantcare.data.models.DiseaseItem;
 import com.project.homeplantcare.data.models.PlantItem;
 import com.project.homeplantcare.data.utils.Result;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -22,24 +24,55 @@ public class AppRepositoryImpl implements AppRepository {
         this.firestore = db;
     }
 
-    // Fetch all plants from Firestore
     @Override
     public LiveData<Result<List<PlantItem>>> getAllPlants() {
         MutableLiveData<Result<List<PlantItem>>> result = new MutableLiveData<>();
         firestore.collection("plants").get()
                 .addOnSuccessListener(querySnapshot -> {
-                    List<PlantItem> plants = querySnapshot.toObjects(PlantItem.class);
-                    result.setValue(Result.success(plants));
+                    List<PlantItem> plants = new ArrayList<>();
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        // Convert the PlantItem object from the Firestore document
+                        PlantItem plantItem = document.toObject(PlantItem.class);
+
+                        // Check if 'diseases' is not null (it should be a list of DiseaseItem objects)
+                        if (plantItem != null && plantItem.getDiseases() != null) {
+                            // Iterate through each DiseaseItem (not String) in the diseases list
+                            List<DiseaseItem> diseaseItems = new ArrayList<>();
+                            for (DiseaseItem disease : plantItem.getDiseases()) {
+                                // You can directly add the disease as DiseaseItem is already the required type
+                                diseaseItems.add(disease);
+                            }
+                            // Set the list of DiseaseItem objects in the plant item
+                            plantItem.setDiseases(diseaseItems);
+                        }
+
+                        // Add the plant item to the list
+                        plants.add(plantItem);
+                    }
+                    result.setValue(Result.success(plants));  // Return the list of plants
                 })
-                .addOnFailureListener(e -> result.setValue(Result.error(e.getMessage())));
+                .addOnFailureListener(e -> result.setValue(Result.error(e.getMessage())));  // Handle any errors
+
         return result;
     }
+
+
+
+
+
+
+
+
 
     @Override
     public LiveData<Result<String>> addPlant(PlantItem plantItem) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
         firestore.collection("plants").add(plantItem)
-                .addOnSuccessListener(documentReference -> result.setValue(Result.success("Plant added successfully.")))
+                .addOnSuccessListener(documentReference -> {
+                    // After adding, set the generated document ID
+                    plantItem.setPlantId(documentReference.getId()); // Assuming PlantItem has a setPlantId method
+                    result.setValue(Result.success("Plant added successfully with ID: " + plantItem.getPlantId()));
+                })
                 .addOnFailureListener(e -> result.setValue(Result.error("Failed to add plant: " + e.getMessage())));
         return result;
     }
@@ -79,7 +112,11 @@ public class AppRepositoryImpl implements AppRepository {
     public LiveData<Result<String>> addDisease(DiseaseItem diseaseItem) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
         firestore.collection("diseases").add(diseaseItem)
-                .addOnSuccessListener(documentReference -> result.setValue(Result.success("Disease added successfully.")))
+                .addOnSuccessListener(documentReference -> {
+                    // After adding, set the generated document ID
+                    diseaseItem.setDiseaseId(documentReference.getId()); // Assuming DiseaseItem has a setDiseaseId method
+                    result.setValue(Result.success("Disease added successfully with ID: " + diseaseItem.getDiseaseId()));
+                })
                 .addOnFailureListener(e -> result.setValue(Result.error("Failed to add disease: " + e.getMessage())));
         return result;
     }
@@ -119,7 +156,11 @@ public class AppRepositoryImpl implements AppRepository {
     public LiveData<Result<String>> addArticle(ArticleItem articleItem) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
         firestore.collection("articles").add(articleItem)
-                .addOnSuccessListener(documentReference -> result.setValue(Result.success("Article added successfully.")))
+                .addOnSuccessListener(documentReference -> {
+                    // After adding, set the generated document ID
+                    articleItem.setArticleId(documentReference.getId()); // Assuming ArticleItem has a setArticleId method
+                    result.setValue(Result.success("Article added successfully with ID: " + articleItem.getArticleId()));
+                })
                 .addOnFailureListener(e -> result.setValue(Result.error("Failed to add article: " + e.getMessage())));
         return result;
     }

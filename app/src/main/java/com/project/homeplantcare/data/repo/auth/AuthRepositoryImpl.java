@@ -44,11 +44,53 @@ public class AuthRepositoryImpl implements AuthRepository {
 
         auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
-                    result.setValue(Result.success(userType + " login successful."));
+                    // Fetch the user info after successful login
+                    FirebaseUser user = auth.getCurrentUser();
+                    if (user != null) {
+                        String userId = user.getUid();
+                        // Check if the user is an admin or a regular user
+                        checkUserType(userId, email, password, userType, result);
+                    } else {
+                        result.setValue(Result.error("User not found."));
+                    }
                 })
                 .addOnFailureListener(e -> result.setValue(Result.error(getFirebaseAuthErrorMessage(e))));
         return result;
     }
+
+    // Check if the user is an admin or a user from respective collections
+    private void checkUserType(String userId, String email, String password, String userType, MutableLiveData<Result<String>> result) {
+
+        // Check if the user is trying to login as admin and handle accordingly
+        if (userType.equals("admin")) {
+            // First check if the user is in the 'admins' collection
+            db.collection("admin").whereEqualTo("adminEmail", email).get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        if (!querySnapshot.isEmpty()) {
+                            // User is an admin
+                            result.setValue(Result.success("Admin login successful."));
+                        } else {
+                            // Admin not found
+                            result.setValue(Result.error("Admin not found."));
+                        }
+                    })
+                    .addOnFailureListener(e -> result.setValue(Result.error("Failed to check admin: " + e.getMessage())));
+        } else {
+            // If user is not an admin, check in the 'users' collection
+            db.collection("user").whereEqualTo("email", email).get()
+                    .addOnSuccessListener(userSnapshot -> {
+                        if (!userSnapshot.isEmpty()) {
+                            // User is a regular user
+                            result.setValue(Result.success("User login successful."));
+                        } else {
+                            result.setValue(Result.error("User not found."));
+                        }
+                    })
+                    .addOnFailureListener(e -> result.setValue(Result.error("Failed to check user: " + e.getMessage())));
+        }
+    }
+
+
 
     @Override
     public LiveData<Result<String>> registerUser(String email, String password, String username) {

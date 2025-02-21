@@ -85,6 +85,7 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
         String email = Objects.requireNonNull(binding.etEmail.getText()).toString().trim();
         String password = Objects.requireNonNull(binding.etPassword.getText()).toString().trim();
 
+        // Validate email and password
         if (!InputValidator.validateEmail(binding.emailInputLayout, email) ||
                 !InputValidator.validateData(binding.passwordInputLayout, password)) {
             return;
@@ -93,38 +94,48 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
         // Show loading spinner before making the login request
         binding.progressBar.setVisibility(View.VISIBLE);
 
+        // Check which user type (admin or user) is selected and perform login accordingly
         if (binding.cbAdmin.isChecked()) {
             observeLogin(viewModel.loginAdmin(email, password), AdminMainActivity.class, "Admin login successful!");
         } else if (binding.cbUser.isChecked()) {
             observeLogin(viewModel.loginUser(email, password), UserMainActivity.class, "User login successful!");
         } else {
+            // Show a toast if no user type is selected
             showToast("Please select a user type");
         }
     }
 
     private void observeLogin(LiveData<Result<String>> loginResult, Class<?> targetActivity, String successMessage) {
         loginResult.observe(getViewLifecycleOwner(), result -> {
-            // Hide loading spinner after login attempt finishes
-            binding.progressBar.setVisibility(View.GONE);
-
+            // Handle the different states of the login result
             switch (result.getStatus()) {
                 case SUCCESS:
-                    showToast(successMessage);
-                    startActivity(new Intent(requireContext(), targetActivity));
-                    requireActivity().finish();
+                    binding.progressBar.setVisibility(View.GONE);
+                    showToast(successMessage);  // Show success message
+                    startActivity(new Intent(requireContext(), targetActivity));  // Redirect to appropriate activity
+                    requireActivity().finish();  // Close the login activity
                     break;
+
                 case ERROR:
-                    showToast(result.getErrorMessage());
+                    binding.progressBar.setVisibility(View.GONE);
+                    showToast(result.getErrorMessage());  // Show error message
                     break;
+
                 case LOADING:
-                    showToast("Logging in...");
+                    // Optionally, you can show a message or a more specific state when the login is loading
+                    showToast("Logging in...");  // Update toast with loading message
+                    binding.progressBar.setVisibility(View.VISIBLE);
+                    binding.btnLogin.setEnabled(false);
                     break;
             }
+            binding.progressBar.setVisibility(View.GONE);
+            binding.btnLogin.setEnabled(true);
         });
     }
 
     private void showToast(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
+
 
 }

@@ -1,7 +1,9 @@
-// AddDiseasesFragment.java
 package com.project.homeplantcare.ui.admin_screen.add_disease;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Toast;
+import android.view.View;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -64,6 +66,58 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
                 viewModel.updateDisease(diseaseId);
             } else {
                 viewModel.addDisease();
+            }
+        });
+
+        // Manually bind text change listeners to update the ViewModel
+        binding.etDiseaseName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                // No operation
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                viewModel.setDiseaseName(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // No operation
+            }
+        });
+
+        binding.etDiseaseSymptoms.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                // No operation
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                viewModel.setDiseaseSymptoms(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // No operation
+            }
+        });
+
+        binding.etDiseaseRemedies.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                // No operation
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                viewModel.setDiseaseRemedies(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // No operation
             }
         });
     }

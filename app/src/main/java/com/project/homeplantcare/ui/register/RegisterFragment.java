@@ -85,21 +85,25 @@ public class RegisterFragment extends BaseFragment<FragmentRegisterBinding> {
     private void observeRegister(LiveData<Result<String>> registerResult) {
         registerResult.observe(getViewLifecycleOwner(), result -> {
             // Hide loading spinner after registration process completes
-            binding.progressBar.setVisibility(View.GONE);
-
             switch (result.getStatus()) {
                 case SUCCESS:
+                    binding.progressBar.setVisibility(View.GONE);
                     showToast(result.getData());
                     // Navigate to HomeFragment after successful registration
                     Navigation.findNavController(requireView()).navigate(R.id.action_registerFragment_to_homeFragment);
                     break;
                 case ERROR:
+                    binding.progressBar.setVisibility(View.GONE);
                     showToast(result.getErrorMessage());
                     break;
                 case LOADING:
                     showToast("Registering...");
+                    binding.progressBar.setVisibility(View.VISIBLE);
+                    binding.btnRegister.setEnabled(false);
                     break;
             }
+            binding.btnRegister.setEnabled(true);
+            binding.progressBar.setVisibility(View.GONE);
         });
     }
 

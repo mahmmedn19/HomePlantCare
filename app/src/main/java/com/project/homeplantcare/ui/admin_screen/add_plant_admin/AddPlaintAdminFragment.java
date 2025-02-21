@@ -118,6 +118,8 @@ public class AddPlaintAdminFragment extends BaseFragment<FragmentAddPlantAdminBi
         plant.setDescription(Objects.requireNonNull(binding.etPlantDescription.getText()).toString());
         plant.setLightRequirements(Objects.requireNonNull(binding.etLightRequirement.getText()).toString());
         plant.setWaterRequirements(Objects.requireNonNull(binding.etWaterRequirement.getText()).toString());
+        plant.setSoilRequirements(Objects.requireNonNull(binding.etSoilRequirement.getText()).toString());
+        plant.setWeatherRequirements(Objects.requireNonNull(binding.etWeatherRequirement.getText()).toString());
         plant.setDiseases(viewModel.getSelectedDiseases().getValue());
 
         // Encode the selected image to Base64
@@ -135,6 +137,9 @@ public class AddPlaintAdminFragment extends BaseFragment<FragmentAddPlantAdminBi
         binding.etPlantDescription.setText(plant.getDescription());
         binding.etLightRequirement.setText(plant.getLightRequirements());
         binding.etWaterRequirement.setText(plant.getWaterRequirements());
+        binding.etSoilRequirement.setText(plant.getSoilRequirements());
+        binding.etWeatherRequirement.setText(plant.getWeatherRequirements());
+
 
         // Decode and set the image if available
         if (plant.getImageResId() != null) {

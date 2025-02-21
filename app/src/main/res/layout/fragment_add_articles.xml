@@ -58,8 +58,7 @@
                         android:id="@+id/etArticleTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Article Title"
-                        android:text="@={viewModel.articleTitle}"/>
+                        android:hint="Article Title" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Content Preview -->
@@ -74,8 +73,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Content Preview"
-                        android:maxLines="3"
-                        android:text="@={viewModel.contentPreview}"/>
+                        android:maxLines="3" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Date Picker -->
@@ -91,8 +89,7 @@
                         android:layout_height="wrap_content"
                         android:hint="Select Date"
                         android:focusable="false"
-                        android:clickable="true"
-                        android:text="@={viewModel.articleDate}"/>
+                        android:clickable="true" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Save Button -->

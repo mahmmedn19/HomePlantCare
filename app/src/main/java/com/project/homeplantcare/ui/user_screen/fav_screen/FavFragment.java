@@ -45,7 +45,9 @@ public class FavFragment extends BaseFragment<FragmentFavBinding> implements Fav
         setToolbarTitle("Favourite");
         showBackButton(false);
 
+/*
         favoritePlants = generateFakeFavorites();
+*/
         setupRecyclerView();
     }
 
@@ -62,7 +64,7 @@ public class FavFragment extends BaseFragment<FragmentFavBinding> implements Fav
     }
 
 
-    private List<PlantItem> generateFakeFavorites() {
+/*    private List<PlantItem> generateFakeFavorites() {
         List<PlantItem> plants = new ArrayList<>();
         plants.add(new PlantItem("", "Aloe Vera", "A great air-purifying plant A great air-purifying plant air-purifying plant air-purifying plant ", R.drawable.plant_2));
         plants.add(new PlantItem("", "Snake Plant", "Low-maintenance indoor plant Low-maintenance indoor plant", R.drawable.plant_6));
@@ -70,7 +72,7 @@ public class FavFragment extends BaseFragment<FragmentFavBinding> implements Fav
         plants.add(new PlantItem("", "Peace Lily", "Ideal mfor offices Ideal for offices Ideal for offices Ideal for offices", R.drawable.plant_3));
         plants.add(new PlantItem("", "Spider Plant", "Hardy and resilient Hardy and resilient Hardy and resilient Hardy and resilient Hardy and resilient", R.drawable.plant_4));
         return plants;
-    }
+    }*/
 
     private void showToast(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();

@@ -55,7 +55,7 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
         }
 
         // Create a fake PlantItem object
-        PlantItem fakePlant = new PlantItem(
+/*        PlantItem fakePlant = new PlantItem(
                 1,
                 "Aloe Vera",
                 "Aloe Vera is a species of plant well known for its medicinal and skincare uses. It is easy to maintain and grows well indoors.",
@@ -65,23 +65,24 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
                 "Warm",        // Weather Requirements
                 "2024-01-01",  // Growth Date (Sample Date)
                 R.drawable.plant_6 // Replace with actual drawable resource
-        );
+        );*/
 
         // Bind the PlantItem to the layout
-        binding.setPlant(fakePlant);
 
         // Load Diseases
+/*
         diseaseList = generateFakeDiseases();
+*/
         setupDiseasesRecyclerView();
     }
 
-    private List<DiseaseItem> generateFakeDiseases() {
+/*    private List<DiseaseItem> generateFakeDiseases() {
         List<DiseaseItem> diseases = new ArrayList<>();
         diseases.add(new DiseaseItem(1, "Leaf Spot", "Dark spots on leaves", "Remove affected leaves\napply fungicide"));
         diseases.add(new DiseaseItem(2, "Root Rot", "Wilting and yellowing leaves", "Improve drainage\nreduce watering"));
         diseases.add(new DiseaseItem(3, "Powdery Mildew", "White powdery substance on leaves", "Increase airflow, apply fungicide"));
         return diseases;
-    }
+    }*/
 
     private void setupDiseasesRecyclerView() {
         DiseasesAdapter diseasesAdapter = new DiseasesAdapter(diseaseList);

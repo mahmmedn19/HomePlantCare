@@ -23,9 +23,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.project.homeplantcare" />
-                  <option name="mobileSdkAppId" value="1:1048248016833:android:6e27890d8fb955f0a15940" />
-                  <option name="projectId" value="homeplantcare" />
-                  <option name="projectNumber" value="1048248016833" />
+                  <option name="mobileSdkAppId" value="1:953211152533:android:06d50575732e289f56139c" />
+                  <option name="projectId" value="homeplantcare-b8ea3" />
+                  <option name="projectNumber" value="953211152533" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
