@@ -34,10 +34,11 @@
         <!-- Placeholder Image for articles when no data is available -->
         <ImageView
             android:id="@+id/placeholder_image_articles"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_marginHorizontal="16dp"
             android:layout_gravity="center"
-            android:src="@drawable/no_image_found"
+            android:src="@drawable/no_article_found"
             android:visibility="gone" />
     </FrameLayout>
 

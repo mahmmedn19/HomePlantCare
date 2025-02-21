@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/no_image_found"
+            android:src="@drawable/no_article_found"
             android:visibility="gone" />
         <!-- Floating Action Button (FAB) to add a new article -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton

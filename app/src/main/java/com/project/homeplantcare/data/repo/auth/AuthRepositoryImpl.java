@@ -110,7 +110,7 @@ public class AuthRepositoryImpl implements AuthRepository {
     private void saveUserToFirestore(String userId, String username, String email, MutableLiveData<Result<String>> result) {
         // Save user data to Firestore
         User user = new User(username, email, userId);  // Include UID in the User object
-        db.collection("users").document(userId)  // Use userId as document ID
+        db.collection("user").document(userId)  // Use userId as document ID
                 .set(user)
                 .addOnSuccessListener(aVoid -> result.setValue(Result.success("User registered and data saved successfully!")))
                 .addOnFailureListener(e -> result.setValue(Result.error("Failed to save user data: " + e.getMessage())));

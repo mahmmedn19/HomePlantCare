@@ -1,5 +1,7 @@
 package com.project.homeplantcare.ui.home_screen;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -88,11 +90,34 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
                 Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantsViewAllFragment);
             }
         });
+
+        // Set up search listener
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                // No action required
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                // Trigger search filtering
+                viewModel.filterPlants(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+
+        });
         // Observe data loading for Plants
         observePlantsData();
 
         // Observe data loading for Articles
         observeArticlesData();
+
+        observeFilteredPlantsData();  // Observe filtered plants
+
 
     }
 
@@ -123,6 +148,36 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
         });
     }
 
+    private void observeFilteredPlantsData() {
+        viewModel.getFilteredPlants().observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.LOADING) {
+                binding.progressBarPlants.setVisibility(View.VISIBLE);
+                binding.recyclerPlantList.setVisibility(View.GONE);
+            } else {
+                binding.progressBarPlants.setVisibility(View.GONE);
+                List<PlantItem> filteredPlants = result.getData();
+
+                if (result.getStatus() == Result.Status.SUCCESS && filteredPlants != null && !filteredPlants.isEmpty()) {
+                    binding.recyclerPlantList.setVisibility(View.VISIBLE);
+                    setupPlantRecyclerView(filteredPlants);
+                } else {
+                    binding.recyclerPlantList.setVisibility(View.GONE);
+                    // Only show Toast if there is an error message
+                    if (result.getStatus() == Result.Status.ERROR) {
+                        String errorMessage = result.getErrorMessage();
+                        if (errorMessage != null && !errorMessage.isEmpty()) {
+                            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(), "No plants found.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        // Handle case when no plants match the filter
+                        Toast.makeText(requireContext(), "No plants found.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
 
     private void observeArticlesData() {
         viewModel.getAllArticles().observe(getViewLifecycleOwner(), result -> {
