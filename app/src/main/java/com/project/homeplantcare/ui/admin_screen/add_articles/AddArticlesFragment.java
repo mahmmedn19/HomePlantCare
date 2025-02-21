@@ -71,12 +71,9 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
 
         setupListeners();
         observeViewModel();
+
         if (articleId != null) {
-            viewModel.getArticleItemLiveData().observe(getViewLifecycleOwner(), plant -> {
-                if (plant != null) {
-                    populateArticleData(plant);
-                }
-            });
+            viewModel.getArticleItemLiveData().observe(getViewLifecycleOwner(), this::populateArticleData);
         }
     }
 
@@ -84,24 +81,40 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
         binding.etDate.setOnClickListener(v -> showDatePicker());
         binding.btnUploadImage.setOnClickListener(v -> openGallery());
         binding.btnSaveArticle.setOnClickListener(v -> {
-            if (articleId != null) {
-                viewModel.updateArticle(articleId, getArticleData());
+            if (validateFields()) {
+                if (articleId != null) {
+                    viewModel.updateArticle(articleId, getArticleData());
+                } else {
+                    viewModel.addArticle(getArticleData());
+                }
             } else {
-                viewModel.addArticle(getArticleData());
+                showToast("Please fill all required fields.");
             }
         });
     }
 
+    private boolean validateFields() {
+        return !Objects.requireNonNull(binding.etArticleTitle.getText()).toString().trim().isEmpty()
+                && !Objects.requireNonNull(binding.etContentPreview.getText()).toString().trim().isEmpty()
+                && !Objects.requireNonNull(binding.etDate.getText()).toString().trim().isEmpty();
+    }
+
     private ArticleItem getArticleData() {
-        // Create a new PlantItem object from the form data
         ArticleItem item = new ArticleItem();
-        item.setTitle(Objects.requireNonNull(binding.etArticleTitle.getText()).toString());
-        item.setContentPreview(Objects.requireNonNull(binding.etContentPreview.getText()).toString());
-        item.setDate(Objects.requireNonNull(binding.etDate.getText()).toString());
-        // Encode the selected image to Base64
+        item.setTitle(Objects.requireNonNull(binding.etArticleTitle.getText()).toString().trim());
+        item.setContentPreview(Objects.requireNonNull(binding.etContentPreview.getText()).toString().trim());
+        item.setDate(Objects.requireNonNull(binding.etDate.getText()).toString().trim());
+
+        // If a new image is selected, encode it
         if (selectedBitmap != null) {
             String encodedImage = ImageUtils.encodeImageToBase64(selectedBitmap);
             item.setImageResId(encodedImage);
+        } else if (articleId != null) {
+            // Preserve the existing image if updating without a new image
+            ArticleItem existingArticle = viewModel.getArticleItemLiveData().getValue();
+            if (existingArticle != null) {
+                item.setImageResId(existingArticle.getImageResId());
+            }
         }
 
         return item;
@@ -145,8 +158,6 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
             if (isSaved) {
                 showToast(articleId != null ? "Article updated successfully!" : "Article added successfully!");
                 Navigation.findNavController(requireView()).navigateUp();
-            } else {
-                showToast("Please fill all required fields.");
             }
         });
     }
@@ -155,12 +166,12 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
         binding.etArticleTitle.setText(article.getTitle());
         binding.etContentPreview.setText(article.getContentPreview());
         binding.etDate.setText(article.getDate());
+
         if (article.getImageResId() != null && !article.getImageResId().isEmpty()) {
             Bitmap decodedBitmap = ImageUtils.decodeBase64ToImage(article.getImageResId());
             binding.imgPreview.setImageBitmap(decodedBitmap);
         }
     }
-
 
     private void showToast(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();

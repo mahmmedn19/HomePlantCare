@@ -55,30 +55,27 @@ public class ManageArticlesFragment extends BaseFragment<FragmentManageArticlesB
 
         // Observe the loading, success, and error states
         viewModel.getAllArticles().observe(getViewLifecycleOwner(), result -> {
-            switch (result.getStatus()) {
-                case LOADING:
-                    binding.progressBar.setVisibility(View.VISIBLE); // Show progress bar
-                    binding.recyclerArticles.setVisibility(View.GONE); // Hide recycler
+            if (result.getStatus() == Result.Status.LOADING) {
+                binding.progressBar.setVisibility(View.VISIBLE); // Show progress bar
+                binding.recyclerArticles.setVisibility(View.GONE); // Hide recycler
+                binding.placeholderImage.setVisibility(View.GONE); // Hide placeholder image
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
+                binding.progressBar.setVisibility(View.GONE); // Hide progress bar
+                List<ArticleItem> itemList = result.getData();
+                if (itemList != null && !itemList.isEmpty()) {
+                    binding.recyclerArticles.setVisibility(View.VISIBLE); // Show recycler
                     binding.placeholderImage.setVisibility(View.GONE); // Hide placeholder image
-                    break;
-                case SUCCESS:
-                    binding.progressBar.setVisibility(View.GONE); // Hide progress bar
-                    List<ArticleItem> itemList = result.getData();
-                    if (itemList != null && !itemList.isEmpty()) {
-                        binding.recyclerArticles.setVisibility(View.VISIBLE); // Show recycler
-                        binding.placeholderImage.setVisibility(View.GONE); // Hide placeholder image
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        binding.recyclerArticles.setVisibility(View.GONE); // Hide recycler if empty
-                        binding.placeholderImage.setVisibility(View.VISIBLE); // Show placeholder image
-                    }
-                    break;
-                case ERROR:
-                    binding.progressBar.setVisibility(View.GONE); // Hide progress bar
-                    Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    break;
+                    adapter.notifyDataSetChanged();
+                } else {
+                    binding.recyclerArticles.setVisibility(View.GONE); // Hide recycler if empty
+                    binding.placeholderImage.setVisibility(View.VISIBLE); // Show placeholder image
+                }
+            } else if (result.getStatus() == Result.Status.ERROR) {
+                binding.progressBar.setVisibility(View.GONE); // Hide progress bar
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     private void setupFab() {

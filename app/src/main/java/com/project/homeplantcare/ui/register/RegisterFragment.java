@@ -74,8 +74,6 @@ public class RegisterFragment extends BaseFragment<FragmentRegisterBinding> {
             return; // Stop further processing if any validation fails
         }
 
-        // Show loading spinner before performing the registration
-        binding.progressBar.setVisibility(View.VISIBLE);
 
         // Call the registerUser method in ViewModel
         observeRegister(viewModel.registerUser(email, password, username));
@@ -84,26 +82,25 @@ public class RegisterFragment extends BaseFragment<FragmentRegisterBinding> {
 
     private void observeRegister(LiveData<Result<String>> registerResult) {
         registerResult.observe(getViewLifecycleOwner(), result -> {
-            // Hide loading spinner after registration process completes
-            switch (result.getStatus()) {
-                case SUCCESS:
-                    binding.progressBar.setVisibility(View.GONE);
-                    showToast(result.getData());
-                    // Navigate to HomeFragment after successful registration
-                    Navigation.findNavController(requireView()).navigate(R.id.action_registerFragment_to_homeFragment);
-                    break;
-                case ERROR:
-                    binding.progressBar.setVisibility(View.GONE);
-                    showToast(result.getErrorMessage());
-                    break;
-                case LOADING:
-                    showToast("Registering...");
-                    binding.progressBar.setVisibility(View.VISIBLE);
-                    binding.btnRegister.setEnabled(false);
-                    break;
+            if (result == null) return;
+
+            if (result.getStatus() == Result.Status.LOADING) {
+                // Show loading spinner and disable the register button
+                showToast("Registering...");
+                binding.progressBar.setVisibility(View.VISIBLE);
+                binding.btnRegister.setEnabled(false);
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
+                binding.progressBar.setVisibility(View.GONE);
+                binding.btnRegister.setEnabled(true);
+                showToast(result.getData());
+                // Navigate to HomeFragment after successful registration
+                Navigation.findNavController(requireView()).navigate(R.id.action_registerFragment_to_homeFragment);
+            } else if (result.getStatus() == Result.Status.ERROR) {
+                // Hide loading spinner and enable the register button
+                binding.progressBar.setVisibility(View.GONE);
+                binding.btnRegister.setEnabled(true);
+                showToast(result.getErrorMessage());
             }
-            binding.btnRegister.setEnabled(true);
-            binding.progressBar.setVisibility(View.GONE);
         });
     }
 

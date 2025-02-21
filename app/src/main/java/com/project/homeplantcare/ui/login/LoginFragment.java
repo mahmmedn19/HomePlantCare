@@ -108,28 +108,23 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
     private void observeLogin(LiveData<Result<String>> loginResult, Class<?> targetActivity, String successMessage) {
         loginResult.observe(getViewLifecycleOwner(), result -> {
             // Handle the different states of the login result
-            switch (result.getStatus()) {
-                case SUCCESS:
-                    binding.progressBar.setVisibility(View.GONE);
-                    showToast(successMessage);  // Show success message
-                    startActivity(new Intent(requireContext(), targetActivity));  // Redirect to appropriate activity
-                    requireActivity().finish();  // Close the login activity
-                    break;
-
-                case ERROR:
-                    binding.progressBar.setVisibility(View.GONE);
-                    showToast(result.getErrorMessage());  // Show error message
-                    break;
-
-                case LOADING:
-                    // Optionally, you can show a message or a more specific state when the login is loading
-                    showToast("Logging in...");  // Update toast with loading message
-                    binding.progressBar.setVisibility(View.VISIBLE);
-                    binding.btnLogin.setEnabled(false);
-                    break;
+            if (result.getStatus() == Result.Status.LOADING) {
+                // Show loading spinner and disable the register button
+                showToast("Logging in...");  // Update toast with loading message
+                binding.progressBar.setVisibility(View.VISIBLE);
+                binding.btnRegister.setEnabled(false);
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
+                binding.progressBar.setVisibility(View.GONE);
+                binding.btnRegister.setEnabled(true);
+                showToast(successMessage);
+                startActivity(new Intent(requireContext(), targetActivity));
+                requireActivity().finish();
+            } else if (result.getStatus() == Result.Status.ERROR) {
+                // Hide loading spinner and enable the register button
+                binding.progressBar.setVisibility(View.GONE);
+                binding.btnRegister.setEnabled(true);
+                showToast(result.getErrorMessage());
             }
-            binding.progressBar.setVisibility(View.GONE);
-            binding.btnLogin.setEnabled(true);
         });
     }
 

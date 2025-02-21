@@ -2,9 +2,13 @@ package com.project.homeplantcare.ui.forget_pass;
 
 import android.view.View;
 import android.widget.Toast;
+
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+
 import com.project.homeplantcare.R;
+import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentForgetPasswordBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.utils.InputValidator;
@@ -15,6 +19,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class ForgetPasswordFragment extends BaseFragment<FragmentForgetPasswordBinding> {
+
+    private ForgotPasswordViewModel viewModel;
 
     @Override
     protected String getTAG() {
@@ -28,7 +34,8 @@ public class ForgetPasswordFragment extends BaseFragment<FragmentForgetPasswordB
 
     @Override
     protected ViewModel getViewModel() {
-        return null;
+        viewModel = new ViewModelProvider(this).get(ForgotPasswordViewModel.class);
+        return viewModel;
     }
 
     @Override
@@ -42,6 +49,7 @@ public class ForgetPasswordFragment extends BaseFragment<FragmentForgetPasswordB
         InputValidator.clearErrorOnTextChange(binding.emailInputLayout);
 
         binding.btnSendResetLink.setOnClickListener(v -> handleResetPassword());
+        observeResetPasswordResult();
     }
 
     private void handleResetPassword() {
@@ -51,9 +59,23 @@ public class ForgetPasswordFragment extends BaseFragment<FragmentForgetPasswordB
         if (!InputValidator.validateEmail(binding.emailInputLayout, email)) {
             return; // Stop further processing if validation fails
         }
+        viewModel.resetPassword(email);
 
         // Proceed with password reset logic
         showToast("Password reset instructions sent to: " + email);
+    }
+
+    private void observeResetPasswordResult() {
+        viewModel.getResetPasswordResult().observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                Toast.makeText(requireContext(), result.getData(), Toast.LENGTH_LONG).show();
+                requireActivity().onBackPressed();
+            } else if (result.getStatus() == Result.Status.ERROR) {
+                Toast.makeText(requireContext(), "Error: " + result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            } else if (result.getStatus() == Result.Status.LOADING) {
+                binding.loadingProgressBar.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void showToast(String message) {

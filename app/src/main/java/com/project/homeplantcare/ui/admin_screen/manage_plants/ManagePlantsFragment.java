@@ -56,28 +56,24 @@ public class ManagePlantsFragment extends BaseFragment<FragmentManagePlantsBindi
 
         // Observe the loading, success, and error states
         viewModel.getAllPlants().observe(getViewLifecycleOwner(), result -> {
-            switch (result.getStatus()) {
-                case LOADING:
-                    binding.progressBar.setVisibility(View.VISIBLE); // Show progress bar
-                    binding.recyclerPlants.setVisibility(View.GONE); // Hide recycler
+            if (result.getStatus() == Result.Status.LOADING) {
+                binding.progressBar.setVisibility(View.VISIBLE); // Show progress bar
+                binding.recyclerPlants.setVisibility(View.GONE); // Hide recycler
+                binding.placeholderImage.setVisibility(View.GONE); // Hide placeholder image
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
+                binding.progressBar.setVisibility(View.GONE); // Hide progress bar
+                List<PlantItem> plantList = result.getData();
+                if (plantList != null && !plantList.isEmpty()) {
+                    binding.recyclerPlants.setVisibility(View.VISIBLE); // Show recycler
                     binding.placeholderImage.setVisibility(View.GONE); // Hide placeholder image
-                    break;
-                case SUCCESS:
-                    binding.progressBar.setVisibility(View.GONE); // Hide progress bar
-                    List<PlantItem> plantList = result.getData();
-                    if (plantList != null && !plantList.isEmpty()) {
-                        binding.recyclerPlants.setVisibility(View.VISIBLE); // Show recycler
-                        binding.placeholderImage.setVisibility(View.GONE); // Hide placeholder image
-                        adapter.notifyDataSetChanged(); // Update the list with new data
-                    } else {
-                        binding.recyclerPlants.setVisibility(View.GONE); // Hide recycler if empty
-                        binding.placeholderImage.setVisibility(View.VISIBLE); // Show placeholder image
-                    }
-                    break;
-                case ERROR:
-                    binding.progressBar.setVisibility(View.GONE); // Hide progress bar
-                    Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    break;
+                    adapter.notifyDataSetChanged(); // Update the list with new data
+                } else {
+                    binding.recyclerPlants.setVisibility(View.GONE); // Hide recycler if empty
+                    binding.placeholderImage.setVisibility(View.VISIBLE); // Show placeholder image
+                }
+            } else if (result.getStatus() == Result.Status.ERROR) {
+                binding.progressBar.setVisibility(View.GONE); // Hide progress bar
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

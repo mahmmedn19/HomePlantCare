@@ -1,25 +1,23 @@
 package com.project.homeplantcare.ui.admin_screen.add_disease;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.Toast;
 import android.view.View;
-
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.Observer;
 import androidx.navigation.Navigation;
-
 import com.project.homeplantcare.R;
+import com.project.homeplantcare.data.models.DiseaseItem;
+import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentAddDiseasesBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
-
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding> {
 
     private AddDiseasesViewModel viewModel;
-    private String diseaseId = null;
+    private String diseaseId;
 
     @Override
     protected String getTAG() {
@@ -40,105 +38,76 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
     @Override
     protected void setup() {
         super.setup();
-
-        setToolbarVisibility(true);
-        diseaseId = getArguments() != null ? getArguments().getString("diseaseId") : null;
-
-        if (diseaseId != null) {
-            setToolbarTitle("Edit Disease");
-            binding.btnSave.setText("Update Disease");
-            viewModel.getDiseaseById(diseaseId);
-        } else {
-            setToolbarTitle("Add Disease");
-            binding.btnSave.setText("Save Disease");
-        }
-
-        showBackButton(true);
+        binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
 
+        diseaseId = getArguments() != null ? getArguments().getString("diseaseId") : null;
+        setupToolbar();
         setupListeners();
         observeViewModel();
     }
 
+    private void setupToolbar() {
+        setToolbarVisibility(true);
+        setToolbarTitle(diseaseId != null ? "Edit Disease" : "Add Disease");
+        binding.btnSave.setText(diseaseId != null ? "Update Disease" : "Save Disease");
+        showBackButton(true);
+
+        if (diseaseId != null) {
+            viewModel.getDiseaseById(diseaseId).observe(getViewLifecycleOwner(), result -> {
+                if (result.getStatus() == Result.Status.SUCCESS && result.getData() != null) {
+                    populateFields(result.getData());
+                } else {
+                    showToast("Error: " + result.getErrorMessage());
+                }
+            });
+        }
+    }
+
     private void setupListeners() {
         binding.btnSave.setOnClickListener(view -> {
-            if (diseaseId != null) {
-                viewModel.updateDisease(diseaseId);
+            if (validateFields()) {
+                DiseaseItem diseaseItem = new DiseaseItem();
+                diseaseItem.setName(binding.etDiseaseName.getText().toString());
+                diseaseItem.setSymptoms(binding.etDiseaseSymptoms.getText().toString());
+                diseaseItem.setRemedies(binding.etDiseaseRemedies.getText().toString());
+
+                if (diseaseId == null) {
+                    viewModel.addDisease(diseaseItem);
+                } else {
+                    viewModel.updateDisease(diseaseId, diseaseItem);
+                }
             } else {
-                viewModel.addDisease();
-            }
-        });
-
-        // Manually bind text change listeners to update the ViewModel
-        binding.etDiseaseName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-                // No operation
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                viewModel.setDiseaseName(charSequence.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // No operation
-            }
-        });
-
-        binding.etDiseaseSymptoms.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-                // No operation
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                viewModel.setDiseaseSymptoms(charSequence.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // No operation
-            }
-        });
-
-        binding.etDiseaseRemedies.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-                // No operation
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                viewModel.setDiseaseRemedies(charSequence.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // No operation
+                showToast("Please fill all fields correctly.");
             }
         });
     }
 
     private void observeViewModel() {
-        viewModel.getIsDiseaseSaved().observe(getViewLifecycleOwner(), isSaved -> {
-            if (isSaved) {
-                showToast(diseaseId != null ? "Disease updated successfully!" : "Disease added successfully!");
+        viewModel.getOperationResult().observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                showToast(result.getData());
                 Navigation.findNavController(requireView()).navigateUp();
-            } else {
-                showToast("Please fill all fields correctly.");
+            } else if (result.getStatus() == Result.Status.ERROR) {
+                showToast("Error: " + result.getErrorMessage());
             }
         });
+    }
 
-        viewModel.getDiseaseItemLiveData().observe(getViewLifecycleOwner(), diseaseItem -> {
-            if (diseaseItem != null) {
-                binding.etDiseaseName.setText(diseaseItem.getName());
-                binding.etDiseaseSymptoms.setText(diseaseItem.getSymptoms());
-                binding.etDiseaseRemedies.setText(diseaseItem.getRemedies());
-            }
-        });
+    private void populateFields(DiseaseItem disease) {
+        binding.etDiseaseName.setText(disease.getName());
+        binding.etDiseaseSymptoms.setText(disease.getSymptoms());
+        binding.etDiseaseRemedies.setText(disease.getRemedies());
+    }
+
+    private boolean validateFields() {
+        return !isEmpty(binding.etDiseaseName.getText().toString()) &&
+                !isEmpty(binding.etDiseaseSymptoms.getText().toString()) &&
+                !isEmpty(binding.etDiseaseRemedies.getText().toString());
+    }
+
+    private boolean isEmpty(String value) {
+        return value == null || value.trim().isEmpty();
     }
 
     private void showToast(String message) {

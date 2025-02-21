@@ -1,5 +1,7 @@
 package com.project.homeplantcare.data.repo.app_repo;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -11,7 +13,10 @@ import com.project.homeplantcare.data.models.PlantItem;
 import com.project.homeplantcare.data.utils.Result;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -27,71 +32,132 @@ public class AppRepositoryImpl implements AppRepository {
     @Override
     public LiveData<Result<List<PlantItem>>> getAllPlants() {
         MutableLiveData<Result<List<PlantItem>>> result = new MutableLiveData<>();
+        result.postValue(Result.loading());
+
         firestore.collection("plants").get()
                 .addOnSuccessListener(querySnapshot -> {
+                    if (querySnapshot.isEmpty()) {
+                        result.postValue(Result.success(Collections.emptyList())); // Return empty list if no plants
+                        return;
+                    }
+
                     List<PlantItem> plants = new ArrayList<>();
                     for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                        // Convert the PlantItem object from the Firestore document
-                        PlantItem plantItem = document.toObject(PlantItem.class);
-
-                        // Check if 'diseases' is not null (it should be a list of DiseaseItem objects)
-                        if (plantItem != null && plantItem.getDiseases() != null) {
-                            // Iterate through each DiseaseItem (not String) in the diseases list
-                            List<DiseaseItem> diseaseItems = new ArrayList<>();
-                            for (DiseaseItem disease : plantItem.getDiseases()) {
-                                // You can directly add the disease as DiseaseItem is already the required type
-                                diseaseItems.add(disease);
+                        try {
+                            PlantItem plantItem = document.toObject(PlantItem.class);
+                            if (plantItem != null) {
+                                plantItem.setPlantId(document.getId()); // Ensure ID is set
+                                if (plantItem.getDiseases() == null) {
+                                    plantItem.setDiseases(new ArrayList<>()); // Prevent NullPointerException
+                                }
+                                plants.add(plantItem);
+                            } else {
+                                Log.e("Firestore", "Null object parsed from document: " + document.getId());
                             }
-                            // Set the list of DiseaseItem objects in the plant item
-                            plantItem.setDiseases(diseaseItems);
+                        } catch (Exception e) {
+                            Log.e("Firestore", "Error parsing plant document: " + document.getId(), e);
                         }
-
-                        // Add the plant item to the list
-                        plants.add(plantItem);
                     }
-                    result.setValue(Result.success(plants));  // Return the list of plants
+
+                    result.postValue(Result.success(plants)); // Update LiveData with the parsed list
                 })
-                .addOnFailureListener(e -> result.setValue(Result.error(e.getMessage())));  // Handle any errors
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Failed to fetch plants", e);
+                    result.postValue(Result.error("Failed to load plants: " + e.getMessage()));
+                });
 
         return result;
     }
-
-
-
-
-
-
 
 
 
     @Override
     public LiveData<Result<String>> addPlant(PlantItem plantItem) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        result.postValue(Result.loading());
+
         firestore.collection("plants").add(plantItem)
                 .addOnSuccessListener(documentReference -> {
-                    // After adding, set the generated document ID
-                    plantItem.setPlantId(documentReference.getId()); // Assuming PlantItem has a setPlantId method
-                    result.setValue(Result.success("Plant added successfully with ID: " + plantItem.getPlantId()));
+                    if (documentReference != null) {
+                        // Set generated document ID
+                        String generatedId = documentReference.getId();
+                        plantItem.setPlantId(generatedId);
+
+                        // Update Firestore with the plant ID
+                        firestore.collection("plants").document(generatedId).set(plantItem)
+                                .addOnSuccessListener(aVoid -> {
+                                    result.postValue(Result.success("Plant added successfully with ID: " + generatedId));
+                                })
+                                .addOnFailureListener(e -> {
+                                    result.postValue(Result.error("Failed to update plant ID: " + e.getMessage()));
+                                    Log.e("Firestore", "Failed to set plant ID in Firestore: ", e);
+                                });
+                    } else {
+                        result.postValue(Result.error("DocumentReference is null. Failed to add plant."));
+                        Log.e("Firestore", "DocumentReference is null.");
+                    }
                 })
-                .addOnFailureListener(e -> result.setValue(Result.error("Failed to add plant: " + e.getMessage())));
+                .addOnFailureListener(e -> {
+                    result.postValue(Result.error("Failed to add plant: " + e.getMessage()));
+                    Log.e("Firestore", "Error adding plant to Firestore: ", e);
+                });
+
         return result;
     }
 
     @Override
     public LiveData<Result<String>> updatePlant(String plantId, PlantItem plantItem) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
-        firestore.collection("plants").document(plantId).set(plantItem)
-                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Plant updated successfully.")))
-                .addOnFailureListener(e -> result.setValue(Result.error("Failed to update plant: " + e.getMessage())));
+
+        // Validate input
+        if (plantId == null || plantId.trim().isEmpty() || plantItem == null) {
+            result.postValue(Result.error("Invalid plant ID or plant data."));
+            Log.e("Firestore", "Attempted to update plant with invalid ID or null data.");
+            return result;
+        }
+
+        result.postValue(Result.loading());
+
+        // Check if plant exists before updating
+        firestore.collection("plants").document(plantId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Ensure the plant ID is correctly set inside the PlantItem object
+                        plantItem.setPlantId(plantId);
+
+                        // Update plant data
+                        firestore.collection("plants").document(plantId).set(plantItem)
+                                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Plant updated successfully.")))
+                                .addOnFailureListener(e -> {
+                                    result.setValue(Result.error("Failed to update plant: " + e.getMessage()));
+                                    Log.e("Firestore", "Error updating plant with ID " + plantId + ": ", e);
+                                });
+                    } else {
+                        result.setValue(Result.error("Plant not found."));
+                        Log.e("Firestore", "Attempted to update a non-existing plant with ID: " + plantId);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    result.setValue(Result.error("Failed to check plant existence: " + e.getMessage()));
+                    Log.e("Firestore", "Error fetching plant with ID " + plantId + ": ", e);
+                });
+
         return result;
     }
-
     @Override
     public LiveData<Result<String>> deletePlant(String plantId) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
+
+        if (plantId == null || plantId.trim().isEmpty()) {
+            result.setValue(Result.error("Invalid plant ID"));
+            return result;
+        }
+
         firestore.collection("plants").document(plantId).delete()
                 .addOnSuccessListener(aVoid -> result.setValue(Result.success("Plant deleted successfully.")))
                 .addOnFailureListener(e -> result.setValue(Result.error("Failed to delete plant: " + e.getMessage())));
+
         return result;
     }
 
@@ -99,6 +165,7 @@ public class AppRepositoryImpl implements AppRepository {
     @Override
     public LiveData<Result<List<DiseaseItem>>> getAllDiseases() {
         MutableLiveData<Result<List<DiseaseItem>>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
         firestore.collection("diseases").get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<DiseaseItem> diseases = querySnapshot.toObjects(DiseaseItem.class);
@@ -111,31 +178,76 @@ public class AppRepositoryImpl implements AppRepository {
     @Override
     public LiveData<Result<String>> addDisease(DiseaseItem diseaseItem) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
+
+        if (diseaseItem.getName() == null) diseaseItem.setName("Unknown Disease");
+        if (diseaseItem.getSymptoms() == null) diseaseItem.setSymptoms("No symptoms provided.");
+        if (diseaseItem.getRemedies() == null) diseaseItem.setRemedies("No remedies available.");
+
         firestore.collection("diseases").add(diseaseItem)
                 .addOnSuccessListener(documentReference -> {
-                    // After adding, set the generated document ID
-                    diseaseItem.setDiseaseId(documentReference.getId()); // Assuming DiseaseItem has a setDiseaseId method
-                    result.setValue(Result.success("Disease added successfully with ID: " + diseaseItem.getDiseaseId()));
+                    String newId = documentReference.getId();
+                    diseaseItem.setDiseaseId(newId);
+
+                    firestore.collection("diseases").document(newId)
+                            .set(diseaseItem)
+                            .addOnSuccessListener(aVoid -> result.setValue(Result.success("Disease added successfully with ID: " + newId)))
+                            .addOnFailureListener(e -> result.setValue(Result.error("Failed to update disease: " + e.getMessage())));
                 })
                 .addOnFailureListener(e -> result.setValue(Result.error("Failed to add disease: " + e.getMessage())));
+
         return result;
     }
 
     @Override
     public LiveData<Result<String>> updateDisease(String diseaseId, DiseaseItem diseaseItem) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
-        firestore.collection("diseases").document(diseaseId).set(diseaseItem)
-                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Disease updated successfully.")))
-                .addOnFailureListener(e -> result.setValue(Result.error("Failed to update disease: " + e.getMessage())));
+
+        if (diseaseId == null || diseaseId.trim().isEmpty()) {
+            result.setValue(Result.error("Invalid disease ID."));
+            return result;
+        }
+
+        result.setValue(Result.loading());
+
+        firestore.collection("diseases").document(diseaseId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        diseaseItem.setDiseaseId(diseaseId); // Ensure ID is not null
+                        firestore.collection("diseases").document(diseaseId).set(diseaseItem)
+                                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Disease updated successfully.")))
+                                .addOnFailureListener(e -> result.setValue(Result.error("Failed to update disease: " + e.getMessage())));
+                    } else {
+                        result.setValue(Result.error("Disease not found."));
+                    }
+                })
+                .addOnFailureListener(e -> result.setValue(Result.error("Error checking disease existence: " + e.getMessage())));
+
         return result;
     }
 
     @Override
     public LiveData<Result<String>> deleteDisease(String diseaseId) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
-        firestore.collection("diseases").document(diseaseId).delete()
-                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Disease deleted successfully.")))
-                .addOnFailureListener(e -> result.setValue(Result.error("Failed to delete disease: " + e.getMessage())));
+        result.setValue(Result.loading());
+
+        if (diseaseId == null || diseaseId.trim().isEmpty()) {
+            result.setValue(Result.error("Invalid disease ID."));
+            return result;
+        }
+
+        firestore.collection("diseases").document(diseaseId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        firestore.collection("diseases").document(diseaseId).delete()
+                                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Disease deleted successfully.")))
+                                .addOnFailureListener(e -> result.setValue(Result.error("Failed to delete disease: " + e.getMessage())));
+                    } else {
+                        result.setValue(Result.error("Disease not found."));
+                    }
+                })
+                .addOnFailureListener(e -> result.setValue(Result.error("Error checking disease existence: " + e.getMessage())));
+
         return result;
     }
 
@@ -143,6 +255,7 @@ public class AppRepositoryImpl implements AppRepository {
     @Override
     public LiveData<Result<List<ArticleItem>>> getAllArticles() {
         MutableLiveData<Result<List<ArticleItem>>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
         firestore.collection("articles").get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<ArticleItem> articles = querySnapshot.toObjects(ArticleItem.class);
@@ -155,37 +268,79 @@ public class AppRepositoryImpl implements AppRepository {
     @Override
     public LiveData<Result<String>> addArticle(ArticleItem articleItem) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
+
+
         firestore.collection("articles").add(articleItem)
                 .addOnSuccessListener(documentReference -> {
-                    // After adding, set the generated document ID
-                    articleItem.setArticleId(documentReference.getId()); // Assuming ArticleItem has a setArticleId method
-                    result.setValue(Result.success("Article added successfully with ID: " + articleItem.getArticleId()));
+                    String newId = documentReference.getId();
+                    articleItem.setArticleId(newId); // Set the generated ID
+
+                    firestore.collection("articles").document(newId).set(articleItem)
+                            .addOnSuccessListener(aVoid -> result.setValue(Result.success("Article added successfully with ID: " + newId)))
+                            .addOnFailureListener(e -> result.setValue(Result.error("Failed to update article: " + e.getMessage())));
                 })
                 .addOnFailureListener(e -> result.setValue(Result.error("Failed to add article: " + e.getMessage())));
+
         return result;
     }
 
     @Override
     public LiveData<Result<String>> updateArticle(String articleId, ArticleItem articleItem) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
-        firestore.collection("articles").document(articleId).set(articleItem)
-                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Article updated successfully.")))
-                .addOnFailureListener(e -> result.setValue(Result.error("Failed to update article: " + e.getMessage())));
+
+        if (articleId == null || articleId.trim().isEmpty()) {
+            result.setValue(Result.error("Invalid article ID."));
+            return result;
+        }
+
+        result.setValue(Result.loading());
+
+        firestore.collection("articles").document(articleId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        articleItem.setArticleId(articleId); // Ensure ID is not null
+                        firestore.collection("articles").document(articleId).set(articleItem)
+                                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Article updated successfully.")))
+                                .addOnFailureListener(e -> result.setValue(Result.error("Failed to update article: " + e.getMessage())));
+                    } else {
+                        result.setValue(Result.error("Article not found."));
+                    }
+                })
+                .addOnFailureListener(e -> result.setValue(Result.error("Error checking article existence: " + e.getMessage())));
+
         return result;
     }
 
     @Override
     public LiveData<Result<String>> deleteArticle(String articleId) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
-        firestore.collection("articles").document(articleId).delete()
-                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Article deleted successfully.")))
-                .addOnFailureListener(e -> result.setValue(Result.error("Failed to delete article: " + e.getMessage())));
+        result.setValue(Result.loading());
+
+        if (articleId == null || articleId.trim().isEmpty()) {
+            result.setValue(Result.error("Invalid article ID."));
+            return result;
+        }
+
+        firestore.collection("articles").document(articleId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        firestore.collection("articles").document(articleId).delete()
+                                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Article deleted successfully.")))
+                                .addOnFailureListener(e -> result.setValue(Result.error("Failed to delete article: " + e.getMessage())));
+                    } else {
+                        result.setValue(Result.error("Article not found."));
+                    }
+                })
+                .addOnFailureListener(e -> result.setValue(Result.error("Error checking article existence: " + e.getMessage())));
+
         return result;
     }
 
     @Override
     public LiveData<Result<String>> addAILink(String link) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
         firestore.collection("ai_links").add(link)
                 .addOnSuccessListener(documentReference -> result.setValue(Result.success("AI link added successfully.")))
                 .addOnFailureListener(e -> result.setValue(Result.error("Failed to add AI link: " + e.getMessage())));
@@ -195,6 +350,7 @@ public class AppRepositoryImpl implements AppRepository {
     @Override
     public LiveData<Result<List<String>>> getAllAILinks() {
         MutableLiveData<Result<List<String>>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
         firestore.collection("ai_links").get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<String> links = querySnapshot.toObjects(String.class);

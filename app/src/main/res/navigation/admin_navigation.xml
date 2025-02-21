@@ -38,6 +38,10 @@
         <action
             android:id="@+id/action_nav_manage_articles_to_nav_add_articles"
             app:destination="@id/nav_add_articles" />
+        <argument
+            android:name="articleId"
+            app:argType="string"
+            />
     </fragment>
 
     <fragment

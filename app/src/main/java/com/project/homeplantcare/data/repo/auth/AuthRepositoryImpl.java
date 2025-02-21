@@ -119,6 +119,7 @@ public class AuthRepositoryImpl implements AuthRepository {
     @Override
     public LiveData<Result<AdminProfile>> getAdminProfile() {
         MutableLiveData<Result<AdminProfile>> liveData = new MutableLiveData<>();
+        liveData.setValue(Result.loading());
         FirebaseUser currentUser = auth.getCurrentUser();
         assert currentUser != null;
         String uid = currentUser.getUid();
@@ -142,6 +143,7 @@ public class AuthRepositoryImpl implements AuthRepository {
     @Override
     public LiveData<Result<String>> updateAdminProfile(String newName) {
         MutableLiveData<Result<String>> liveData = new MutableLiveData<>();
+        liveData.setValue(Result.loading());
         FirebaseUser currentUser = auth.getCurrentUser();
         assert currentUser != null;
         String uid = currentUser.getUid();
@@ -154,13 +156,27 @@ public class AuthRepositoryImpl implements AuthRepository {
         return liveData;
     }
 
+    @Override
+    public LiveData<Result<String>> sendPasswordResetEmail(String email) {
+        MutableLiveData<Result<String>> resultLiveData = new MutableLiveData<>();
+        resultLiveData.setValue(Result.loading());
+
+        auth.sendPasswordResetEmail(email)
+                .addOnSuccessListener(aVoid -> resultLiveData.setValue(Result.success("Reset link sent to your email.")))
+                .addOnFailureListener(e -> {
+                    String errorMessage = getFirebaseAuthErrorMessage(Objects.requireNonNull(e));
+                    resultLiveData.setValue(Result.error(errorMessage));
+                });
+        return resultLiveData;
+    }
+
     private String getFirebaseAuthErrorMessage(Exception e) {
         if (e instanceof FirebaseAuthUserCollisionException) {
             return "This email is already registered.";
         } else if (e instanceof FirebaseAuthWeakPasswordException) {
             return "Password should be at least 6 characters.";
         } else if (e instanceof FirebaseAuthInvalidCredentialsException) {
-            return "Invalid email format.";
+            return "Invalid email or password.";
         } else {
             return "Login failed: " + e.getMessage();
         }

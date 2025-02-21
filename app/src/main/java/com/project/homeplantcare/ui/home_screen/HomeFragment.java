@@ -1,5 +1,6 @@
 package com.project.homeplantcare.ui.home_screen;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -97,28 +98,31 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
 
     private void observePlantsData() {
         viewModel.getAllPlants().observe(getViewLifecycleOwner(), result -> {
+            Log.d("HomeFragment", "Plants Data Status: " + result.getStatus()); // Add this line
             if (result.getStatus() == Result.Status.LOADING) {
                 binding.progressBarPlants.setVisibility(View.VISIBLE);
                 binding.recyclerPlantList.setVisibility(View.GONE);
                 binding.placeholderImagePlants.setVisibility(View.GONE);
-            } else if (result.getStatus() == Result.Status.SUCCESS) {
+            } else {
                 binding.progressBarPlants.setVisibility(View.GONE);
                 List<PlantItem> plants = result.getData();
-                if (plants != null && !plants.isEmpty()) {
+
+                if (result.getStatus() == Result.Status.SUCCESS && plants != null && !plants.isEmpty()) {
                     binding.recyclerPlantList.setVisibility(View.VISIBLE);
                     binding.placeholderImagePlants.setVisibility(View.GONE);
                     setupPlantRecyclerView(plants);
                 } else {
                     binding.recyclerPlantList.setVisibility(View.GONE);
                     binding.placeholderImagePlants.setVisibility(View.VISIBLE);
+
+                    if (result.getStatus() == Result.Status.ERROR) {
+                        Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
-            } else {
-                binding.progressBarPlants.setVisibility(View.GONE);
-                binding.placeholderImagePlants.setVisibility(View.GONE);
-                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     private void observeArticlesData() {
         viewModel.getAllArticles().observe(getViewLifecycleOwner(), result -> {
@@ -126,24 +130,26 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
                 binding.progressBarArticles.setVisibility(View.VISIBLE);
                 binding.recyclerNewArticles.setVisibility(View.GONE);
                 binding.placeholderImageArticles.setVisibility(View.GONE);
-            } else if (result.getStatus() == Result.Status.SUCCESS) {
+            } else {
                 binding.progressBarArticles.setVisibility(View.GONE);
                 List<ArticleItem> articles = result.getData();
-                if (articles != null && !articles.isEmpty()) {
+
+                if (result.getStatus() == Result.Status.SUCCESS && articles != null && !articles.isEmpty()) {
                     binding.recyclerNewArticles.setVisibility(View.VISIBLE);
                     binding.placeholderImageArticles.setVisibility(View.GONE);
                     setupNewArticlesRecyclerView(articles);
                 } else {
                     binding.recyclerNewArticles.setVisibility(View.GONE);
                     binding.placeholderImageArticles.setVisibility(View.VISIBLE);
+
+                    if (result.getStatus() == Result.Status.ERROR) {
+                        Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
-            } else {
-                binding.progressBarArticles.setVisibility(View.GONE);
-                binding.placeholderImageArticles.setVisibility(View.GONE);
-                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     private void setupPlantRecyclerView(List<PlantItem> plants) {
         PlantAdapter plantAdapter = new PlantAdapter(plants, this);

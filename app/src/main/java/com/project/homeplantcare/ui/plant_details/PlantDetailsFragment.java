@@ -1,14 +1,15 @@
 package com.project.homeplantcare.ui.plant_details;
 
-import android.view.View;
+import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
-import com.project.homeplantcare.databinding.FragmentPlantDetailsBinding;
 import com.project.homeplantcare.data.models.DiseaseItem;
-import com.project.homeplantcare.data.models.PlantItem;
+import com.project.homeplantcare.data.utils.Result;
+import com.project.homeplantcare.databinding.FragmentPlantDetailsBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
 
 import java.util.ArrayList;
@@ -19,7 +20,9 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBinding> {
 
-    private List<DiseaseItem> diseaseList;
+    private PlantDetailsViewModel viewModel;
+    private List<DiseaseItem> diseaseList = new ArrayList<>();
+    private DiseasesAdapter diseasesAdapter;
 
     @Override
     protected String getTAG() {
@@ -33,7 +36,8 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
 
     @Override
     protected ViewModel getViewModel() {
-        return null;
+        viewModel = new ViewModelProvider(this).get(PlantDetailsViewModel.class);
+        return viewModel;
     }
 
     @Override
@@ -43,50 +47,43 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
         setToolbarTitle("Plant Details");
         showBackButton(true);
 
-        // Retrieve argument
-        boolean isAnalysis = getArguments() != null && getArguments().getBoolean("isAnaylsis", false);
+        // Retrieve plantId from arguments
+        String plantId = getArguments() != null ? getArguments().getString("plantId") : null;
 
-        if (isAnalysis) {
-            // Perform AI Analysis specific logic
-            binding.addToHistory.setVisibility(View.VISIBLE);
-        }else {
-            // Hide the Add to History button
-            binding.addToHistory.setVisibility(View.GONE);
+        if (plantId != null) {
+            viewModel.fetchPlantDetails(plantId);
+            observePlantDetails();
+        } else {
+            Toast.makeText(requireContext(), "Invalid Plant ID", Toast.LENGTH_SHORT).show();
         }
 
-        // Create a fake PlantItem object
-/*        PlantItem fakePlant = new PlantItem(
-                1,
-                "Aloe Vera",
-                "Aloe Vera is a species of plant well known for its medicinal and skincare uses. It is easy to maintain and grows well indoors.",
-                "Indoor",      // Light Requirements
-                "Medium",      // Water Requirements
-                "Well-Drained", // Soil Requirements
-                "Warm",        // Weather Requirements
-                "2024-01-01",  // Growth Date (Sample Date)
-                R.drawable.plant_6 // Replace with actual drawable resource
-        );*/
-
-        // Bind the PlantItem to the layout
-
-        // Load Diseases
-/*
-        diseaseList = generateFakeDiseases();
-*/
         setupDiseasesRecyclerView();
+        observeDiseases();
     }
 
-/*    private List<DiseaseItem> generateFakeDiseases() {
-        List<DiseaseItem> diseases = new ArrayList<>();
-        diseases.add(new DiseaseItem(1, "Leaf Spot", "Dark spots on leaves", "Remove affected leaves\napply fungicide"));
-        diseases.add(new DiseaseItem(2, "Root Rot", "Wilting and yellowing leaves", "Improve drainage\nreduce watering"));
-        diseases.add(new DiseaseItem(3, "Powdery Mildew", "White powdery substance on leaves", "Increase airflow, apply fungicide"));
-        return diseases;
-    }*/
+    private void observePlantDetails() {
+        viewModel.getPlantDetails().observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                binding.setPlant(result.getData());  // Data Binding
+            } else {
+                Toast.makeText(requireContext(), "Failed to load plant details", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void observeDiseases() {
+        viewModel.getAllDiseases().observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                diseaseList.clear();
+                diseaseList.addAll(result.getData());
+                diseasesAdapter.notifyDataSetChanged();
+            }
+        });
+    }
 
     private void setupDiseasesRecyclerView() {
-        DiseasesAdapter diseasesAdapter = new DiseasesAdapter(diseaseList);
-        binding.recyclerDiseases.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+        diseasesAdapter = new DiseasesAdapter(diseaseList);
+        binding.recyclerDiseases.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerDiseases.setAdapter(diseasesAdapter);
     }
 }

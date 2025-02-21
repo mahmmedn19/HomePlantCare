@@ -59,20 +59,22 @@ public class AddPlaintAdminFragment extends BaseFragment<FragmentAddPlantAdminBi
     protected void setup() {
         super.setup();
         setToolbarVisibility(true);
+
+        // Initialize ViewModel FIRST
+        viewModel = new ViewModelProvider(this).get(AddPlantViewModel.class);
+
         plantId = getArguments() != null ? getArguments().getString("plantId") : null;
 
         if (plantId != null) {
             setToolbarTitle("Edit Plant");
             binding.save.setText("Update Plant");
-            viewModel.getPlantById(plantId);
+            viewModel.getPlantById(plantId);  // Now it should not be null
         } else {
             setToolbarTitle("Add Plant");
             binding.save.setText("Save Plant");
         }
 
         showBackButton(true);
-
-        viewModel = new ViewModelProvider(this).get(AddPlantViewModel.class);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
 
@@ -88,6 +90,7 @@ public class AddPlaintAdminFragment extends BaseFragment<FragmentAddPlantAdminBi
             });
         }
     }
+
 
     private void setupRecyclerView() {
         binding.recyclerDiseases.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -122,10 +125,16 @@ public class AddPlaintAdminFragment extends BaseFragment<FragmentAddPlantAdminBi
         plant.setWeatherRequirements(Objects.requireNonNull(binding.etWeatherRequirement.getText()).toString());
         plant.setDiseases(viewModel.getSelectedDiseases().getValue());
 
-        // Encode the selected image to Base64
+        // If updating and no new image is selected, retain the existing image
         if (selectedBitmap != null) {
             String encodedImage = ImageUtils.encodeImageToBase64(selectedBitmap);
             plant.setImageResId(encodedImage);
+        } else if (plantId != null) {
+            // Preserve the existing image in case of an update
+            PlantItem existingPlant = viewModel.getPlantItemLiveData().getValue();
+            if (existingPlant != null) {
+                plant.setImageResId(existingPlant.getImageResId());
+            }
         }
 
         return plant;
@@ -141,10 +150,16 @@ public class AddPlaintAdminFragment extends BaseFragment<FragmentAddPlantAdminBi
         binding.etWeatherRequirement.setText(plant.getWeatherRequirements());
 
 
-        // Decode and set the image if available
-        if (plant.getImageResId() != null) {
-            Bitmap decodedImage = ImageUtils.decodeBase64ToImage(plant.getImageResId());
-            binding.imgPreview.setImageBitmap(decodedImage);
+        // If updating and no new image is selected, retain the existing image
+        if (selectedBitmap != null) {
+            String encodedImage = ImageUtils.encodeImageToBase64(selectedBitmap);
+            plant.setImageResId(encodedImage);
+        } else if (plantId != null) {
+            // Preserve the existing image in case of an update
+            PlantItem existingPlant = viewModel.getPlantItemLiveData().getValue();
+            if (existingPlant != null) {
+                plant.setImageResId(existingPlant.getImageResId());
+            }
         }
         // Set the diseases (if any)
         selectedDiseasesAdapter.updateList(plant.getDiseases());

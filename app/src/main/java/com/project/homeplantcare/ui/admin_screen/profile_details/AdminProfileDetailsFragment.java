@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.models.AdminProfile;
@@ -60,22 +61,19 @@ public class AdminProfileDetailsFragment extends BaseFragment<FragmentAdminProfi
 
     private void observeAdminProfile() {
         viewModel.getAdminProfile().observe(getViewLifecycleOwner(), result -> {
-            switch (result.getStatus()) {
-                case LOADING:
-                    binding.progressBar.setVisibility(View.VISIBLE);
-                    break;
-                case SUCCESS:
-                    binding.progressBar.setVisibility(View.GONE);
-                    AdminProfile adminProfile = result.getData();
-                    if (adminProfile != null) {
-                        binding.etAdminName.setText(adminProfile.getAdminName());
-                        binding.etAdminEmail.setText(adminProfile.getAdminEmail());
-                    }
-                    break;
-                case ERROR:
-                    binding.progressBar.setVisibility(View.GONE);
-                    Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    break;
+            if (result.getStatus() == Result.Status.LOADING) {
+                binding.progressBar.setVisibility(View.VISIBLE);
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
+                binding.progressBar.setVisibility(View.GONE);
+                AdminProfile adminProfile = result.getData();
+                if (adminProfile != null) {
+                    binding.etAdminName.setText(adminProfile.getAdminName());
+                    binding.etAdminEmail.setText(adminProfile.getAdminEmail());
+                }
+                Navigation.findNavController(requireView()).navigateUp();
+            } else if (result.getStatus() == Result.Status.ERROR) {
+                binding.progressBar.setVisibility(View.GONE);
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -87,4 +85,5 @@ public class AdminProfileDetailsFragment extends BaseFragment<FragmentAdminProfi
             }
         });
     }
+
 }
