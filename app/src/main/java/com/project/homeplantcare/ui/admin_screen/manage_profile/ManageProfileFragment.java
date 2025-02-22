@@ -3,11 +3,13 @@ package com.project.homeplantcare.ui.admin_screen.manage_profile;
 import android.content.Intent;
 
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.databinding.FragmentManageProfileBinding;
 import com.project.homeplantcare.ui.MainActivity;
+import com.project.homeplantcare.ui.admin_screen.profile_details.AdminProfileViewModel;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.utils.DialogUtils;
 
@@ -15,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class ManageProfileFragment extends BaseFragment<FragmentManageProfileBinding> {
+    private AdminProfileViewModel viewModel;
 
     @Override
     protected String getTAG() {
@@ -28,7 +31,8 @@ public class ManageProfileFragment extends BaseFragment<FragmentManageProfileBin
 
     @Override
     protected ViewModel getViewModel() {
-        return null;
+        viewModel = new ViewModelProvider(this).get(AdminProfileViewModel.class);
+        return viewModel;
     }
 
     @Override
@@ -60,6 +64,12 @@ public class ManageProfileFragment extends BaseFragment<FragmentManageProfileBin
                         requireActivity().finish();
                     }
             );
+        });
+
+        viewModel.getAdminProfile().observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == com.project.homeplantcare.data.utils.Result.Status.SUCCESS) {
+                binding.userName.setText(result.getData().getAdminName());
+            }
         });
 
     }
