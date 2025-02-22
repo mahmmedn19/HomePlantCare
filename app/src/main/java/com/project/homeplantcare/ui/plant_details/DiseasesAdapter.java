@@ -11,11 +11,16 @@ import java.util.List;
 
 public class DiseasesAdapter extends BaseAdapter<DiseaseItem, ItemDiseaseCardBinding> {
 
+    private List<DiseaseItem> diseaseList;
 
     public DiseasesAdapter(List<DiseaseItem> itemList) {
         super(itemList);
+        this.diseaseList = itemList;
     }
-
+    public void setDiseases(List<DiseaseItem> diseases) {
+        this.diseaseList = diseases;
+        notifyDataSetChanged(); // Notify adapter about the data change
+    }
     @Override
     public ItemDiseaseCardBinding createBinding(LayoutInflater inflater, ViewGroup parent, boolean attachToParent) {
         return ItemDiseaseCardBinding.inflate(inflater, parent, attachToParent);

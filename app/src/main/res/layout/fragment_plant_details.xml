@@ -102,17 +102,6 @@
                             app:tint="@color/md_theme_primary" />
 
                     </LinearLayout>
-                    <!-- Date Added -->
-                    <TextView
-                        android:id="@+id/tv_growth_added"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:text="@{plant.growthDate}"
-                        android:textColor="@color/md_theme_primary"
-                        android:textSize="18sp"
-                        tools:text="Growth Added: 2021-01-01" />
-
                     <!-- Description -->
                     <TextView
                         android:layout_width="match_parent"
@@ -255,6 +244,7 @@
                     </LinearLayout>
                     <!-- Diseases Section -->
                     <TextView
+                        android:id="@+id/tv_related_diseases"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
@@ -262,6 +252,17 @@
                         android:textColor="@android:color/black"
                         android:textSize="18sp"
                         android:textStyle="bold" />
+
+                    <!-- Diseases Text no diseases -->
+                    <TextView
+                        android:id="@+id/tv_no_diseases"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="32dp"
+                        android:text="No diseases found."
+                        android:gravity="center"
+                        android:visibility="gone"
+                        />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recycler_diseases"
@@ -271,6 +272,7 @@
                         android:orientation="vertical"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         app:spanCount="2"
+                        app:diseasesList="@{plant.diseases}"
                         tools:listitem="@layout/item_disease_card" />
 
                 </LinearLayout>

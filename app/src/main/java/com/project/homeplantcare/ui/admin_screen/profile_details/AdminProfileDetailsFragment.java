@@ -52,7 +52,18 @@ public class AdminProfileDetailsFragment extends BaseFragment<FragmentAdminProfi
         binding.btnSaveProfile.setOnClickListener(v -> {
             String adminName = Objects.requireNonNull(binding.etAdminName.getText()).toString().trim();
             if (!adminName.isEmpty()) {
-                viewModel.updateAdminProfile(adminName);
+                // Call the ViewModel to save the profile
+                viewModel.updateAdminProfile(adminName).observeForever(result -> {
+                            if (result.getStatus() == Result.Status.LOADING) {
+                                Toast.makeText(requireContext(), "Profile Loading...", Toast.LENGTH_SHORT).show();
+                            } else if (result.getStatus() == Result.Status.SUCCESS) {
+                                Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                                Navigation.findNavController(requireView()).navigateUp();
+                            } else if (result.getStatus() == Result.Status.ERROR) {
+                                Toast.makeText(requireContext(), "Failed to update profile", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                );
             } else {
                 Toast.makeText(requireContext(), "Admin name cannot be empty", Toast.LENGTH_SHORT).show();
             }
@@ -60,24 +71,30 @@ public class AdminProfileDetailsFragment extends BaseFragment<FragmentAdminProfi
     }
 
     private void observeAdminProfile() {
+        // Observe the profile data
         viewModel.getAdminProfile().observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == Result.Status.LOADING) {
                 binding.progressBar.setVisibility(View.VISIBLE);
+                binding.etAdminName.setEnabled(false);  // Disable fields while loading
             } else if (result.getStatus() == Result.Status.SUCCESS) {
                 binding.progressBar.setVisibility(View.GONE);
+                binding.etAdminName.setEnabled(true); // Enable fields after loading
+
                 AdminProfile adminProfile = result.getData();
                 if (adminProfile != null) {
                     binding.etAdminName.setText(adminProfile.getAdminName());
                     binding.etAdminEmail.setText(adminProfile.getAdminEmail());
                 }
-                Navigation.findNavController(requireView()).navigateUp();
             } else if (result.getStatus() == Result.Status.ERROR) {
                 binding.progressBar.setVisibility(View.GONE);
+                binding.etAdminName.setEnabled(true); // Enable fields on error
                 Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
+        // Observe the update profile operation
         viewModel.getUpdateProfileLiveData().observe(getViewLifecycleOwner(), result -> {
+
             if (result.getStatus() == Result.Status.SUCCESS) {
                 Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
             } else {
@@ -85,5 +102,4 @@ public class AdminProfileDetailsFragment extends BaseFragment<FragmentAdminProfi
             }
         });
     }
-
 }

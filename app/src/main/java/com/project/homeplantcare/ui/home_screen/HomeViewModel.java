@@ -22,85 +22,72 @@ public class HomeViewModel extends ViewModel {
 
     private final AppRepository appRepository;
     private final MutableLiveData<Result<List<ArticleItem>>> articlesLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Result<List<PlantItem>>> allPlantsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Result<List<PlantItem>>> filteredPlants = new MutableLiveData<>();
-    private final LiveData<Result<List<PlantItem>>> allPlants;
 
     @Inject
     public HomeViewModel(AppRepository appRepository) {
         this.appRepository = appRepository;
-        allPlants = appRepository.getAllPlants();
     }
 
-    // Get all plants from Firestore
+    // Fetch all plants data initially
+    public void loadAllPlants() {
+        appRepository.getAllPlants().observeForever(result -> {
+            if (result.getStatus() == Result.Status.LOADING) {
+                allPlantsLiveData.setValue(Result.loading());
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
+                allPlantsLiveData.setValue(Result.success(result.getData()));
+                filterPlants("");  // Apply initial filter (all plants)
+            } else {
+                allPlantsLiveData.setValue(Result.error(result.getErrorMessage()));
+            }
+        });
+    }
+
+    // Get all plants data
     public LiveData<Result<List<PlantItem>>> getAllPlants() {
-        return appRepository.getAllPlants();
+        return allPlantsLiveData;
     }
 
-    public void getPlantById(String plantId) {
-        appRepository.getAllPlants().observeForever(result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
-                for (PlantItem plant : result.getData()) {
-                    if (plant.getPlantId().equals(plantId)) {
-                        // Handle plant by ID logic here
-                        break;
-                    }
-                }
-            }
-        });
-    }
-
-    public LiveData<Result<List<ArticleItem>>> getAllArticles() {
-        return appRepository.getAllArticles();
-    }
-
-    public void getArticleById(String articleId) {
-        appRepository.getAllArticles().observeForever(result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
-                for (ArticleItem article : result.getData()) {
-                    if (article.getArticleId().equals(articleId)) {
-                        articlesLiveData.setValue(Result.success(List.of(article)));
-                        break;
-                    }
-                }
-            }
-        });
-    }
-
+    // Filter the stored plants data based on the query
     public void filterPlants(String query) {
-        filteredPlants.setValue(Result.loading());  // Show loading state while filtering
+        // Set loading state while filtering
+        filteredPlants.setValue(Result.loading());
 
-        // Fetch all plants data
-        appRepository.getAllPlants().observeForever(result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
-                List<PlantItem> plants = result.getData();
-                List<PlantItem> filteredList = new ArrayList<>();
+        // Ensure that we have data
+        List<PlantItem> allPlants = allPlantsLiveData.getValue() != null ? allPlantsLiveData.getValue().getData() : null;
 
-                if (plants != null) {
-                    for (PlantItem plant : plants) {
-                        // Check if the plant name or disease name matches the search query
-                        if (plant.getName().toLowerCase().contains(query.toLowerCase())) {
+        if (allPlants != null && !query.isEmpty()) {
+            List<PlantItem> filteredList = new ArrayList<>();
+            for (PlantItem plant : allPlants) {
+                // Check if the plant name or disease name matches the search query
+                if (plant.getName().toLowerCase().contains(query.toLowerCase())) {
+                    filteredList.add(plant);
+                } else {
+                    for (DiseaseItem disease : plant.getDiseases()) {
+                        if (disease.getName().toLowerCase().contains(query.toLowerCase())) {
                             filteredList.add(plant);
-                        } else {
-                            for (DiseaseItem disease : plant.getDiseases()) {
-                                if (disease.getName().toLowerCase().contains(query.toLowerCase())) {
-                                    filteredList.add(plant);
-                                    break;
-                                }
-                            }
+                            break;
                         }
                     }
                 }
-
-                // Set the filtered list as the result
-                filteredPlants.setValue(Result.success(filteredList));
-            } else {
-                // If there was an error, set the error state
-                filteredPlants.setValue(Result.error(result.getErrorMessage()));
             }
-        });
+
+            // Set the filtered list in the LiveData as a success Result
+            filteredPlants.setValue(Result.success(filteredList));
+        } else {
+            // If no query, show all plants
+            filteredPlants.setValue(Result.success(allPlants));
+        }
     }
 
+    // Get filtered plants data
     public LiveData<Result<List<PlantItem>>> getFilteredPlants() {
         return filteredPlants;
+    }
+
+    // Get all articles data
+    public LiveData<Result<List<ArticleItem>>> getAllArticles() {
+        return appRepository.getAllArticles();
     }
 }

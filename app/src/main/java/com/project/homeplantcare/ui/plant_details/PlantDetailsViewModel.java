@@ -20,36 +20,47 @@ public class PlantDetailsViewModel extends ViewModel {
 
     private final AppRepository repository;
     private final MutableLiveData<Result<PlantItem>> plantDetails = new MutableLiveData<>();
-    private LiveData<Result<List<DiseaseItem>>> diseases;
+    private final MutableLiveData<List<DiseaseItem>> diseases = new MutableLiveData<>();
 
     @Inject
     public PlantDetailsViewModel(AppRepository repository) {
         this.repository = repository;
     }
 
+    // Fetch plant details and diseases
     public void fetchPlantDetails(String plantId) {
         repository.getAllPlants().observeForever(result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
-                for (PlantItem plant : result.getData()) {
-                    if (plant.getPlantId().equals(plantId)) {
-                        plantDetails.setValue(Result.success(plant));
-                        break;
-                    }
+            if (result.getStatus() == Result.Status.SUCCESS && result.getData() != null) {
+                PlantItem plant = findPlantById(result.getData(), plantId);
+                if (plant != null) {
+                    plantDetails.setValue(Result.success(plant)); // Set plant details
+                    diseases.setValue(plant.getDiseases()); // Set diseases directly
+                } else {
+                    plantDetails.setValue(Result.error("Plant not found"));
+                    diseases.setValue(null);
                 }
             } else {
-                plantDetails.setValue(Result.error("Plant not found"));
+                plantDetails.setValue(Result.error("Failed to load plants"));
+                diseases.setValue(null);
             }
         });
+    }
+
+    // Helper method to find a plant by ID
+    private PlantItem findPlantById(List<PlantItem> plants, String plantId) {
+        for (PlantItem plant : plants) {
+            if (plant.getPlantId().equals(plantId)) {
+                return plant;
+            }
+        }
+        return null;
     }
 
     public LiveData<Result<PlantItem>> getPlantDetails() {
         return plantDetails;
     }
 
-    public LiveData<Result<List<DiseaseItem>>> getAllDiseases() {
-        if (diseases == null) {
-            diseases = repository.getAllDiseases();
-        }
+    public LiveData<List<DiseaseItem>> getDiseases() {
         return diseases;
     }
 }

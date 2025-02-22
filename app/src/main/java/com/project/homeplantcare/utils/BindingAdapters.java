@@ -4,6 +4,10 @@ package com.project.homeplantcare.utils;
 import android.view.View;
 
 import androidx.databinding.BindingAdapter;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.project.homeplantcare.data.models.DiseaseItem;
+import com.project.homeplantcare.ui.plant_details.DiseasesAdapter;
 
 import java.util.List;
 
@@ -43,5 +47,12 @@ public class BindingAdapters {
             textView.setText("تحميل...");
         }
     }*/
+@BindingAdapter("diseasesList")
+public static void bindDiseases(RecyclerView recyclerView, List<DiseaseItem> diseaseList) {
+    DiseasesAdapter adapter = (DiseasesAdapter) recyclerView.getAdapter();
+    if (adapter != null) {
+        adapter.setDiseases(diseaseList); // Update the adapter with the new list
+    }
+}
 
 }

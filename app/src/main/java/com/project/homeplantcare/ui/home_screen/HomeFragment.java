@@ -1,5 +1,6 @@
 package com.project.homeplantcare.ui.home_screen;
 
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -110,40 +111,40 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
             }
 
         });
-        // Observe data loading for Plants
+        // Observe plants and filtered data
         observePlantsData();
-
-        // Observe data loading for Articles
+        observeFilteredPlantsData();
         observeArticlesData();
 
-        observeFilteredPlantsData();  // Observe filtered plants
-
+        // Load the plants data when fragment is created
+        viewModel.loadAllPlants();
 
     }
 
     private void observePlantsData() {
         viewModel.getAllPlants().observe(getViewLifecycleOwner(), result -> {
-            Log.d("HomeFragment", "Plants Data Status: " + result.getStatus()); // Add this line
             if (result.getStatus() == Result.Status.LOADING) {
                 binding.progressBarPlants.setVisibility(View.VISIBLE);
                 binding.recyclerPlantList.setVisibility(View.GONE);
                 binding.placeholderImagePlants.setVisibility(View.GONE);
-            } else {
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
                 binding.progressBarPlants.setVisibility(View.GONE);
                 List<PlantItem> plants = result.getData();
 
-                if (result.getStatus() == Result.Status.SUCCESS && plants != null && !plants.isEmpty()) {
+                if (plants != null && !plants.isEmpty()) {
                     binding.recyclerPlantList.setVisibility(View.VISIBLE);
                     binding.placeholderImagePlants.setVisibility(View.GONE);
                     setupPlantRecyclerView(plants);
                 } else {
                     binding.recyclerPlantList.setVisibility(View.GONE);
                     binding.placeholderImagePlants.setVisibility(View.VISIBLE);
-
-                    if (result.getStatus() == Result.Status.ERROR) {
-                        Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(requireContext(), "No plants available", Toast.LENGTH_SHORT).show();
                 }
+            } else if (result.getStatus() == Result.Status.ERROR) {
+                binding.progressBarPlants.setVisibility(View.GONE);
+                binding.recyclerPlantList.setVisibility(View.GONE);
+                binding.placeholderImagePlants.setVisibility(View.VISIBLE);
+                Toast.makeText(requireContext(), result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -153,31 +154,30 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
             if (result.getStatus() == Result.Status.LOADING) {
                 binding.progressBarPlants.setVisibility(View.VISIBLE);
                 binding.recyclerPlantList.setVisibility(View.GONE);
-            } else {
+                binding.placeholderImagePlants.setVisibility(View.GONE);
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
                 binding.progressBarPlants.setVisibility(View.GONE);
                 List<PlantItem> filteredPlants = result.getData();
 
-                if (result.getStatus() == Result.Status.SUCCESS && filteredPlants != null && !filteredPlants.isEmpty()) {
+                if (filteredPlants != null && !filteredPlants.isEmpty()) {
                     binding.recyclerPlantList.setVisibility(View.VISIBLE);
+                    binding.placeholderImagePlants.setVisibility(View.GONE);
                     setupPlantRecyclerView(filteredPlants);
                 } else {
                     binding.recyclerPlantList.setVisibility(View.GONE);
-                    // Only show Toast if there is an error message
-                    if (result.getStatus() == Result.Status.ERROR) {
-                        String errorMessage = result.getErrorMessage();
-                        if (errorMessage != null && !errorMessage.isEmpty()) {
-                            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(requireContext(), "No plants found.", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        // Handle case when no plants match the filter
-                        Toast.makeText(requireContext(), "No plants found.", Toast.LENGTH_SHORT).show();
-                    }
+                    binding.placeholderImagePlants.setVisibility(View.VISIBLE);
+                    Toast.makeText(requireContext(), "No plants found matching the criteria", Toast.LENGTH_SHORT).show();
                 }
+            } else if (result.getStatus() == Result.Status.ERROR) {
+                binding.progressBarPlants.setVisibility(View.GONE);
+                binding.recyclerPlantList.setVisibility(View.GONE);
+                binding.placeholderImagePlants.setVisibility(View.VISIBLE);
+                String errorMessage = result.getErrorMessage();
+                Toast.makeText(requireContext(), errorMessage != null ? errorMessage : "An error occurred", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     private void observeArticlesData() {
         viewModel.getAllArticles().observe(getViewLifecycleOwner(), result -> {
@@ -237,31 +237,37 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
 
     @Override
     public void onShowDetailsClicked(PlantItem item) {
+        Bundle bundle = new Bundle();
+        bundle.putString("plantId", item.getPlantId());
         // Handle favorite click
         if (isLogging()) {
-            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment2);
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment2,bundle);
         } else {
-            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment);
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment,bundle);
         }
     }
 
     @Override
     public void onPlantClicked(PlantItem item) {
+        Bundle bundle = new Bundle();
+        bundle.putString("plantId", item.getPlantId());
         // Handle cart click (Navigate to details page)
         if (isLogging()) {
-            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment2);
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment2,bundle);
         } else {
-            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment);
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_plantDetailsFragment,bundle);
         }
     }
 
     @Override
     public void onArticleClicked(ArticleItem item) {
+        Bundle bundle = new Bundle();
+        bundle.putString("articleId", item.getArticleId());
         // Handle article click
         if (isLogging()) {
-            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_articlesDetailsFragment2);
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_articlesDetailsFragment2,bundle);
         } else {
-            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_articlesDetailsFragment);
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_articlesDetailsFragment,bundle);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.project.homeplantcare.ui.plant_details;
 
+import android.graphics.Bitmap;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
@@ -8,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.models.DiseaseItem;
+import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentPlantDetailsBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
@@ -21,8 +24,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBinding> {
 
     private PlantDetailsViewModel viewModel;
-    private List<DiseaseItem> diseaseList = new ArrayList<>();
     private DiseasesAdapter diseasesAdapter;
+    private List<DiseaseItem> diseaseList = new ArrayList<>();
 
     @Override
     protected String getTAG() {
@@ -53,30 +56,38 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
         if (plantId != null) {
             viewModel.fetchPlantDetails(plantId);
             observePlantDetails();
+            observeDiseases();
         } else {
-            Toast.makeText(requireContext(), "Invalid Plant ID", Toast.LENGTH_SHORT).show();
+            showToast("Invalid Plant ID");
         }
 
         setupDiseasesRecyclerView();
-        observeDiseases();
     }
 
     private void observePlantDetails() {
         viewModel.getPlantDetails().observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == Result.Status.SUCCESS) {
-                binding.setPlant(result.getData());  // Data Binding
-            } else {
-                Toast.makeText(requireContext(), "Failed to load plant details", Toast.LENGTH_SHORT).show();
+                binding.setPlant(result.getData());
+                String base64Image = result.getData().getImageResId(); // Make sure the article has imageResId
+                if (base64Image != null && !base64Image.isEmpty()) {
+                    Bitmap bitmap = ImageUtils.decodeBase64ToImage(base64Image);
+                    binding.imgPlant.setImageBitmap(bitmap);
+                }
             }
         });
     }
 
     private void observeDiseases() {
-        viewModel.getAllDiseases().observe(getViewLifecycleOwner(), result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
+        viewModel.getDiseases().observe(getViewLifecycleOwner(), diseases -> {
+            if (diseases != null && !diseases.isEmpty()) {
+                binding.recyclerDiseases.setVisibility(View.VISIBLE);
+                binding.tvNoDiseases.setVisibility(View.GONE);
                 diseaseList.clear();
-                diseaseList.addAll(result.getData());
+                diseaseList.addAll(diseases);
                 diseasesAdapter.notifyDataSetChanged();
+            } else {
+                binding.recyclerDiseases.setVisibility(View.GONE);
+                binding.tvNoDiseases.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -85,5 +96,9 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
         diseasesAdapter = new DiseasesAdapter(diseaseList);
         binding.recyclerDiseases.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerDiseases.setAdapter(diseasesAdapter);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 }

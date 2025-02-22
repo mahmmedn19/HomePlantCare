@@ -16,6 +16,12 @@
         <action
             android:id="@+id/action_homeFragment_to_plantsViewAllFragment2"
             app:destination="@id/plantsViewAllFragment2" />
+        <argument
+            android:name="plantId"
+            app:argType="string" />
+        <argument
+            android:name="articleId"
+            app:argType="string" />
     </fragment>
 
     <fragment
@@ -58,7 +64,7 @@
     </fragment>
     <fragment
         android:id="@+id/articlesDetailsFragment2"
-        android:name="com.project.homeplantcare.ui.user_screen.ArticlesDetailsFragment"
+        android:name="com.project.homeplantcare.ui.articles_details.ArticlesDetailsFragment"
         android:label="ArticlesDetailsFragment" />
     <fragment
         android:id="@+id/plantsViewAllFragment2"

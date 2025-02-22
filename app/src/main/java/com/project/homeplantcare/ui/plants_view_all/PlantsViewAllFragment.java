@@ -1,5 +1,6 @@
 package com.project.homeplantcare.ui.plants_view_all;
 
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
@@ -87,11 +88,13 @@ public class PlantsViewAllFragment extends BaseFragment<FragmentPlantsViewAllBin
     public void onCartClicked(ArticleItem item) {
         // Handle cart click
         // Navigate to details page
+        Bundle bundle = new Bundle();
+        bundle.putString("articleId", item.getArticleId());
         if (isLogging()) {
-            Navigation.findNavController(requireView()).navigate(R.id.action_plantsViewAllFragment2_to_articlesDetailsFragment2);
+            Navigation.findNavController(requireView()).navigate(R.id.action_plantsViewAllFragment2_to_articlesDetailsFragment2, bundle);
         } else {
             // User is not logged in
-            Navigation.findNavController(requireView()).navigate(R.id.action_plantsViewAllFragment_to_articlesDetailsFragment);
+            Navigation.findNavController(requireView()).navigate(R.id.action_plantsViewAllFragment_to_articlesDetailsFragment, bundle);
         }
     }
 
