@@ -3,6 +3,7 @@ package com.project.homeplantcare.data.repo.auth;
 import androidx.lifecycle.LiveData;
 
 import com.project.homeplantcare.data.models.AdminProfile;
+import com.project.homeplantcare.data.models.User;
 import com.project.homeplantcare.data.utils.Result;
 
 public interface AuthRepository {
@@ -23,5 +24,8 @@ public interface AuthRepository {
 
     LiveData<Result<String>> sendPasswordResetEmail(String email);
 
-
+    // Profile Operations
+    LiveData<Result<User>> getUserProfile();
+    LiveData<Result<String>> updateUserProfile(String newName);
+    LiveData<Result<String>> updateUserPassword(String oldPassword, String newPassword);
 }

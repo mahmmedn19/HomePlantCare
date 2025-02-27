@@ -49,7 +49,11 @@
     <fragment
         android:id="@+id/plantDetailsFragment"
         android:name="com.project.homeplantcare.ui.plant_details.PlantDetailsFragment"
-        android:label="PlantDetailsFragment" />
+        android:label="PlantDetailsFragment" >
+        <action
+            android:id="@+id/action_plantDetailsFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
     <fragment
         android:id="@+id/articlesDetailsFragment"
         android:name="com.project.homeplantcare.ui.articles_details.ArticlesDetailsFragment"

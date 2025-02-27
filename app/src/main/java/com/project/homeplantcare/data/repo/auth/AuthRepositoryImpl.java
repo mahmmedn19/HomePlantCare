@@ -3,6 +3,7 @@ package com.project.homeplantcare.data.repo.auth;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
@@ -13,6 +14,8 @@ import com.project.homeplantcare.data.models.AdminProfile;
 import com.project.homeplantcare.data.models.User;
 import com.project.homeplantcare.data.utils.Result;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
@@ -47,9 +50,8 @@ public class AuthRepositoryImpl implements AuthRepository {
                     // Fetch the user info after successful login
                     FirebaseUser user = auth.getCurrentUser();
                     if (user != null) {
-                        String userId = user.getUid();
                         // Check if the user is an admin or a regular user
-                        checkUserType(userId, email, password, userType, result);
+                        checkUserType(email, userType, result);
                     } else {
                         result.setValue(Result.error("User not found."));
                     }
@@ -59,7 +61,7 @@ public class AuthRepositoryImpl implements AuthRepository {
     }
 
     // Check if the user is an admin or a user from respective collections
-    private void checkUserType(String userId, String email, String password, String userType, MutableLiveData<Result<String>> result) {
+    private void checkUserType(String email, String userType, MutableLiveData<Result<String>> result) {
 
         // Check if the user is trying to login as admin and handle accordingly
         if (userType.equals("admin")) {
@@ -91,7 +93,6 @@ public class AuthRepositoryImpl implements AuthRepository {
     }
 
 
-
     @Override
     public LiveData<Result<String>> registerUser(String email, String password, String username) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
@@ -120,22 +121,23 @@ public class AuthRepositoryImpl implements AuthRepository {
     public LiveData<Result<AdminProfile>> getAdminProfile() {
         MutableLiveData<Result<AdminProfile>> liveData = new MutableLiveData<>();
         liveData.setValue(Result.loading());
-        FirebaseUser currentUser = auth.getCurrentUser();
-        assert currentUser != null;
-        String uid = currentUser.getUid();
 
-        db.collection("admin")
-                .document(uid)  // Assuming a single admin document
-                .get()
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) {
+            liveData.setValue(Result.error("User not authenticated."));
+            return liveData;
+        }
+
+        db.collection("admin").document(currentUser.getUid()).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         AdminProfile adminProfile = documentSnapshot.toObject(AdminProfile.class);
                         liveData.setValue(Result.success(adminProfile));
                     } else {
-                        liveData.setValue(Result.error("Admin profile not found"));
+                        liveData.setValue(Result.error("Admin profile not found."));
                     }
                 })
-                .addOnFailureListener(e -> liveData.setValue(Result.error(e.getMessage())));
+                .addOnFailureListener(e -> liveData.setValue(Result.error("Error fetching admin profile: " + e.getMessage())));
 
         return liveData;
     }
@@ -144,6 +146,7 @@ public class AuthRepositoryImpl implements AuthRepository {
     public LiveData<Result<String>> updateAdminProfile(String newName) {
         MutableLiveData<Result<String>> liveData = new MutableLiveData<>();
         liveData.setValue(Result.loading());
+
         FirebaseUser currentUser = auth.getCurrentUser();
         assert currentUser != null;
         String uid = currentUser.getUid();
@@ -170,6 +173,72 @@ public class AuthRepositoryImpl implements AuthRepository {
         return resultLiveData;
     }
 
+    @Override
+    public LiveData<Result<User>> getUserProfile() {
+        MutableLiveData<Result<User>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
+
+        FirebaseUser currentUser = auth.getCurrentUser();
+        assert currentUser != null;
+        String uid = currentUser.getUid();
+
+        db.collection("user").document(uid).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        User userProfile = documentSnapshot.toObject(User.class);
+                        result.setValue(Result.success(userProfile));
+                    } else {
+                        result.setValue(Result.error("User profile not found."));
+                    }
+                })
+                .addOnFailureListener(e -> result.setValue(Result.error("Failed to retrieve profile: " + e.getMessage())));
+
+        return result;
+    }
+
+    @Override
+    public LiveData<Result<String>> updateUserProfile(String newName) {
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
+
+        FirebaseUser user = auth.getCurrentUser();
+        if (user == null) {
+            result.setValue(Result.error("User not authenticated."));
+            return result;
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", newName);
+
+        db.collection("user").document(user.getUid()).update(updates)
+                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Profile updated successfully.")))
+                .addOnFailureListener(e -> result.setValue(Result.error("Failed to update profile: " + e.getMessage())));
+
+        return result;
+    }
+
+    @Override
+    public LiveData<Result<String>> updateUserPassword(String oldPassword, String newPassword) {
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
+
+        FirebaseUser user = auth.getCurrentUser();
+        if (user == null || user.getEmail() == null) {
+            result.setValue(Result.error("User not authenticated."));
+            return result;
+        }
+
+        user.reauthenticate(EmailAuthProvider.getCredential(user.getEmail(), oldPassword))
+                .addOnSuccessListener(authResult -> {
+                    user.updatePassword(newPassword)
+                            .addOnSuccessListener(aVoid -> result.setValue(Result.success("Password updated successfully.")))
+                            .addOnFailureListener(e -> result.setValue(Result.error("Failed to update password: " + e.getMessage())));
+                })
+                .addOnFailureListener(e -> result.setValue(Result.error("Old password is incorrect.")));
+
+        return result;
+    }
+
     private String getFirebaseAuthErrorMessage(Exception e) {
         if (e instanceof FirebaseAuthUserCollisionException) {
             return "This email is already registered.";
@@ -178,7 +247,7 @@ public class AuthRepositoryImpl implements AuthRepository {
         } else if (e instanceof FirebaseAuthInvalidCredentialsException) {
             return "Invalid email or password.";
         } else {
-            return "Login failed: " + e.getMessage();
+            return "Authentication error: " + e.getMessage();
         }
     }
 }

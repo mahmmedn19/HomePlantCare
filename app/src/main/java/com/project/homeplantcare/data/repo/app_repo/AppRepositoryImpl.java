@@ -15,8 +15,6 @@ import com.project.homeplantcare.data.utils.Result;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -68,7 +66,6 @@ public class AppRepositoryImpl implements AppRepository {
 
         return result;
     }
-
 
 
     @Override
@@ -144,6 +141,7 @@ public class AppRepositoryImpl implements AppRepository {
 
         return result;
     }
+
     @Override
     public LiveData<Result<String>> deletePlant(String plantId) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
@@ -341,22 +339,32 @@ public class AppRepositoryImpl implements AppRepository {
     public LiveData<Result<String>> addAILink(String link) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
         result.setValue(Result.loading());
-        firestore.collection("ai_links").add(link)
-                .addOnSuccessListener(documentReference -> result.setValue(Result.success("AI link added successfully.")))
-                .addOnFailureListener(e -> result.setValue(Result.error("Failed to add AI link: " + e.getMessage())));
+
+        firestore.collection("ai_links").document("single_ai_link") // Use a fixed document ID
+                .set(Collections.singletonMap("link", link)) // Store as a key-value pair
+                .addOnSuccessListener(aVoid -> result.setValue(Result.success("AI link updated successfully.")))
+                .addOnFailureListener(e -> result.setValue(Result.error("Failed to update AI link: " + e.getMessage())));
+
         return result;
     }
 
     @Override
-    public LiveData<Result<List<String>>> getAllAILinks() {
-        MutableLiveData<Result<List<String>>> result = new MutableLiveData<>();
+    public LiveData<Result<String>> getSingleAILink() {
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
         result.setValue(Result.loading());
-        firestore.collection("ai_links").get()
-                .addOnSuccessListener(querySnapshot -> {
-                    List<String> links = querySnapshot.toObjects(String.class);
-                    result.setValue(Result.success(links));
+
+        firestore.collection("ai_links").document("single_ai_link").get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists() && documentSnapshot.contains("link")) {
+                        String link = documentSnapshot.getString("link");
+                        result.setValue(Result.success(link));
+                    } else {
+                        result.setValue(Result.error("No AI link found."));
+                    }
                 })
-                .addOnFailureListener(e -> result.setValue(Result.error(e.getMessage())));
+                .addOnFailureListener(e -> result.setValue(Result.error("Failed to fetch AI link: " + e.getMessage())));
+
         return result;
     }
+
 }

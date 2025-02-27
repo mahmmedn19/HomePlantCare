@@ -33,11 +33,10 @@
                     android:id="@+id/etUserName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
                     android:hint="Full Name"
                     android:maxLines="1"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    />
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Email (Non-editable) -->
@@ -59,6 +58,15 @@
                     android:hint="Email" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <ProgressBar
+                android:id="@+id/progressUpdateProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/user_email" />
             <!-- Update Profile Button -->
             <Button
                 android:id="@+id/btnUpdateProfile"
@@ -68,7 +76,7 @@
                 android:backgroundTint="@color/md_theme_primary"
                 android:text="Update Profile"
                 android:textColor="@android:color/white"
-                app:layout_constraintTop_toBottomOf="@id/user_email" />
+                app:layout_constraintTop_toBottomOf="@id/progressUpdateProfile" />
 
             <!-- Change Password Section -->
             <com.google.android.material.textview.MaterialTextView
@@ -115,11 +123,11 @@
                     android:id="@+id/etNewPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="New Password"
-                    android:maxLines="1"
-                    android:singleLine="true"
                     android:ellipsize="end"
-                    android:inputType="textPassword" />
+                    android:hint="New Password"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Confirm Password -->
@@ -141,6 +149,15 @@
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <ProgressBar
+                android:id="@+id/progressUpdatePassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/confirm_password" />
             <!-- Save New Password Button -->
             <Button
                 android:id="@+id/btnSaveNewPassword"
@@ -150,7 +167,7 @@
                 android:backgroundTint="@color/md_theme_primary"
                 android:text="Save New Password"
                 android:textColor="@android:color/white"
-                app:layout_constraintTop_toBottomOf="@id/confirm_password" />
+                app:layout_constraintTop_toBottomOf="@id/progressUpdatePassword" />
 
             <!--logout button-->
             <com.google.android.material.button.MaterialButton

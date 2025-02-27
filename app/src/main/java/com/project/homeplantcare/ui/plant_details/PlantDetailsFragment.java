@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
@@ -13,7 +14,10 @@ import com.project.homeplantcare.data.models.DiseaseItem;
 import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentPlantDetailsBinding;
+import com.project.homeplantcare.ui.MainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.ui.user_screen.UserMainActivity;
+import com.project.homeplantcare.utils.DialogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +65,24 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
             showToast("Invalid Plant ID");
         }
 
+        binding.favIcon.setOnClickListener(v -> {
+            if (isLogging()) {
+              //  viewModel.toggleFavorite();
+            } else {
+                // Show Login Dialog
+                DialogUtils.showConfirmationDialog(
+                        requireContext(),
+                        "Login Required",
+                        "You need to login to add this plant to favorites",
+                        "Login",
+                        "Cancel",
+                        (dialog, which) -> {
+                            Navigation.findNavController(v).navigate(R.id.action_plantDetailsFragment_to_loginFragment);
+                        }
+                );
+            }
+        });
+
         setupDiseasesRecyclerView();
     }
 
@@ -90,6 +112,14 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
                 binding.tvNoDiseases.setVisibility(View.VISIBLE);
             }
         });
+    }
+    private boolean isLogging() {
+        if (getActivity() instanceof UserMainActivity) {
+            return true; // User is logged in
+        } else if (getActivity() instanceof MainActivity) {
+            return false; // User is not logged in
+        }
+        return false; // Default case
     }
 
     private void setupDiseasesRecyclerView() {

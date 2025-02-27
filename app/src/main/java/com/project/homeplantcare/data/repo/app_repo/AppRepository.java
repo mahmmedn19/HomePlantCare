@@ -54,10 +54,7 @@ public interface AppRepository {
      */
     LiveData<Result<String>> addAILink(String link);
 
-    /**
-     * Fetch all AI-generated links stored in Firestore.
-     * @return LiveData<Result<List<String>>> containing the list of AI links.
-     */
-    LiveData<Result<List<String>>> getAllAILinks();
+
+    LiveData<Result<String>> getSingleAILink() ;
 
 }

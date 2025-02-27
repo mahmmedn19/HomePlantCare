@@ -138,7 +138,6 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
                 } else {
                     binding.recyclerPlantList.setVisibility(View.GONE);
                     binding.placeholderImagePlants.setVisibility(View.VISIBLE);
-                    Toast.makeText(requireContext(), "No plants available", Toast.LENGTH_SHORT).show();
                 }
             } else if (result.getStatus() == Result.Status.ERROR) {
                 binding.progressBarPlants.setVisibility(View.GONE);
@@ -172,9 +171,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding>
                 binding.progressBarPlants.setVisibility(View.GONE);
                 binding.recyclerPlantList.setVisibility(View.GONE);
                 binding.placeholderImagePlants.setVisibility(View.VISIBLE);
-                String errorMessage = result.getErrorMessage();
-                Toast.makeText(requireContext(), errorMessage != null ? errorMessage : "An error occurred", Toast.LENGTH_SHORT).show();
-            }
+                 }
         });
     }
 
