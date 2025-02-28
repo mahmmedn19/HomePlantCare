@@ -27,6 +27,8 @@ public class ArticlesDetailsViewModel extends ViewModel {
 
     // Fetch article details by ID
     public void fetchArticleDetails(String articleId) {
+        articleDetails.postValue(Result.loading()); // Show loading state
+        new android.os.Handler().postDelayed(() -> {
         repository.getAllArticles().observeForever(result -> {
             if (result.getStatus() == Result.Status.SUCCESS && result.getData() != null) {
                 ArticleItem article = findArticleById(result.getData(), articleId);
@@ -39,6 +41,7 @@ public class ArticlesDetailsViewModel extends ViewModel {
                 articleDetails.setValue(Result.error("Failed to load articles"));
             }
         });
+        }, 1000);
     }
 
     // Helper method to find an article by ID

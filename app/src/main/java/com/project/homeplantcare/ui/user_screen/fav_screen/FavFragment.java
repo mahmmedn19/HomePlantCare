@@ -1,14 +1,19 @@
 package com.project.homeplantcare.ui.user_screen.fav_screen;
 
+import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.project.homeplantcare.R;
-import com.project.homeplantcare.databinding.FragmentFavBinding;
 import com.project.homeplantcare.data.models.PlantItem;
+import com.project.homeplantcare.data.utils.AuthUtils;
+import com.project.homeplantcare.data.utils.Result;
+import com.project.homeplantcare.databinding.FragmentFavBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
 
 import java.util.ArrayList;
@@ -19,9 +24,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class FavFragment extends BaseFragment<FragmentFavBinding> implements FavAdapter.FavoriteInteractionListener {
 
-
+    private FavViewModel viewModel;
     private FavAdapter adapter;
-    private List<PlantItem> favoritePlants;
 
     @Override
     protected String getTAG() {
@@ -35,56 +39,83 @@ public class FavFragment extends BaseFragment<FragmentFavBinding> implements Fav
 
     @Override
     protected ViewModel getViewModel() {
-        return null;
+        viewModel = new ViewModelProvider(this).get(FavViewModel.class);
+        return viewModel;
     }
 
     @Override
     protected void setup() {
         super.setup();
         setToolbarVisibility(true);
-        setToolbarTitle("Favourite");
+        setToolbarTitle("Favorites");
         showBackButton(false);
 
-/*
-        favoritePlants = generateFakeFavorites();
-*/
         setupRecyclerView();
+        fetchFavorites();
     }
 
     private void setupRecyclerView() {
-        adapter = new FavAdapter(favoritePlants, this);
-
+        adapter = new FavAdapter(new ArrayList<>(), this);
         binding.recyclerFav.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         binding.recyclerFav.setAdapter(adapter);
     }
 
-    private void removeFromFavorites(PlantItem plant) {
-        favoritePlants.remove(plant);
-        adapter.updateList(new ArrayList<>(favoritePlants));
-    }
+    private void fetchFavorites() {
+        String userId = AuthUtils.getCurrentUserId();
+        if (userId == null) {
+            showToast("Please log in to view favorites.");
+            return;
+        }
 
-
-/*    private List<PlantItem> generateFakeFavorites() {
-        List<PlantItem> plants = new ArrayList<>();
-        plants.add(new PlantItem("", "Aloe Vera", "A great air-purifying plant A great air-purifying plant air-purifying plant air-purifying plant ", R.drawable.plant_2));
-        plants.add(new PlantItem("", "Snake Plant", "Low-maintenance indoor plant Low-maintenance indoor plant", R.drawable.plant_6));
-        plants.add(new PlantItem("", "Money Plant", "Brings good luck! Brings good luck!Brings good luck!Brings good luck!", R.drawable.plant_7));
-        plants.add(new PlantItem("", "Peace Lily", "Ideal mfor offices Ideal for offices Ideal for offices Ideal for offices", R.drawable.plant_3));
-        plants.add(new PlantItem("", "Spider Plant", "Hardy and resilient Hardy and resilient Hardy and resilient Hardy and resilient Hardy and resilient", R.drawable.plant_4));
-        return plants;
-    }*/
-
-    private void showToast(String message) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        viewModel.getFavorites(userId).observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.LOADING) {
+                binding.progressBar.setVisibility(View.VISIBLE);
+                binding.recyclerFav.setVisibility(View.GONE);
+                binding.noData.setVisibility(View.GONE);
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
+                List<PlantItem> favoritePlants = result.getData();
+                binding.progressBar.setVisibility(View.GONE);
+                if (favoritePlants != null && !favoritePlants.isEmpty()) {
+                    adapter.updateList(favoritePlants);
+                    binding.recyclerFav.setVisibility(View.VISIBLE);
+                    binding.noData.setVisibility(View.GONE);
+                } else {
+                    binding.recyclerFav.setVisibility(View.GONE);
+                    binding.noData.setVisibility(View.VISIBLE);
+                }
+            } else {
+                binding.progressBar.setVisibility(View.GONE);
+                binding.recyclerFav.setVisibility(View.GONE);
+                binding.noData.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
     public void onFavoriteClicked(PlantItem item) {
-        removeFromFavorites(item);
+        String userId = AuthUtils.getCurrentUserId();
+        if (userId == null) {
+            showToast("Please log in to remove favorites.");
+            return;
+        }
+
+        viewModel.removeFavorite(userId, item.getPlantId()).observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                showToast("Removed from favorites");
+                fetchFavorites();
+            }
+        });
     }
 
     @Override
     public void onDetailsClicked(PlantItem item) {
-        Navigation.findNavController(requireView()).navigate(R.id.action_favoritesFragment_to_plantDetailsFragment2);
+        Bundle bundle = new Bundle();
+        bundle.putString("plantId", item.getPlantId());
+        Navigation.findNavController(requireView()).navigate(R.id.action_favoritesFragment_to_plantDetailsFragment2, bundle);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 }
+

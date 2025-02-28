@@ -7,6 +7,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
@@ -18,6 +19,7 @@ import com.project.homeplantcare.databinding.FragmentPlantDetailsBinding;
 import com.project.homeplantcare.ui.MainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.ui.user_screen.UserMainActivity;
+import com.project.homeplantcare.utils.DialogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,17 +84,42 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
         binding.addToHistory.setOnClickListener(v -> handleHistoryToggle());
 
         setupDiseasesRecyclerView();
+        binding.favIcon.setOnClickListener(v -> {
+            if (isLogging()) {
+                handleFavoriteToggle();
+            } else {
+                // Show Login Dialog
+                DialogUtils.showConfirmationDialog(
+                        requireContext(),
+                        "Login Required",
+                        "You need to login to add this plant to favorites",
+                        "Login",
+                        "Cancel",
+                        (dialog, which) -> {
+                            Navigation.findNavController(v).navigate(R.id.action_plantDetailsFragment_to_loginFragment);
+                        }
+                );
+            }
+        });
     }
 
     private void observePlantDetails() {
         viewModel.getPlantDetails().observe(getViewLifecycleOwner(), result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
-                binding.setPlant(result.getData());
-                String base64Image = result.getData().getImageResId();
-                if (base64Image != null && !base64Image.isEmpty()) {
-                    Bitmap bitmap = ImageUtils.decodeBase64ToImage(base64Image);
-                    binding.imgPlant.setImageBitmap(bitmap);
-                }
+            if (result.getStatus() == Result.Status.LOADING) {
+                showFullScreenLoading(true);
+                binding.llDetailsContainer.setVisibility(View.GONE);  // Hide all UI components
+            }
+            else if (result.getStatus() == Result.Status.SUCCESS) {
+                new android.os.Handler().postDelayed(() -> {
+                    showFullScreenLoading(false);
+                    binding.setPlant(result.getData());
+                    binding.llDetailsContainer.setVisibility(View.VISIBLE);  // Show UI after loading
+                    String base64Image = result.getData().getImageResId();
+                    if (base64Image != null && !base64Image.isEmpty()) {
+                        Bitmap bitmap = ImageUtils.decodeBase64ToImage(base64Image);
+                        binding.imgPlant.setImageBitmap(bitmap);
+                    }
+                }, 1000); // 1.5 seconds delay
             }
         });
     }
@@ -189,7 +216,15 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
             binding.addToHistory.setColorFilter(ContextCompat.getColor(requireContext(), R.color.md_theme_primary));
         }
     }
-
+    private void showFullScreenLoading(boolean isLoading) {
+        if (isLoading) {
+            binding.fullScreenLoader.setVisibility(View.VISIBLE);
+        } else {
+            new android.os.Handler().postDelayed(() -> {
+                binding.fullScreenLoader.setVisibility(View.GONE);
+            }, 1000); // 1.5 seconds delay
+        }
+    }
     private boolean isLogging() {
         if (getActivity() instanceof UserMainActivity) {
             return true;

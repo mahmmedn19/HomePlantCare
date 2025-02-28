@@ -30,15 +30,25 @@ public class UserProfileViewModel extends ViewModel {
 
     public LiveData<Result<String>> updateUserProfile(String newName) {
         isUpdatingProfile.setValue(true);
-        LiveData<Result<String>> result = authRepository.updateUserProfile(newName);
-        result.observeForever(res -> isUpdatingProfile.setValue(false));
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+
+        authRepository.updateUserProfile(newName).observeForever(res -> {
+            result.setValue(res);
+            isUpdatingProfile.setValue(false);
+        });
+
         return result;
     }
 
     public LiveData<Result<String>> updateUserPassword(String oldPassword, String newPassword) {
         isUpdatingPassword.setValue(true);
-        LiveData<Result<String>> result = authRepository.updateUserPassword(oldPassword, newPassword);
-        result.observeForever(res -> isUpdatingPassword.setValue(false));
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+
+        authRepository.updateUserPassword(oldPassword, newPassword).observeForever(res -> {
+            result.setValue(res);
+            isUpdatingPassword.setValue(false);
+        });
+
         return result;
     }
 

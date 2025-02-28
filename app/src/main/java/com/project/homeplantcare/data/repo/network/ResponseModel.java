@@ -1,11 +1,12 @@
 package com.project.homeplantcare.data.repo.network;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ResponseModel {
-    private String name;
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
+    @SerializedName("predicted_class")
+    private String predictedClass;
+
+    public String getPredictedClass() {
+        return predictedClass;
     }
 }

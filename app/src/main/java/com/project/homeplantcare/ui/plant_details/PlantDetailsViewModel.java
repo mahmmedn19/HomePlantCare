@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.project.homeplantcare.data.models.PlantItem;
 import com.project.homeplantcare.data.models.DiseaseItem;
+import com.project.homeplantcare.data.models.PlantItem;
 import com.project.homeplantcare.data.repo.app_repo.AppRepository;
 import com.project.homeplantcare.data.utils.Result;
 
@@ -29,21 +29,24 @@ public class PlantDetailsViewModel extends ViewModel {
 
     // Fetch plant details and diseases
     public void fetchPlantDetails(String plantId) {
-        repository.getAllPlants().observeForever(result -> {
-            if (result.getStatus() == Result.Status.SUCCESS && result.getData() != null) {
-                PlantItem plant = findPlantById(result.getData(), plantId);
-                if (plant != null) {
-                    plantDetails.setValue(Result.success(plant)); // Set plant details
-                    diseases.setValue(plant.getDiseases()); // Set diseases directly
+        plantDetails.postValue(Result.loading()); // Show loading state
+        new android.os.Handler().postDelayed(() -> {
+            repository.getAllPlants().observeForever(result -> {
+                if (result.getStatus() == Result.Status.SUCCESS && result.getData() != null) {
+                    PlantItem plant = findPlantById(result.getData(), plantId);
+                    if (plant != null) {
+                        plantDetails.setValue(Result.success(plant)); // Set plant details
+                        diseases.setValue(plant.getDiseases()); // Set diseases directly
+                    } else {
+                        plantDetails.setValue(Result.error("Plant not found"));
+                        diseases.setValue(null);
+                    }
                 } else {
-                    plantDetails.setValue(Result.error("Plant not found"));
+                    plantDetails.setValue(Result.error("Failed to load plants"));
                     diseases.setValue(null);
                 }
-            } else {
-                plantDetails.setValue(Result.error("Failed to load plants"));
-                diseases.setValue(null);
-            }
-        });
+            });
+        }, 1000);
     }
 
     // Helper method to find a plant by ID

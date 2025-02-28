@@ -1,11 +1,12 @@
 package com.project.homeplantcare.ui.user_screen.fav_screen;
 
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.project.homeplantcare.databinding.ItemFavBinding;
 import com.project.homeplantcare.data.models.PlantItem;
+import com.project.homeplantcare.data.utils.ImageUtils;
+import com.project.homeplantcare.databinding.ItemFavBinding;
 import com.project.homeplantcare.ui.base.BaseAdapter;
 import com.project.homeplantcare.ui.base.BaseInteractionListener;
 
@@ -29,11 +30,10 @@ public class FavAdapter extends BaseAdapter<PlantItem, ItemFavBinding> {
     public void onBindViewHolder(BaseViewHolder<ItemFavBinding> holder, int position, PlantItem currentItem) {
         ItemFavBinding binding = holder.binding;
         binding.setItem(currentItem);
-
-        // Load Image using Glide
-        Glide.with(holder.binding.getRoot().getContext())
-                .load(currentItem.getImageResId())
-                .into(holder.binding.imgPlant);
+        if (currentItem.getImageResId() != null && !currentItem.getImageResId().isEmpty()) {
+            Bitmap bitmap = ImageUtils.decodeBase64ToImage(currentItem.getImageResId());
+            binding.imgPlant.setImageBitmap(bitmap);
+        }
 
         // Handle Favorite Click
         binding.btnFav.setOnClickListener(view -> listener.onFavoriteClicked(currentItem));

@@ -1,8 +1,8 @@
 package com.project.homeplantcare.data.repo.app_repo;
 
-import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -10,9 +10,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.project.homeplantcare.data.models.ArticleItem;
 import com.project.homeplantcare.data.models.DiseaseItem;
+import com.project.homeplantcare.data.models.HistoryItem;
 import com.project.homeplantcare.data.models.PlantItem;
+import com.project.homeplantcare.data.models.ResultApi;
 import com.project.homeplantcare.data.repo.network.ApiService;
 import com.project.homeplantcare.data.repo.network.ResponseModel;
+import com.project.homeplantcare.data.utils.AuthUtils;
 import com.project.homeplantcare.data.utils.Result;
 
 import java.io.File;
@@ -21,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -393,37 +397,90 @@ public class AppRepositoryImpl implements AppRepository {
 
         return result;
     }
+
     @Override
-    public LiveData<Result<String>> uploadImage(Uri imageUri) {
+    public LiveData<Result<String>> uploadImage(File imageFile) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
         result.setValue(Result.loading());
 
-        File file = new File(imageUri.getPath());
-        RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
-        MultipartBody.Part part = MultipartBody.Part.createFormData("imagePlant", file.getName(), requestBody);
+        if (imageFile == null || !imageFile.exists()) {
+            result.postValue(Result.error("Invalid file: File does not exist"));
+            return result;
+        }
 
-        apiService.uploadImage(part).enqueue(new Callback<ResponseModel>() {
-            @Override
-            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    result.setValue(Result.success(response.message()));
-                } else {
-                    result.setValue(Result.error("Upload failed"));
+        try {
+            Log.d("UploadImage", "File Name: " + imageFile.getName());
+            Log.d("UploadImage", "File Path: " + imageFile.getAbsolutePath());
+            Log.d("UploadImage", "File Exists: " + imageFile.exists());
+            Log.d("UploadImage", "File Length: " + imageFile.length());
+
+            // ✅ Prepare image for API upload
+            RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), imageFile);
+            MultipartBody.Part part = MultipartBody.Part.createFormData("image", imageFile.getName(), requestBody);
+
+            apiService.uploadImage(part).enqueue(new Callback<ResponseModel>() {
+                @Override
+                public void onResponse(@NonNull Call<ResponseModel> call, @NonNull Response<ResponseModel> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        // ✅ Successfully uploaded image, now save it to Firebase
+                        String analysisDate = String.valueOf(System.currentTimeMillis());
+                        String plantName = response.body().getPredictedClass();
+
+                        if (plantName == null || plantName.isEmpty()) {
+                            result.setValue(Result.error("Invalid response: Plant name is missing"));
+                            return;
+                        }
+
+                        // ✅ Fetch Plant ID by Name
+                        getPlantIdByName(plantName).observeForever(plantIdResult -> {
+                            if (plantIdResult.getStatus() == Result.Status.SUCCESS) {
+                                String plantId = plantIdResult.getData().getPlantId();
+                                if (plantId == null || plantId.isEmpty()) {
+                                    result.setValue(Result.error("Plant not found for analysis"));
+                                    return;
+                                }
+
+                                // ✅ Save analysis result to Firestore
+                                Map<String, Object> analysisData = new HashMap<>();
+                                analysisData.put("imageUrl", imageFile.getAbsolutePath());
+                                analysisData.put("analysisDate", analysisDate);
+                                analysisData.put("plantName", plantName);
+                                analysisData.put("plantId", plantId);
+
+                                firestore.collection("user")
+                                        .document(Objects.requireNonNull(AuthUtils.getCurrentUserId()))
+                                        .collection("analysis_results")
+                                        .document(plantId)
+                                        .set(analysisData)
+                                        .addOnSuccessListener(aVoid -> result.setValue(Result.success("Image uploaded and analysis saved")))
+                                        .addOnFailureListener(e -> result.setValue(Result.error("Image uploaded but failed to save analysis: " + e.getMessage())));
+                            } else {
+                                result.setValue(Result.error("Failed to find plant for analysis"));
+                            }
+                        });
+
+                    } else {
+                        result.setValue(Result.error("Upload failed: " + response.message()));
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<ResponseModel> call, Throwable t) {
-                result.setValue(Result.error("Network error: " + t.getMessage()));
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<ResponseModel> call, @NonNull Throwable t) {
+                    result.setValue(Result.error("Network error: " + t.getMessage()));
+                }
+            });
+
+        } catch (Exception e) {
+            result.postValue(Result.error("Unexpected error: " + e.getMessage()));
+        }
 
         return result;
     }
 
+
     @Override
-    public LiveData<Result<String>> getPlantIdByName(String plantName) {
-        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+    public LiveData<Result<PlantItem>> getPlantIdByName(String plantName) {
+        MutableLiveData<Result<PlantItem>> result = new MutableLiveData<>();
         result.setValue(Result.loading());
 
         firestore.collection("plants")
@@ -432,16 +489,23 @@ public class AppRepositoryImpl implements AppRepository {
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
-                        String plantId = querySnapshot.getDocuments().get(0).getId();
-                        result.setValue(Result.success(plantId));
+                        DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                        PlantItem plantItem = document.toObject(PlantItem.class);
+                        if (plantItem != null) {
+                            plantItem.setPlantId(document.getId()); // Ensure ID is set
+                            result.setValue(Result.success(plantItem));
+                        } else {
+                            result.setValue(Result.error("Failed to parse plant data"));
+                        }
                     } else {
                         result.setValue(Result.error("Plant not found"));
                     }
                 })
-                .addOnFailureListener(e -> result.setValue(Result.error("Error fetching plant ID: " + e.getMessage())));
+                .addOnFailureListener(e -> result.setValue(Result.error("Error fetching plant: " + e.getMessage())));
 
         return result;
     }
+
 
     @Override
     public LiveData<Result<Boolean>> isPlantInHistory(String userId, String plantId) {
@@ -457,16 +521,136 @@ public class AppRepositoryImpl implements AppRepository {
     @Override
     public LiveData<Result<String>> addToHistory(String userId, String plantId) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
-        Map<String, Object> data = new HashMap<>();
-        data.put("plantId", plantId);
-        data.put("timestamp", System.currentTimeMillis());
-        firestore.collection("user").document(userId)
-                .collection("history").document(plantId)
-                .set(data)
-                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Added to history")))
-                .addOnFailureListener(e -> result.setValue(Result.error("Failed to add to history")));
+        result.setValue(Result.loading());
+
+        // Step 2: Fetch Full Plant Details
+        firestore.collection("plants").document(plantId).get()
+                .addOnSuccessListener(plantDocument -> {
+                    if (!plantDocument.exists()) {
+                        result.setValue(Result.error("Plant details not found"));
+                        return;
+                    }
+
+                    PlantItem plantItem = plantDocument.toObject(PlantItem.class);
+                    if (plantItem == null) {
+                        result.setValue(Result.error("Failed to parse plant data"));
+                        return;
+                    }
+
+                    // Ensure the Plant ID is set
+                    plantItem.setPlantId(plantDocument.getId());
+
+                    // Step 3: Fetch Latest Analysis Data
+                    getLatestAnalysisResult(userId, plantId).observeForever(analysisResult -> {
+                        if (analysisResult.getStatus() == Result.Status.SUCCESS) {
+                            ResultApi analysisData = analysisResult.getData();
+                            if (analysisData == null) {
+                                result.setValue(Result.error("Failed to retrieve analysis data"));
+                                return;
+                            }
+
+                            // Step 4: Prepare and Save History Entry
+                            Map<String, Object> historyData = new HashMap<>();
+                            historyData.put("plantId", plantItem.getPlantId());
+                            historyData.put("plantName", plantItem.getName());
+                            historyData.put("diseases", plantItem.getDiseases());
+                            historyData.put("analysisDate", analysisData.getAnalysisDate());
+                            historyData.put("imageUrl", analysisData.getImageUrl());
+                            historyData.put("result", analysisData.getResult());
+                            historyData.put("timestamp", System.currentTimeMillis());
+
+                            firestore.collection("user").document(userId)
+                                    .collection("history").document(plantId)
+                                    .set(historyData)
+                                    .addOnSuccessListener(aVoid -> result.setValue(Result.success("History saved successfully.")))
+                                    .addOnFailureListener(e -> result.setValue(Result.error("Failed to save history: " + e.getMessage())));
+
+                        } else {
+                            result.setValue(Result.error("Failed to retrieve analysis result"));
+                        }
+                    });
+
+                })
+                .addOnFailureListener(e -> result.setValue(Result.error("Error fetching plant details: " + e.getMessage())));
+
         return result;
     }
+
+    public LiveData<Result<ResultApi>> getLatestAnalysisResult(String userId, String plantId) {
+        MutableLiveData<Result<ResultApi>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
+
+        firestore.collection("user").document(userId)
+                .collection("analysis_results")
+                .document(plantId) // Assuming the document ID is the plant ID
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (document.exists()) {
+                        ResultApi analysisData = document.toObject(ResultApi.class);
+                        result.setValue(Result.success(analysisData));
+                    } else {
+                        result.setValue(Result.error("No analysis data found"));
+                    }
+                })
+                .addOnFailureListener(e -> result.setValue(Result.error("Error fetching analysis data: " + e.getMessage())));
+
+        return result;
+    }
+
+    @Override
+    public LiveData<Result<List<HistoryItem>>> getUserHistory(String userId) {
+        MutableLiveData<Result<List<HistoryItem>>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
+
+        firestore.collection("user").document(userId)
+                .collection("history")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<HistoryItem> historyList = new ArrayList<>();
+                    if (querySnapshot.isEmpty()) {
+                        result.setValue(Result.success(historyList)); // Return empty list if no history
+                        return;
+                    }
+
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        String plantId = document.getString("plantId");
+                        String analysisDate = document.getString("analysisDate");
+                        String imageUrl = document.getString("imageUrl");
+
+                        // Fetch plant details from Firestore
+                        firestore.collection("plants").document(plantId)
+                                .get()
+                                .addOnSuccessListener(plantDoc -> {
+                                    if (plantDoc.exists()) {
+                                        String plantName = plantDoc.getString("name");
+                                        List<DiseaseItem> diseases = Objects.requireNonNull(plantDoc.toObject(PlantItem.class)).getDiseases();
+
+                                        // Create a HistoryItem object
+                                        HistoryItem historyItem = new HistoryItem(
+                                                document.getId(),
+                                                plantId,
+                                                plantName,
+                                                diseases,
+                                                analysisDate,
+                                                imageUrl
+                                        );
+
+                                        historyList.add(historyItem);
+                                        result.setValue(Result.success(historyList));
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    result.setValue(Result.error("Failed to fetch plant details: " + e.getMessage()));
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    result.setValue(Result.error("Failed to load history: " + e.getMessage()));
+                });
+
+        return result;
+    }
+
 
     @Override
     public LiveData<Result<Boolean>> isPlantFavorite(String userId, String plantId) {
@@ -489,6 +673,45 @@ public class AppRepositoryImpl implements AppRepository {
                 .set(data)
                 .addOnSuccessListener(aVoid -> result.setValue(Result.success("Added to favorites")))
                 .addOnFailureListener(e -> result.setValue(Result.error("Failed to add to favorites")));
+        return result;
+    }
+
+    @Override
+    public LiveData<Result<List<PlantItem>>> getUserFavorites(String userId) {
+        MutableLiveData<Result<List<PlantItem>>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
+
+        firestore.collection("user").document(userId)
+                .collection("favorites")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<PlantItem> favoritePlants = new ArrayList<>();
+                    if (querySnapshot.isEmpty()) {
+                        result.setValue(Result.success(favoritePlants)); // Empty list
+                        return;
+                    }
+
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        String plantId = document.getString("plantId");
+
+                        // Fetch plant details
+                        firestore.collection("plants").document(plantId)
+                                .get()
+                                .addOnSuccessListener(plantDoc -> {
+                                    if (plantDoc.exists()) {
+                                        PlantItem plant = plantDoc.toObject(PlantItem.class);
+                                        if (plant != null) {
+                                            plant.setPlantId(plantId);
+                                            favoritePlants.add(plant);
+                                            result.setValue(Result.success(favoritePlants));
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(e -> result.setValue(Result.error("Failed to fetch plant details.")));
+                    }
+                })
+                .addOnFailureListener(e -> result.setValue(Result.error("Failed to load favorites.")));
+
         return result;
     }
 

@@ -10,6 +10,6 @@ import retrofit2.http.Part;
 
 public interface ApiService {
     @Multipart
-    @POST("/image")
-    Call<ResponseModel> uploadImage(@Part MultipartBody.Part imagePlant);
+    @POST("/predict")
+    Call<ResponseModel> uploadImage(@Part MultipartBody.Part image);
 }

@@ -1,5 +1,7 @@
 package com.project.homeplantcare.data.repo.auth;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -179,22 +181,33 @@ public class AuthRepositoryImpl implements AuthRepository {
         result.setValue(Result.loading());
 
         FirebaseUser currentUser = auth.getCurrentUser();
-        assert currentUser != null;
+        if (currentUser == null) {
+            result.setValue(Result.error("User not authenticated."));
+            return result;
+        }
+
         String uid = currentUser.getUid();
+        Log.d("Firestore", "Fetching profile for UID: " + uid);
 
         db.collection("user").document(uid).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         User userProfile = documentSnapshot.toObject(User.class);
+                        Log.d("Firestore", "User profile retrieved: " + userProfile);
                         result.setValue(Result.success(userProfile));
                     } else {
+                        Log.e("Firestore", "User profile not found.");
                         result.setValue(Result.error("User profile not found."));
                     }
                 })
-                .addOnFailureListener(e -> result.setValue(Result.error("Failed to retrieve profile: " + e.getMessage())));
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error retrieving profile: " + e.getMessage());
+                    result.setValue(Result.error("Failed to retrieve profile: " + e.getMessage()));
+                });
 
         return result;
     }
+
 
     @Override
     public LiveData<Result<String>> updateUserProfile(String newName) {
@@ -208,7 +221,7 @@ public class AuthRepositoryImpl implements AuthRepository {
         }
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put("name", newName);
+        updates.put("username", newName);
 
         db.collection("user").document(user.getUid()).update(updates)
                 .addOnSuccessListener(aVoid -> result.setValue(Result.success("Profile updated successfully.")))

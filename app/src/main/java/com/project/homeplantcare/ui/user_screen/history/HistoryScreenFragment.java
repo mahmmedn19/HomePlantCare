@@ -11,12 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.models.HistoryItem;
-import com.project.homeplantcare.data.models.PlantItem;
+import com.project.homeplantcare.data.utils.AuthUtils;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentHistoryScreenBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
-import com.project.homeplantcare.utils.AuthUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -26,6 +26,7 @@ public class HistoryScreenFragment extends BaseFragment<FragmentHistoryScreenBin
 
     private HistoryViewModel viewModel;
     private HistoryAdapter adapter;
+    private List<HistoryItem> historyList = new ArrayList<>();
 
     @Override
     protected String getTAG() {
@@ -48,14 +49,14 @@ public class HistoryScreenFragment extends BaseFragment<FragmentHistoryScreenBin
         super.setup();
         setToolbarVisibility(true);
         setToolbarTitle("History");
-        showBackButton(true);
+        showBackButton(false);
 
         setupRecyclerView();
         fetchHistory();
     }
 
     private void setupRecyclerView() {
-        adapter = new HistoryAdapter(this);
+        adapter = new HistoryAdapter(historyList, this);
         binding.recyclerHistory.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerHistory.setAdapter(adapter);
     }
@@ -73,10 +74,10 @@ public class HistoryScreenFragment extends BaseFragment<FragmentHistoryScreenBin
                 binding.recyclerHistory.setVisibility(View.GONE);
                 binding.noHistoryImage.setVisibility(View.GONE);
             } else if (result.getStatus() == Result.Status.SUCCESS) {
-                List<PlantItem> historyList = result.getData();
+                historyList = result.getData();
                 binding.progressBar.setVisibility(View.GONE);
                 if (historyList != null && !historyList.isEmpty()) {
-                    adapter.submitList(historyList);
+                    adapter.updateList(historyList);
                     binding.recyclerHistory.setVisibility(View.VISIBLE);
                     binding.noHistoryImage.setVisibility(View.GONE);
                 } else {
@@ -87,20 +88,19 @@ public class HistoryScreenFragment extends BaseFragment<FragmentHistoryScreenBin
                 binding.progressBar.setVisibility(View.GONE);
                 binding.recyclerHistory.setVisibility(View.GONE);
                 binding.noHistoryImage.setVisibility(View.VISIBLE);
-                showToast("Failed to load history.");
             }
         });
     }
 
     @Override
-    public void onHistoryItemClicked(PlantItem plant) {
+    public void onHistoryItemClicked(HistoryItem plant) {
         navigateToPlantDetails(plant.getPlantId());
     }
 
     private void navigateToPlantDetails(String plantId) {
         Bundle bundle = new Bundle();
         bundle.putString("plantId", plantId);
-        Navigation.findNavController(requireView()).navigate(R.id.action_historyScreenFragment_to_plantDetailsFragment2);
+        Navigation.findNavController(requireView()).navigate(R.id.action_historyScreenFragment_to_plantDetailsFragment2, bundle);
     }
 
     private void showToast(String message) {
@@ -119,14 +119,7 @@ public class HistoryScreenFragment extends BaseFragment<FragmentHistoryScreenBin
             if (result.getStatus() == Result.Status.SUCCESS) {
                 showToast("Removed from history");
                 fetchHistory();
-            } else {
-                showToast("Failed to remove from history.");
             }
         });
-    }
-
-    @Override
-    public void onHistoryItemClicked(HistoryItem item) {
-
     }
 }

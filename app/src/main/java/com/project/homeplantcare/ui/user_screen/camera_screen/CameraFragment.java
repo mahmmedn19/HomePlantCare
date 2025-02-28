@@ -4,34 +4,29 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.Toast;
 
-import androidx.core.content.FileProvider;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentCameraBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.utils.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
 
-    private static final int REQUEST_CAMERA = 1;
-    private static final int REQUEST_GALLERY = 2;
     private Uri imageUri;
     private CameraViewModel viewModel;
 
@@ -65,47 +60,41 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
         binding.btnAnalyze.setOnClickListener(v -> uploadImage());
     }
 
+    // ✅ Register activity result launcher for ImagePicker
+    private final ActivityResultLauncher<Intent> imagePickerLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    imageUri = result.getData().getData();
+                    if (imageUri != null) {
+                        Glide.with(this).load(imageUri).into(binding.imgPreview);
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Image selection failed", Toast.LENGTH_SHORT).show();
+                }
+            });
+
     private void openCamera() {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (cameraIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            File photoFile = createImageFile();
-            if (photoFile != null) {
-                imageUri = FileProvider.getUriForFile(requireContext(),
-                        "com.project.homeplantcare.fileprovider", photoFile);
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(cameraIntent, REQUEST_CAMERA);
-            }
-        }
+        ImagePicker.with(this)
+                .cameraOnly()
+                .crop()
+                .compress(1024) // Compress to 1MB
+                .maxResultSize(1080, 1080)
+                .createIntent(intent -> {
+                    imagePickerLauncher.launch(intent);
+                    return null; // Java compatibility fix
+                });
     }
 
     private void openGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, REQUEST_GALLERY);
-    }
-
-    private File createImageFile() {
-        try {
-            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            File storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-            return File.createTempFile("IMG_" + timeStamp, ".jpg", storageDir);
-        } catch (IOException e) {
-            Log.e("CameraFragment", "Error creating image file", e);
-            return null;
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CAMERA) {
-                Glide.with(this).load(imageUri).into(binding.imgPreview);
-            } else if (requestCode == REQUEST_GALLERY && data != null) {
-                imageUri = data.getData();
-                Glide.with(this).load(imageUri).into(binding.imgPreview);
-            }
-        }
+        ImagePicker.with(this)
+                .galleryOnly()
+                .crop()
+                .compress(1024)
+                .maxResultSize(1080, 1080)
+                .createIntent(intent -> {
+                    imagePickerLauncher.launch(intent);
+                    return null; // Java compatibility fix
+                });
     }
 
     private void uploadImage() {
@@ -113,11 +102,20 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
             Toast.makeText(requireContext(), "Please select an image first", Toast.LENGTH_SHORT).show();
             return;
         }
-        viewModel.uploadImage(imageUri).observe(getViewLifecycleOwner(), result -> {
+
+        // ✅ Convert Uri to File
+        File imageFile = FileUtils.getFileFromUri(requireContext(), imageUri);
+        if (imageFile == null || !imageFile.exists()) {
+            Toast.makeText(requireContext(), "Failed to process image file", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // ✅ Upload image as File
+        viewModel.uploadImage(imageFile).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == Result.Status.SUCCESS) {
                 String plantName = result.getData(); // Get plant name from API
                 searchPlantByNameAndNavigate(plantName);
-            } else if (result.getStatus() == Result.Status.ERROR) {
+            } else {
                 Toast.makeText(requireContext(), "Upload failed: " + result.getErrorMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -126,10 +124,10 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
     private void searchPlantByNameAndNavigate(String plantName) {
         viewModel.getPlantIdByName(plantName).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == Result.Status.SUCCESS && result.getData() != null) {
-                String plantId = result.getData();
+                String plantId = result.getData().getPlantId(); // ✅ Fixed reference to `plantId`
 
                 Bundle bundle = new Bundle();
-                bundle.putBoolean("isAnaylsis", true);
+                bundle.putBoolean("isAnalysis", true);
                 bundle.putString("plantId", plantId);
 
                 Navigation.findNavController(requireView()).navigate(R.id.action_cameraFragment_to_plantDetailsFragment2, bundle);

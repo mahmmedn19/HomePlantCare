@@ -6,9 +6,11 @@ import androidx.lifecycle.LiveData;
 
 import com.project.homeplantcare.data.models.ArticleItem;
 import com.project.homeplantcare.data.models.DiseaseItem;
+import com.project.homeplantcare.data.models.HistoryItem;
 import com.project.homeplantcare.data.models.PlantItem;
 import com.project.homeplantcare.data.utils.Result;
 
+import java.io.File;
 import java.util.List;
 
 public interface AppRepository {
@@ -59,9 +61,9 @@ public interface AppRepository {
 
     LiveData<Result<String>> getSingleAILink() ;
 
-    LiveData<Result<String>> uploadImage(Uri imageUri);
+    LiveData<Result<String>> uploadImage(File imageUri);
 
-    LiveData<Result<String>> getPlantIdByName(String plantName);
+    LiveData<Result<PlantItem>> getPlantIdByName(String plantName);
 
     LiveData<Result<Boolean>> isPlantInHistory(String userId, String plantId);
 
@@ -69,13 +71,13 @@ public interface AppRepository {
 
     LiveData<Result<String>> removeFromHistory(String userId, String plantId);
 
-
+    LiveData<Result<List<HistoryItem>>> getUserHistory(String userId);
 
     LiveData<Result<Boolean>> isPlantFavorite(String userId, String plantId);
 
     LiveData<Result<String>> addToFavorites(String userId, String plantId);
 
     LiveData<Result<String>> removeFromFavorites(String userId, String plantId);
-
+    LiveData<Result<List<PlantItem>>> getUserFavorites(String userId);
 
 }

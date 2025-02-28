@@ -1,6 +1,7 @@
 package com.project.homeplantcare.ui.articles_details;
 
 import android.graphics.Bitmap;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.lifecycle.ViewModel;
@@ -58,15 +59,32 @@ public class ArticlesDetailsFragment extends BaseFragment<FragmentArticlesDetail
 
     private void observeArticleDetails() {
         viewModel.getArticleDetails().observe(getViewLifecycleOwner(), result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
-                binding.setArticle(result.getData());  // Bind article data to the layout
-                String base64Image = result.getData().getImageResId(); // Make sure the article has imageResId
-                if (base64Image != null && !base64Image.isEmpty()) {
-                    Bitmap bitmap = ImageUtils.decodeBase64ToImage(base64Image);
-                    binding.articleImage.setImageBitmap(bitmap);
-                }
+            if (result.getStatus() == Result.Status.LOADING) {
+                showFullScreenLoading(true);
+                binding.coordinatorLayout.setVisibility(View.GONE);
+            }
+            else if (result.getStatus() == Result.Status.SUCCESS) {
+                new android.os.Handler().postDelayed(() -> {
+                    showFullScreenLoading(false);
+                    binding.coordinatorLayout.setVisibility(View.VISIBLE);
+                    binding.setArticle(result.getData());  // Bind article data to the layout
+                    String base64Image = result.getData().getImageResId(); // Make sure the article has imageResId
+                    if (base64Image != null && !base64Image.isEmpty()) {
+                        Bitmap bitmap = ImageUtils.decodeBase64ToImage(base64Image);
+                        binding.articleImage.setImageBitmap(bitmap);
+                    }
+                }, 1000); // 1 second delay
             }
         });
+    }
+    private void showFullScreenLoading(boolean isLoading) {
+        if (isLoading) {
+            binding.fullScreenLoader.setVisibility(View.VISIBLE);
+        } else {
+            new android.os.Handler().postDelayed(() -> {
+                binding.fullScreenLoader.setVisibility(View.GONE);
+            }, 1000); // 1.5 seconds delay
+        }
     }
 
     private void showToast(String message) {
