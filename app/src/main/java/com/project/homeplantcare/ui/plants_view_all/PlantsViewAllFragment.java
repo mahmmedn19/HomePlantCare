@@ -80,7 +80,7 @@ public class PlantsViewAllFragment extends BaseFragment<FragmentPlantsViewAllBin
 
     private void setupNewArticlesRecyclerView(List<ArticleItem> articles) {
         ViewAllArticleAdapter articleAdapter = new ViewAllArticleAdapter(articles, this);
-        binding.recyclerNewArticles.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.recyclerNewArticles.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
         binding.recyclerNewArticles.setAdapter(articleAdapter);
     }
 
