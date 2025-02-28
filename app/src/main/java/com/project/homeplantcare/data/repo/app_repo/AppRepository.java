@@ -1,5 +1,7 @@
 package com.project.homeplantcare.data.repo.app_repo;
 
+import android.net.Uri;
+
 import androidx.lifecycle.LiveData;
 
 import com.project.homeplantcare.data.models.ArticleItem;
@@ -56,5 +58,24 @@ public interface AppRepository {
 
 
     LiveData<Result<String>> getSingleAILink() ;
+
+    LiveData<Result<String>> uploadImage(Uri imageUri);
+
+    LiveData<Result<String>> getPlantIdByName(String plantName);
+
+    LiveData<Result<Boolean>> isPlantInHistory(String userId, String plantId);
+
+    LiveData<Result<String>> addToHistory(String userId, String plantId);
+
+    LiveData<Result<String>> removeFromHistory(String userId, String plantId);
+
+
+
+    LiveData<Result<Boolean>> isPlantFavorite(String userId, String plantId);
+
+    LiveData<Result<String>> addToFavorites(String userId, String plantId);
+
+    LiveData<Result<String>> removeFromFavorites(String userId, String plantId);
+
 
 }

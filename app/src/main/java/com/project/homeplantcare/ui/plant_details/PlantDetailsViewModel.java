@@ -63,4 +63,28 @@ public class PlantDetailsViewModel extends ViewModel {
     public LiveData<List<DiseaseItem>> getDiseases() {
         return diseases;
     }
+
+    public LiveData<Result<Boolean>> isPlantFavorite(String userId, String plantId) {
+        return repository.isPlantFavorite(userId, plantId);
+    }
+
+    public LiveData<Result<String>> addToFavorites(String userId, String plantId) {
+        return repository.addToFavorites(userId, plantId);
+    }
+
+    public LiveData<Result<String>> removeFromFavorites(String userId, String plantId) {
+        return repository.removeFromFavorites(userId, plantId);
+    }
+
+    public LiveData<Result<Boolean>> isPlantInHistory(String userId, String plantId) {
+        return repository.isPlantInHistory(userId, plantId);
+    }
+
+    public LiveData<Result<String>> addToHistory(String userId, String plantId) {
+        return repository.addToHistory(userId, plantId);
+    }
+
+    public LiveData<Result<String>> removeFromHistory(String userId, String plantId) {
+        return repository.removeFromHistory(userId, plantId);
+    }
 }

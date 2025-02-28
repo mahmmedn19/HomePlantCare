@@ -1,5 +1,6 @@
 package com.project.homeplantcare.data.repo.app_repo;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -10,21 +11,47 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.project.homeplantcare.data.models.ArticleItem;
 import com.project.homeplantcare.data.models.DiseaseItem;
 import com.project.homeplantcare.data.models.PlantItem;
+import com.project.homeplantcare.data.repo.network.ApiService;
+import com.project.homeplantcare.data.repo.network.ResponseModel;
 import com.project.homeplantcare.data.utils.Result;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AppRepositoryImpl implements AppRepository {
 
     private final FirebaseFirestore firestore;
+    private final ApiService apiService;
+    private static AppRepositoryImpl instance;
 
     @Inject
-    public AppRepositoryImpl(FirebaseFirestore db) {
+    public AppRepositoryImpl(FirebaseFirestore db, ApiService apiService) {
+
         this.firestore = db;
+        this.apiService = apiService;
+    }
+
+    public static synchronized AppRepositoryImpl getInstance(ApiService apiService) {
+        if (instance == null) {
+            instance = new AppRepositoryImpl(
+                    FirebaseFirestore.getInstance(),
+                    apiService
+            );
+        }
+        return instance;
     }
 
     @Override
@@ -366,5 +393,125 @@ public class AppRepositoryImpl implements AppRepository {
 
         return result;
     }
+    @Override
+    public LiveData<Result<String>> uploadImage(Uri imageUri) {
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
 
+        File file = new File(imageUri.getPath());
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("imagePlant", file.getName(), requestBody);
+
+        apiService.uploadImage(part).enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.setValue(Result.success(response.message()));
+                } else {
+                    result.setValue(Result.error("Upload failed"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                result.setValue(Result.error("Network error: " + t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public LiveData<Result<String>> getPlantIdByName(String plantName) {
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
+
+        firestore.collection("plants")
+                .whereEqualTo("name", plantName) // Search plant by name
+                .limit(1) // Limit to first match
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        String plantId = querySnapshot.getDocuments().get(0).getId();
+                        result.setValue(Result.success(plantId));
+                    } else {
+                        result.setValue(Result.error("Plant not found"));
+                    }
+                })
+                .addOnFailureListener(e -> result.setValue(Result.error("Error fetching plant ID: " + e.getMessage())));
+
+        return result;
+    }
+
+    @Override
+    public LiveData<Result<Boolean>> isPlantInHistory(String userId, String plantId) {
+        MutableLiveData<Result<Boolean>> result = new MutableLiveData<>();
+        firestore.collection("user").document(userId)
+                .collection("history").document(plantId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> result.setValue(Result.success(documentSnapshot.exists())))
+                .addOnFailureListener(e -> result.setValue(Result.error("Error checking history: " + e.getMessage())));
+        return result;
+    }
+
+    @Override
+    public LiveData<Result<String>> addToHistory(String userId, String plantId) {
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        Map<String, Object> data = new HashMap<>();
+        data.put("plantId", plantId);
+        data.put("timestamp", System.currentTimeMillis());
+        firestore.collection("user").document(userId)
+                .collection("history").document(plantId)
+                .set(data)
+                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Added to history")))
+                .addOnFailureListener(e -> result.setValue(Result.error("Failed to add to history")));
+        return result;
+    }
+
+    @Override
+    public LiveData<Result<Boolean>> isPlantFavorite(String userId, String plantId) {
+        MutableLiveData<Result<Boolean>> result = new MutableLiveData<>();
+        firestore.collection("user").document(userId)
+                .collection("favorites").document(plantId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> result.setValue(Result.success(documentSnapshot.exists())))
+                .addOnFailureListener(e -> result.setValue(Result.error("Error checking favorite: " + e.getMessage())));
+        return result;
+    }
+
+    @Override
+    public LiveData<Result<String>> addToFavorites(String userId, String plantId) {
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        Map<String, Object> data = new HashMap<>();
+        data.put("plantId", plantId);
+        firestore.collection("user").document(userId)
+                .collection("favorites").document(plantId)
+                .set(data)
+                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Added to favorites")))
+                .addOnFailureListener(e -> result.setValue(Result.error("Failed to add to favorites")));
+        return result;
+    }
+
+    @Override
+    public LiveData<Result<String>> removeFromFavorites(String userId, String plantId) {
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        firestore.collection("user").document(userId)
+                .collection("favorites").document(plantId)
+                .delete()
+                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Removed from favorites")))
+                .addOnFailureListener(e -> result.setValue(Result.error("Failed to remove from favorites")));
+        return result;
+    }
+
+
+    @Override
+    public LiveData<Result<String>> removeFromHistory(String userId, String plantId) {
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        firestore.collection("user").document(userId)
+                .collection("history").document(plantId)
+                .delete()
+                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Removed from history")))
+                .addOnFailureListener(e -> result.setValue(Result.error("Failed to remove from history")));
+        return result;
+    }
 }

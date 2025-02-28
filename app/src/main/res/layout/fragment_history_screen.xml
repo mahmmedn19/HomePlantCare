@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
@@ -15,6 +14,23 @@
         android:orientation="vertical"
         android:padding="16dp"
         tools:context=".ui.user_screen.history.HistoryScreenFragment">
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+        <!-- Placeholder Image -->
+        <ImageView
+            android:id="@+id/noHistoryImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/no_image_found"
+            android:visibility="gone"/>
 
         <!-- History List -->
         <androidx.recyclerview.widget.RecyclerView

@@ -23,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class UserProfileFragment extends BaseFragment<FragmentUserProfileBinding> {
     private UserProfileViewModel viewModel;
+
     @Override
     protected String getTAG() {
         return "UserProfileFragment";
@@ -46,42 +47,16 @@ public class UserProfileFragment extends BaseFragment<FragmentUserProfileBinding
         setToolbarTitle("User Profile");
         showBackButton(false);
 
-        // Enable real-time error removal for text fields
-        InputValidator.clearErrorOnTextChange(binding.userName);
-        InputValidator.clearErrorOnTextChange(binding.oldPassword);
-        InputValidator.clearErrorOnTextChange(binding.newPassword);
-        InputValidator.clearErrorOnTextChange(binding.confirmPassword);
 
-
-        binding.btnLogout.setOnClickListener(v -> {
-            DialogUtils.showConfirmationDialog(
-                    requireContext(),
-                    "Logout",
-                    "Are you sure you want to logout?",
-                    "Yes",
-                    "No",
-                    (dialog, which) -> {
-                        Intent intent = new Intent(requireContext(), MainActivity.class);
-                        startActivity(intent);
-                        requireActivity().finish();
-                    }
-            );
-        });
         viewModel.getUserProfile().observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == Result.Status.SUCCESS) {
-                Objects.requireNonNull(binding.userName.getEditText()).setText(result.getData().getUsername());
-                Objects.requireNonNull(binding.userEmail.getEditText()).setText(result.getData().getEmail());
+                if (result.getData() != null) {
+                    binding.userName.getEditText().setText(result.getData().getUsername());
+                    binding.userEmail.getEditText().setText(result.getData().getEmail());
+                } else {
+                    showToast("User data is null!");
+                }
             }
-        });
-
-        viewModel.isUpdatingProfile().observe(getViewLifecycleOwner(), isLoading -> {
-            binding.btnUpdateProfile.setEnabled(!isLoading);
-            binding.progressUpdateProfile.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        });
-
-        viewModel.isUpdatingPassword().observe(getViewLifecycleOwner(), isLoading -> {
-            binding.btnSaveNewPassword.setEnabled(!isLoading);
-            binding.progressUpdatePassword.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         });
 
         binding.btnUpdateProfile.setOnClickListener(v -> handleUpdateProfile());
@@ -89,9 +64,9 @@ public class UserProfileFragment extends BaseFragment<FragmentUserProfileBinding
     }
 
     private void handleUpdateProfile() {
-        String newName = binding.userName.getEditText().getText().toString().trim();
-
-        if (!InputValidator.validateUsername(binding.userName, newName)) {
+        String newName = Objects.requireNonNull(binding.userName.getEditText()).getText().toString().trim();
+        if (newName.isEmpty()) {
+            showToast("Name cannot be empty.");
             return;
         }
 

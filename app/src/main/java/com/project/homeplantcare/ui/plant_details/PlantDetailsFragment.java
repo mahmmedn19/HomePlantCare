@@ -4,20 +4,20 @@ import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.models.DiseaseItem;
+import com.project.homeplantcare.data.utils.AuthUtils;
 import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentPlantDetailsBinding;
 import com.project.homeplantcare.ui.MainActivity;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.ui.user_screen.UserMainActivity;
-import com.project.homeplantcare.utils.DialogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +30,9 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
     private PlantDetailsViewModel viewModel;
     private DiseasesAdapter diseasesAdapter;
     private List<DiseaseItem> diseaseList = new ArrayList<>();
+    private boolean isFavorite = false;
+    private boolean isInHistory = false;
+    private String plantId;
 
     @Override
     protected String getTAG() {
@@ -54,34 +57,29 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
         setToolbarTitle("Plant Details");
         showBackButton(true);
 
+        boolean isAnalysis = getArguments() != null && getArguments().getBoolean("isAnaylsis", false);
+
+        if (isAnalysis) {
+            binding.addToHistory.setVisibility(View.VISIBLE);
+        } else {
+            binding.addToHistory.setVisibility(View.GONE);
+        }
+
         // Retrieve plantId from arguments
-        String plantId = getArguments() != null ? getArguments().getString("plantId") : null;
+        plantId = getArguments() != null ? getArguments().getString("plantId") : null;
 
         if (plantId != null) {
             viewModel.fetchPlantDetails(plantId);
             observePlantDetails();
             observeDiseases();
+            checkFavoriteState(plantId);
+            checkHistoryState(plantId);
         } else {
             showToast("Invalid Plant ID");
         }
 
-        binding.favIcon.setOnClickListener(v -> {
-            if (isLogging()) {
-              //  viewModel.toggleFavorite();
-            } else {
-                // Show Login Dialog
-                DialogUtils.showConfirmationDialog(
-                        requireContext(),
-                        "Login Required",
-                        "You need to login to add this plant to favorites",
-                        "Login",
-                        "Cancel",
-                        (dialog, which) -> {
-                            Navigation.findNavController(v).navigate(R.id.action_plantDetailsFragment_to_loginFragment);
-                        }
-                );
-            }
-        });
+        binding.favIcon.setOnClickListener(v -> handleFavoriteToggle());
+        binding.addToHistory.setOnClickListener(v -> handleHistoryToggle());
 
         setupDiseasesRecyclerView();
     }
@@ -90,7 +88,7 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
         viewModel.getPlantDetails().observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == Result.Status.SUCCESS) {
                 binding.setPlant(result.getData());
-                String base64Image = result.getData().getImageResId(); // Make sure the article has imageResId
+                String base64Image = result.getData().getImageResId();
                 if (base64Image != null && !base64Image.isEmpty()) {
                     Bitmap bitmap = ImageUtils.decodeBase64ToImage(base64Image);
                     binding.imgPlant.setImageBitmap(bitmap);
@@ -113,13 +111,92 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
             }
         });
     }
+
+    private void checkFavoriteState(String plantId) {
+        String userId = AuthUtils.getCurrentUserId();
+        viewModel.isPlantFavorite(userId, plantId).observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                isFavorite = result.getData();
+                updateFavoriteIcon();
+            }
+        });
+    }
+
+    private void handleFavoriteToggle() {
+        String userId = AuthUtils.getCurrentUserId();
+        if (isFavorite) {
+            viewModel.removeFromFavorites(userId, plantId).observe(getViewLifecycleOwner(), result -> {
+                if (result.getStatus() == Result.Status.SUCCESS) {
+                    isFavorite = false;
+                    updateFavoriteIcon();
+                    showToast("Removed from favorites");
+                }
+            });
+        } else {
+            viewModel.addToFavorites(userId, plantId).observe(getViewLifecycleOwner(), result -> {
+                if (result.getStatus() == Result.Status.SUCCESS) {
+                    isFavorite = true;
+                    updateFavoriteIcon();
+                    showToast("Added to favorites");
+                }
+            });
+        }
+    }
+
+    private void updateFavoriteIcon() {
+        if (isFavorite) {
+            binding.favIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.md_theme_error));
+        } else {
+            binding.favIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.md_theme_primary));
+        }
+    }
+
+    private void checkHistoryState(String plantId) {
+        String userId = AuthUtils.getCurrentUserId();
+        viewModel.isPlantInHistory(userId, plantId).observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                isInHistory = result.getData();
+                updateHistoryIcon();
+            }
+        });
+    }
+
+    private void handleHistoryToggle() {
+        String userId = AuthUtils.getCurrentUserId();
+        if (isInHistory) {
+            viewModel.removeFromHistory(userId, plantId).observe(getViewLifecycleOwner(), result -> {
+                if (result.getStatus() == Result.Status.SUCCESS) {
+                    isInHistory = false;
+                    updateHistoryIcon();
+                    showToast("Removed from history");
+                }
+            });
+        } else {
+            viewModel.addToHistory(userId, plantId).observe(getViewLifecycleOwner(), result -> {
+                if (result.getStatus() == Result.Status.SUCCESS) {
+                    isInHistory = true;
+                    updateHistoryIcon();
+                    showToast("Added to history");
+                }
+            });
+        }
+    }
+
+    private void updateHistoryIcon() {
+        if (isInHistory) {
+            binding.addToHistory.setColorFilter(ContextCompat.getColor(requireContext(), R.color.md_theme_error));
+        } else {
+            binding.addToHistory.setColorFilter(ContextCompat.getColor(requireContext(), R.color.md_theme_primary));
+        }
+    }
+
     private boolean isLogging() {
         if (getActivity() instanceof UserMainActivity) {
-            return true; // User is logged in
+            return true;
         } else if (getActivity() instanceof MainActivity) {
-            return false; // User is not logged in
+            return false;
         }
-        return false; // Default case
+        return false;
     }
 
     private void setupDiseasesRecyclerView() {

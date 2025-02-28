@@ -6,6 +6,8 @@ import com.project.homeplantcare.data.repo.app_repo.AppRepository;
 import com.project.homeplantcare.data.repo.app_repo.AppRepositoryImpl;
 import com.project.homeplantcare.data.repo.auth.AuthRepository;
 import com.project.homeplantcare.data.repo.auth.AuthRepositoryImpl;
+import com.project.homeplantcare.data.repo.network.ApiService;
+
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -36,8 +38,8 @@ public class AppModule {
 
     @Provides
     @Singleton
-    public AppRepository provideAppRepository(FirebaseFirestore firestore) {
-        return new AppRepositoryImpl(firestore);
+    public AppRepository provideAppRepository(FirebaseFirestore firestore, ApiService apiService) {
+        return new AppRepositoryImpl(firestore, apiService);
     }
 
 }

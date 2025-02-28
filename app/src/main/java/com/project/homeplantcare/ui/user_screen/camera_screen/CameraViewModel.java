@@ -1,31 +1,33 @@
 package com.project.homeplantcare.ui.user_screen.camera_screen;
 
+import android.net.Uri;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.project.homeplantcare.data.repo.app_repo.AppRepository;
+import com.project.homeplantcare.data.utils.Result;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
 public class CameraViewModel extends ViewModel {
-    private final MutableLiveData<Boolean> isProcessing = new MutableLiveData<>(false);
-    private final MutableLiveData<String> analysisResult = new MutableLiveData<>();
 
-    public LiveData<Boolean> getIsProcessing() {
-        return isProcessing;
+    private final AppRepository appRepository;
+
+    @Inject
+    public CameraViewModel(AppRepository appRepository) {
+        this.appRepository = appRepository;
     }
 
-    public LiveData<String> getAnalysisResult() {
-        return analysisResult;
+    public LiveData<Result<String>> uploadImage(Uri imageUri) {
+        return appRepository.uploadImage(imageUri);
     }
 
-    public void analyzeImage() {
-        isProcessing.setValue(true);
-        new Thread(() -> {
-            try {
-                Thread.sleep(3000); // Simulating AI processing time
-                analysisResult.postValue("Detected: Powdery Mildew");
-            } catch (InterruptedException e) {
-                analysisResult.postValue("Error processing image.");
-            }
-            isProcessing.postValue(false);
-        }).start();
+    public LiveData<Result<String>> getPlantIdByName(String plantName) {
+        return appRepository.getPlantIdByName(plantName);
     }
 }

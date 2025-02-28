@@ -6,16 +6,19 @@ public class HistoryItem {
     private String plantName;
     private String diseaseName;
     private String analysisDate;
-    private int imageUrl;
+    private String imageUrl;
 
-    public HistoryItem(String plantName, String diseaseName, String analysisDate, int imageUrl) {
+    public HistoryItem() {
+    }
+
+    public HistoryItem(String plantName, String diseaseName, String analysisDate, String imageUrl) {
         this.plantName = plantName;
         this.diseaseName = diseaseName;
         this.analysisDate = analysisDate;
         this.imageUrl = imageUrl;
     }
 
-    public HistoryItem(String historyId, String plantId, String plantName, String diseaseName, String analysisDate, int imageUrl) {
+    public HistoryItem(String historyId, String plantId, String plantName, String diseaseName, String analysisDate, String imageUrl) {
         this.historyId = historyId;
         this.plantId = plantId;
         this.plantName = plantName;
@@ -45,7 +48,7 @@ public class HistoryItem {
         return analysisDate;
     }
 
-    public int getImageUrl() {
+    public String getImageUrl() {
         return imageUrl;
     }
 }
