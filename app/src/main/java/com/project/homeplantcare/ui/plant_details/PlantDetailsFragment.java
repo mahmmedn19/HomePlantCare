@@ -141,6 +141,11 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
 
     private void checkFavoriteState(String plantId) {
         String userId = AuthUtils.getCurrentUserId();
+
+        if (userId == null || plantId == null) {
+            return;
+        }
+
         viewModel.isPlantFavorite(userId, plantId).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == Result.Status.SUCCESS) {
                 isFavorite = result.getData();
@@ -151,6 +156,11 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
 
     private void handleFavoriteToggle() {
         String userId = AuthUtils.getCurrentUserId();
+
+        if (userId == null || plantId == null) {
+            return;
+        }
+
         if (isFavorite) {
             viewModel.removeFromFavorites(userId, plantId).observe(getViewLifecycleOwner(), result -> {
                 if (result.getStatus() == Result.Status.SUCCESS) {
@@ -180,6 +190,11 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
 
     private void checkHistoryState(String plantId) {
         String userId = AuthUtils.getCurrentUserId();
+
+        if (userId == null || plantId == null) {
+            return;
+        }
+
         viewModel.isPlantInHistory(userId, plantId).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == Result.Status.SUCCESS) {
                 isInHistory = result.getData();
@@ -188,8 +203,14 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
         });
     }
 
+
     private void handleHistoryToggle() {
         String userId = AuthUtils.getCurrentUserId();
+
+        if (userId == null || plantId == null) {
+            return;
+        }
+
         if (isInHistory) {
             viewModel.removeFromHistory(userId, plantId).observe(getViewLifecycleOwner(), result -> {
                 if (result.getStatus() == Result.Status.SUCCESS) {

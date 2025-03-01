@@ -132,6 +132,9 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                     showNavigationDialogNoPlantDetails(plantName); // ✅ Show dialog to search for plant details
                 }
                 // ✅ Call getPlantIdByName only if plantName is successfully received
+            } else if (result.getStatus() == Result.Status.ERROR) {
+                binding.progressAnalysis.setVisibility(View.GONE);
+                binding.tvAnalysisResult.setText("Failed to analyze image");
             }
         });
 

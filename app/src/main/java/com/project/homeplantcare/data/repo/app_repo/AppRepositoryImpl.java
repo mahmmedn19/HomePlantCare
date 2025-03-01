@@ -412,11 +412,6 @@ public class AppRepositoryImpl implements AppRepository {
         }
 
         try {
-            Log.d("UploadImage", "File Name: " + imageFile.getName());
-            Log.d("UploadImage", "File Path: " + imageFile.getAbsolutePath());
-            Log.d("UploadImage", "File Exists: " + imageFile.exists());
-            Log.d("UploadImage", "File Length: " + imageFile.length());
-
             // ✅ Prepare image for API upload
             RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
             MultipartBody.Part body = MultipartBody.Part.createFormData("file", imageFile.getName(), requestFile);
