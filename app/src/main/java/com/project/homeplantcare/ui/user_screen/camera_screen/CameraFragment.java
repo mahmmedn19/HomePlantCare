@@ -125,7 +125,7 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                 binding.progressAnalysis.setVisibility(View.GONE);
                 String plantName = result.getData().first;
                 boolean hasDetails = result.getData().second;
-                String cleanedPlantName = normalizePlantName(plantName);
+                String cleanedPlantName = normalizePlantName("Corn_(maize)");
 
                 binding.tvAnalysisResult.setText("Detected Plant: " + plantName);
                 if (hasDetails) {
