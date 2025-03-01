@@ -466,8 +466,6 @@ public class AppRepositoryImpl implements AppRepository {
                                         Log.e("UploadImage", "❌ Failed to save analysis: " + e.getMessage());
                                         result.setValue(Result.success(new Pair<>(plantName, false))); // ✅ Return plantName + Not Saved
                                     });
-                        } else {
-                            result.setValue(Result.success(new Pair<>(plantName, false))); // ✅ Return plantName + Not Saved
                         }
                     });
                 }
