@@ -125,11 +125,13 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                 binding.progressAnalysis.setVisibility(View.GONE);
                 String plantName = result.getData().first;
                 boolean hasDetails = result.getData().second;
+                String cleanedPlantName = normalizePlantName(plantName);
+
                 binding.tvAnalysisResult.setText("Detected Plant: " + plantName);
                 if (hasDetails) {
-                    showNavigationDialog(plantName); // ✅ Show dialog to navigate to plant details
+                    showNavigationDialog(cleanedPlantName); // ✅ Show dialog to navigate to plant details
                 } else {
-                    showNavigationDialogNoPlantDetails(plantName); // ✅ Show dialog to search for plant details
+                    showNavigationDialogNoPlantDetails(cleanedPlantName); // ✅ Show dialog to search for plant details
                 }
                 // ✅ Call getPlantIdByName only if plantName is successfully received
             } else if (result.getStatus() == Result.Status.ERROR) {
@@ -146,7 +148,8 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                 "Plant Analysis",
                 "We detected the plant: " + plantName + ". Do you want to view its details?",
                 "Yes", "No",
-                (dialog, which) -> searchPlantByNameAndNavigate(plantName)
+                (dialog, which) -> searchPlantByNameAndNavigate(plantName),
+                null
         );
     }
     // not found plant details
@@ -154,10 +157,21 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
         DialogUtils.showConfirmationDialog(
                 requireContext(),
                 "Plant Analysis",
-                "No plant details found for: " + plantName + "!",
+                "No plant details found for: " + plantName + " try Another!",
                 "Yes", "No",
-                (dialog, which) -> searchPlantByNameAndNavigate(plantName)
+                (dialog, which) -> Toast.makeText(requireContext(), "No plant details found.", Toast.LENGTH_SHORT).show(),
+                null // Negative button will still appear but default to dismissing the dialog
         );
+    }
+    private String normalizePlantName(String plantName) {
+        // If the plant name contains special characters or parentheses, clean it
+        if (plantName.matches(".*[^a-zA-Z0-9 ].*")) {
+            return plantName.replaceAll("[^a-zA-Z0-9 ]", " ")  // Remove special characters
+                    .replaceAll("\\s+", " ")  // Remove extra spaces
+                    .trim();
+        }
+        // If no special characters, return the original name (case-sensitive)
+        return plantName;
     }
 
     private void searchPlantByNameAndNavigate(String plantName) {
