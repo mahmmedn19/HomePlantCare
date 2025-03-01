@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,6 +19,7 @@ import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentCameraBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.utils.DialogUtils;
 import com.project.homeplantcare.utils.FileUtils;
 
 import java.io.File;
@@ -58,6 +60,9 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
         binding.btnCapture.setOnClickListener(v -> openCamera());
         binding.btnUpload.setOnClickListener(v -> openGallery());
         binding.btnAnalyze.setOnClickListener(v -> uploadImage());
+
+        // Hide progress on start
+        binding.progressAnalysis.setVisibility(View.GONE);
     }
 
     // ✅ Register activity result launcher for ImagePicker
@@ -112,27 +117,62 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
 
         // ✅ Upload image as File
         viewModel.uploadImage(imageFile).observe(getViewLifecycleOwner(), result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
-                String plantName = result.getData(); // Get plant name from API
-                searchPlantByNameAndNavigate(plantName);
-            } else {
-                Toast.makeText(requireContext(), "Upload failed: " + result.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            if (result.getStatus() == Result.Status.LOADING) {
+                binding.progressAnalysis.setVisibility(View.VISIBLE);
+                binding.tvAnalysisResult.setText("Analyzing...");
+            }
+            else if (result.getStatus() == Result.Status.SUCCESS) {
+                binding.progressAnalysis.setVisibility(View.GONE);
+                String plantName = result.getData().first;
+                boolean hasDetails = result.getData().second;
+                binding.tvAnalysisResult.setText("Detected Plant: " + plantName);
+                if (hasDetails) {
+                    showNavigationDialog(plantName); // ✅ Show dialog to navigate to plant details
+                } else {
+                    showNavigationDialogNoPlantDetails(plantName); // ✅ Show dialog to search for plant details
+                }
+                // ✅ Call getPlantIdByName only if plantName is successfully received
             }
         });
+
+    }
+
+    private void showNavigationDialog(String plantName) {
+        DialogUtils.showConfirmationDialog(
+                requireContext(),
+                "Plant Analysis",
+                "We detected the plant: " + plantName + ". Do you want to view its details?",
+                "Yes", "No",
+                (dialog, which) -> searchPlantByNameAndNavigate(plantName)
+        );
+    }
+    // not found plant details
+    private void showNavigationDialogNoPlantDetails(String plantName) {
+        DialogUtils.showConfirmationDialog(
+                requireContext(),
+                "Plant Analysis",
+                "No plant details found for: " + plantName + "!",
+                "Yes", "No",
+                (dialog, which) -> searchPlantByNameAndNavigate(plantName)
+        );
     }
 
     private void searchPlantByNameAndNavigate(String plantName) {
-        viewModel.getPlantIdByName(plantName).observe(getViewLifecycleOwner(), result -> {
-            if (result.getStatus() == Result.Status.SUCCESS && result.getData() != null) {
-                String plantId = result.getData().getPlantId(); // ✅ Fixed reference to `plantId`
+        viewModel.getPlantIdByName(plantName).observe(getViewLifecycleOwner(), plantResult -> {
+            if (plantResult.getStatus() == Result.Status.LOADING) {
+                binding.progressAnalysis.setVisibility(View.VISIBLE);
+            }
+            else if (plantResult.getStatus() == Result.Status.SUCCESS) {
+                binding.progressAnalysis.setVisibility(View.GONE);
+                String plantId = plantResult.getData().getPlantId();
 
                 Bundle bundle = new Bundle();
                 bundle.putBoolean("isAnalysis", true);
                 bundle.putString("plantId", plantId);
-
                 Navigation.findNavController(requireView()).navigate(R.id.action_cameraFragment_to_plantDetailsFragment2, bundle);
-            } else {
-                Toast.makeText(requireContext(), "Plant not found: " + plantName, Toast.LENGTH_SHORT).show();
+            }
+            else if (plantResult.getStatus() == Result.Status.ERROR) {
+                binding.progressAnalysis.setVisibility(View.GONE);
             }
         });
     }

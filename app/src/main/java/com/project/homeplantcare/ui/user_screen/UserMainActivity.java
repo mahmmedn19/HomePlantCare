@@ -1,22 +1,27 @@
 package com.project.homeplantcare.ui.user_screen;
 
+import static com.project.homeplantcare.utils.LocalLang.setLocale;
+
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.project.homeplantcare.R;
+import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.ActivityUserMainBinding;
+import com.project.homeplantcare.ui.MainViewModel;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.utils.SharedPrefUtils;
 
 import java.util.Objects;
 
@@ -33,7 +38,7 @@ public class UserMainActivity extends AppCompatActivity implements BaseFragment.
         binding = ActivityUserMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         EdgeToEdge.enable(this);
-
+        setLocale("en", this);
         // Apply system bar insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -81,7 +86,7 @@ public class UserMainActivity extends AppCompatActivity implements BaseFragment.
                 navController.navigate(R.id.homeFragment);
             } else if (item.getItemId() == R.id.cameraFragment) {
                 navController.navigate(R.id.cameraFragment);
-            }  else if (item.getItemId() == R.id.historyFragment) {
+            } else if (item.getItemId() == R.id.historyFragment) {
                 navController.navigate(R.id.historyFragment);
             } else if (item.getItemId() == R.id.favoritesFragment) {
                 navController.navigate(R.id.favoritesFragment);

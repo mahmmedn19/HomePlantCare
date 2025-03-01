@@ -32,7 +32,7 @@
             android:id="@+id/action_cameraFragment_to_plantDetailsFragment2"
             app:destination="@id/plantDetailsFragment2" />
         <argument
-            android:name="isAnaylsis"
+            android:name="isAnalysis"
             app:argType="boolean"
             android:defaultValue="false" />
     </fragment>

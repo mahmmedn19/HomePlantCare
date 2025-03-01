@@ -5,9 +5,28 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 public class ImageUtils {
 
+
+    // Convert File to Bitmap
+    public static Bitmap fileToBitmap(File file) {
+        try {
+            return BitmapFactory.decodeStream(new FileInputStream(file));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Convert Bitmap to Base64 String
+    public static String encodeImageFileToBase64(File file) {
+        Bitmap bitmap = fileToBitmap(file);
+        if (bitmap == null) return null;
+        return encodeImageToBase64(bitmap);
+    }
     // ✅ Compress & Convert Bitmap to Base64 (Reduce Size by 50%)
     public static String encodeImageToBase64(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

@@ -1,6 +1,7 @@
 package com.project.homeplantcare.ui.user_screen.camera_screen;
 
 import android.net.Uri;
+import android.util.Pair;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -26,7 +27,7 @@ public class CameraViewModel extends ViewModel {
         this.appRepository = appRepository;
     }
 
-    public LiveData<Result<String>> uploadImage(File imageUri) {
+    public LiveData<Result<Pair<String, Boolean>>>  uploadImage(File imageUri) {
         return appRepository.uploadImage(imageUri);
     }
 

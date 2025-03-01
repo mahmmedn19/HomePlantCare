@@ -1,6 +1,8 @@
 package com.project.homeplantcare.data.repo.app_repo;
 
+import android.graphics.Bitmap;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -16,6 +18,7 @@ import com.project.homeplantcare.data.models.ResultApi;
 import com.project.homeplantcare.data.repo.network.ApiService;
 import com.project.homeplantcare.data.repo.network.ResponseModel;
 import com.project.homeplantcare.data.utils.AuthUtils;
+import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.data.utils.Result;
 
 import java.io.File;
@@ -399,8 +402,8 @@ public class AppRepositoryImpl implements AppRepository {
     }
 
     @Override
-    public LiveData<Result<String>> uploadImage(File imageFile) {
-        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+    public LiveData<Result<Pair<String, Boolean>>> uploadImage(File imageFile) {
+        MutableLiveData<Result<Pair<String, Boolean>>> result = new MutableLiveData<>();
         result.setValue(Result.loading());
 
         if (imageFile == null || !imageFile.exists()) {
@@ -415,53 +418,63 @@ public class AppRepositoryImpl implements AppRepository {
             Log.d("UploadImage", "File Length: " + imageFile.length());
 
             // ✅ Prepare image for API upload
-            RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), imageFile);
-            MultipartBody.Part part = MultipartBody.Part.createFormData("image", imageFile.getName(), requestBody);
+            RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageFile);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("file", imageFile.getName(), requestFile);
 
-            apiService.uploadImage(part).enqueue(new Callback<ResponseModel>() {
+            apiService.uploadImage(body).enqueue(new Callback<ResponseModel>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseModel> call, @NonNull Response<ResponseModel> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        // ✅ Successfully uploaded image, now save it to Firebase
-                        String analysisDate = String.valueOf(System.currentTimeMillis());
-                        String plantName = response.body().getPredictedClass();
-
-                        if (plantName == null || plantName.isEmpty()) {
-                            result.setValue(Result.error("Invalid response: Plant name is missing"));
-                            return;
-                        }
-
-                        // ✅ Fetch Plant ID by Name
-                        getPlantIdByName(plantName).observeForever(plantIdResult -> {
-                            if (plantIdResult.getStatus() == Result.Status.SUCCESS) {
-                                String plantId = plantIdResult.getData().getPlantId();
-                                if (plantId == null || plantId.isEmpty()) {
-                                    result.setValue(Result.error("Plant not found for analysis"));
-                                    return;
-                                }
-
-                                // ✅ Save analysis result to Firestore
-                                Map<String, Object> analysisData = new HashMap<>();
-                                analysisData.put("imageUrl", imageFile.getAbsolutePath());
-                                analysisData.put("analysisDate", analysisDate);
-                                analysisData.put("plantName", plantName);
-                                analysisData.put("plantId", plantId);
-
-                                firestore.collection("user")
-                                        .document(Objects.requireNonNull(AuthUtils.getCurrentUserId()))
-                                        .collection("analysis_results")
-                                        .document(plantId)
-                                        .set(analysisData)
-                                        .addOnSuccessListener(aVoid -> result.setValue(Result.success("Image uploaded and analysis saved")))
-                                        .addOnFailureListener(e -> result.setValue(Result.error("Image uploaded but failed to save analysis: " + e.getMessage())));
-                            } else {
-                                result.setValue(Result.error("Failed to find plant for analysis"));
-                            }
-                        });
-
-                    } else {
-                        result.setValue(Result.error("Upload failed: " + response.message()));
+                    if (!response.isSuccessful() || response.body() == null) {
+                        result.setValue(Result.error("Server error: " + response.code()));
+                        return;
                     }
+
+                    // ✅ Successfully received prediction
+                    String plantName = response.body().getPredictedClass();
+                    if (plantName == null || plantName.isEmpty()) {
+                        result.setValue(Result.error("Invalid response: No plant name detected"));
+                        return;
+                    }
+
+                    Log.d("UploadImage", "Prediction Received: " + plantName);
+
+                    // ✅ Fetch Plant ID by Name
+                    getPlantIdByName(plantName).observeForever(plantIdResult -> {
+                        if (plantIdResult.getStatus() == Result.Status.SUCCESS) {
+                            String plantId = plantIdResult.getData().getPlantId();
+                            if (plantId == null || plantId.isEmpty()) {
+                                result.setValue(Result.success(new Pair<>(plantName, false))); // ✅ Return plantName + Not Saved
+                                return;
+                            }
+
+                            String imageBase64 = ImageUtils.encodeImageFileToBase64(imageFile);
+                            String analysisDate = String.valueOf(System.currentTimeMillis());
+
+                            // ✅ Prepare Firestore data
+                            Map<String, Object> analysisData = new HashMap<>();
+                            analysisData.put("imageUrl", imageBase64);
+                            analysisData.put("analysisDate", analysisDate);
+                            analysisData.put("plantName", plantName);
+                            analysisData.put("plantId", plantId);
+
+                            // ✅ Save analysis result to Firestore
+                            firestore.collection("user")
+                                    .document(Objects.requireNonNull(AuthUtils.getCurrentUserId()))
+                                    .collection("analysis_results")
+                                    .document(plantId)
+                                    .set(analysisData)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("UploadImage", "🔥 Analysis saved for " + plantName);
+                                        result.setValue(Result.success(new Pair<>(plantName, true))); // ✅ Return plantName + Saved
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("UploadImage", "❌ Failed to save analysis: " + e.getMessage());
+                                        result.setValue(Result.success(new Pair<>(plantName, false))); // ✅ Return plantName + Not Saved
+                                    });
+                        } else {
+                            result.setValue(Result.success(new Pair<>(plantName, false))); // ✅ Return plantName + Not Saved
+                        }
+                    });
                 }
 
                 @Override
@@ -476,6 +489,8 @@ public class AppRepositoryImpl implements AppRepository {
 
         return result;
     }
+
+
 
 
     @Override

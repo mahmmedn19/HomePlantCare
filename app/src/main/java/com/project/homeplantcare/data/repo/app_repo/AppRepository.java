@@ -1,6 +1,7 @@
 package com.project.homeplantcare.data.repo.app_repo;
 
 import android.net.Uri;
+import android.util.Pair;
 
 import androidx.lifecycle.LiveData;
 
@@ -61,7 +62,7 @@ public interface AppRepository {
 
     LiveData<Result<String>> getSingleAILink() ;
 
-    LiveData<Result<String>> uploadImage(File imageUri);
+    LiveData<Result<Pair<String, Boolean>>> uploadImage(File imageFile);
 
     LiveData<Result<PlantItem>> getPlantIdByName(String plantName);
 

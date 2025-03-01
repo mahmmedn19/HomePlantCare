@@ -1,13 +1,17 @@
 package com.project.homeplantcare.di;
 
+import android.content.Context;
+
 import com.google.gson.GsonBuilder;
 import com.project.homeplantcare.data.repo.network.ApiService;
+import com.project.homeplantcare.utils.SharedPrefUtils;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -18,13 +22,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    private static final String DEFAULT_BASE_URL = "https://edcc-34-105-42-79.ngrok-free.app/"; // ✅ Default Base URL
-
     @Provides
     @Singleton
-    public static Retrofit provideRetrofit(GsonConverterFactory gson, OkHttpClient okHttpClient) {
+    public static Retrofit provideRetrofit(@ApplicationContext Context context, GsonConverterFactory gson, OkHttpClient okHttpClient) {
+        String baseUrl = SharedPrefUtils.getAiLink(context); // ✅ Get AI Link from SharedPreferences
+
         return new Retrofit.Builder()
-                .baseUrl(DEFAULT_BASE_URL) // ✅ Keep a default base URL
+                .baseUrl(baseUrl) // ✅ Use AI Link as Base URL
                 .addConverterFactory(gson)
                 .client(okHttpClient)
                 .build();

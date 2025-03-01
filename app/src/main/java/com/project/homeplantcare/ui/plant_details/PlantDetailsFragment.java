@@ -59,7 +59,7 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
         setToolbarTitle("Plant Details");
         showBackButton(true);
 
-        boolean isAnalysis = getArguments() != null && getArguments().getBoolean("isAnaylsis", false);
+        boolean isAnalysis = getArguments() != null && getArguments().getBoolean("isAnalysis", false);
 
         if (isAnalysis) {
             binding.addToHistory.setVisibility(View.VISIBLE);

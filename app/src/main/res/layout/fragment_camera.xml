@@ -29,7 +29,7 @@
                     android:layout_width="250dp"
                     android:layout_height="250dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/hoya4"
+                    android:src="@drawable/image_camera"
                     android:background="@drawable/rounded_background"
                     android:contentDescription="@string/image_preview"
                     app:layout_constraintTop_toTopOf="parent"
@@ -46,22 +46,13 @@
                     android:text="@string/ai_analysis_description"
                     android:textSize="14sp"
                     android:textColor="@color/md_theme_secondary"
-                    android:gravity="start"
+                    android:gravity="center"
                     app:layout_constraintTop_toBottomOf="@id/img_preview"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="24dp"/>
 
-                <!-- Loading Indicator -->
-                <ProgressBar
-                    android:id="@+id/progress_analysis"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintTop_toBottomOf="@id/tv_description"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginTop="16dp"/>
+
 
                 <!-- Analysis Result Text -->
                 <TextView
@@ -72,7 +63,8 @@
                     android:textStyle="bold"
                     android:textColor="@android:color/black"
                     android:gravity="center"
-                    app:layout_constraintTop_toBottomOf="@id/progress_analysis"
+                    android:text="Result will be displayed here"
+                    app:layout_constraintTop_toBottomOf="@id/tv_description"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="12dp"/>
@@ -124,6 +116,16 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
+                <!-- Loading Indicator -->
+                <ProgressBar
+                    android:id="@+id/progress_analysis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_analyze" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>

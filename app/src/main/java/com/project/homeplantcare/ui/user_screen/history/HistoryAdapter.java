@@ -10,7 +10,10 @@ import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.databinding.ItemHistoryBinding;
 import com.project.homeplantcare.ui.base.BaseAdapter;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class HistoryAdapter extends BaseAdapter<HistoryItem, ItemHistoryBinding> {
 
@@ -40,8 +43,10 @@ public class HistoryAdapter extends BaseAdapter<HistoryItem, ItemHistoryBinding>
         // Set plant name
         binding.tvPlantName.setText(currentItem.getPlantName());
 
+        String analysisDate = formatDate(currentItem.getAnalysisDate());
+
         // Set analysis date
-        binding.tvAnalysisDate.setText(currentItem.getAnalysisDate());
+        binding.tvAnalysisDate.setText("Analysis date: " + analysisDate);
 
         // Display diseases
         if (currentItem.getDiseaseName() != null && !currentItem.getDiseaseName().isEmpty()) {
@@ -60,7 +65,18 @@ public class HistoryAdapter extends BaseAdapter<HistoryItem, ItemHistoryBinding>
         binding.executePendingBindings();
     }
 
-
+    // ✅ Convert String timestamp to formatted date
+    private String formatDate(String timestampString) {
+        try {
+            long timestamp = Long.parseLong(timestampString); // Convert String to long
+            Date date = new Date(timestamp); // Convert to Date
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+            return sdf.format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Invalid date"; // Fallback in case of error
+        }
+    }
     public void updateList(List<HistoryItem> newList) {
         items.clear();
         items.addAll(newList);
