@@ -426,7 +426,12 @@ public class AppRepositoryImpl implements AppRepository {
 
                     // ✅ Successfully received prediction
                     String plantName = response.body().getPredictedClass();
-                    if (plantName == null || plantName.isEmpty()) {
+                    if (plantName.equalsIgnoreCase("Unknown")) {
+                        result.setValue(Result.success(new Pair<>(plantName, false))); // ✅ Return plantName + Not Saved
+                        return;
+                    }
+
+                    if (plantName.isEmpty()) {
                         result.setValue(Result.error("Invalid response: No plant name detected"));
                         return;
                     }

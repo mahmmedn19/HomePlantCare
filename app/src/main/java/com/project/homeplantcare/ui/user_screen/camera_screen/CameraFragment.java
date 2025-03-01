@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -56,7 +59,6 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
         showBackButton(false);
 
         viewModel = new ViewModelProvider(this).get(CameraViewModel.class);
-
         binding.btnCapture.setOnClickListener(v -> openCamera());
         binding.btnUpload.setOnClickListener(v -> openGallery());
         binding.btnAnalyze.setOnClickListener(v -> uploadImage());
@@ -125,6 +127,13 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                 binding.progressAnalysis.setVisibility(View.GONE);
                 String plantName = result.getData().first;
                 boolean hasDetails = result.getData().second;
+                // ✅ If Plant is "Unknown", show "Not Found" dialog immediately
+                if (plantName.equalsIgnoreCase("Unknown")) {
+                    showNotFoundDialog();
+                    binding.tvAnalysisResult.setText("Plant Not Found");
+                    binding.progressAnalysis.setVisibility(View.GONE);
+                    return;
+                }
 
                 binding.tvAnalysisResult.setText("Detected Plant: " + plantName);
                 if (hasDetails) {
@@ -163,6 +172,16 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
         );
     }
 
+    private void showNotFoundDialog() {
+        DialogUtils.showConfirmationDialog(
+                requireContext(),
+                "Plant Not Found",
+                "The detected plant is unknown. Try selecting another image.",
+                "OK", null,
+                (dialog, which) -> resetImageSelection()
+        );
+    }
+
     private void searchPlantByNameAndNavigate(String plantName) {
         viewModel.getPlantIdByName(plantName).observe(getViewLifecycleOwner(), plantResult -> {
             if (plantResult.getStatus() == Result.Status.LOADING) {
@@ -175,6 +194,7 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                 Bundle bundle = new Bundle();
                 bundle.putBoolean("isAnalysis", true);
                 bundle.putString("plantId", plantId);
+                resetImageSelection();
                 Navigation.findNavController(requireView()).navigate(R.id.action_cameraFragment_to_plantDetailsFragment2, bundle);
             }
             else if (plantResult.getStatus() == Result.Status.ERROR) {
@@ -182,4 +202,12 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
             }
         });
     }
+
+
+    private void resetImageSelection() {
+        imageUri = null;
+        binding.imgPreview.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_camera, null));
+        binding.progressAnalysis.setVisibility(View.GONE);
+    }
+
 }
