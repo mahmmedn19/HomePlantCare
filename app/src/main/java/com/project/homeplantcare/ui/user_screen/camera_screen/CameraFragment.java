@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -82,15 +83,8 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
 
 
     private void openGallery() {
-        ImagePicker.with(this)
-                .galleryOnly()
-                .crop()
-                .compress(1024)
-                .maxResultSize(1080, 1080)
-                .createIntent(intent -> {
-                    imagePickerLauncher.launch(intent);
-                    return null; // Java compatibility fix
-                });
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagePickerLauncher.launch(intent);
     }
 
     private void uploadImage() {
