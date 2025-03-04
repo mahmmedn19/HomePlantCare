@@ -35,7 +35,7 @@ public class InputValidator {
             setError(textInputLayout, errorMessage);
             return false;
         } else if (text.length() < 4) {
-            setError(textInputLayout, errorMessage);
+            setError(textInputLayout, "At least 4 char");
             return false;
         }
         clearError(textInputLayout);
