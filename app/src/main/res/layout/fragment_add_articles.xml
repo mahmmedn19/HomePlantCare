@@ -49,6 +49,7 @@
 
                 <!-- Article Title -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilArticleTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -63,6 +64,7 @@
 
                 <!-- Content Preview -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilContentPreview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -78,6 +80,7 @@
 
                 <!-- Date Picker -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"

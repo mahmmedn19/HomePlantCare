@@ -107,7 +107,24 @@
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_invalid_email" />
+
+        <!-- Forgot Password TextView -->
+        <TextView
+            android:id="@+id/tv_invalid_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            android:text="Invalid email or password"
+            android:textColor="@color/md_theme_error"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/password_input_layout" />
+
 
         <!-- Checkbox Group -->
         <androidx.appcompat.widget.LinearLayoutCompat

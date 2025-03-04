@@ -76,6 +76,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center"
+                    android:layout_marginHorizontal="64dp"
                     android:layout_marginTop="24dp"
                     app:layout_constraintTop_toBottomOf="@id/tv_analysis_result"
                     app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +85,7 @@
                     <!-- Upload Button -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_upload"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/upload_image"
                         app:icon="@drawable/ic_upload"
@@ -92,15 +93,6 @@
                         android:textColor="@android:color/white"
                         android:layout_marginEnd="12dp"/>
 
-                    <!-- Capture Button -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_capture"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/capture"
-                        app:icon="@drawable/ic_camera"
-                        app:backgroundTint="@color/md_theme_primary"
-                        android:textColor="@android:color/white"/>
                 </LinearLayout>
 
                 <!-- Analyze Button -->

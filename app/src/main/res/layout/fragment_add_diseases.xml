@@ -22,6 +22,7 @@
 
             <!-- Disease Name -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_disease_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -37,6 +38,7 @@
 
             <!-- Symptoms -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_disease_symptoms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -52,6 +54,7 @@
 
             <!-- Remedies -->
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_disease_remedies"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"

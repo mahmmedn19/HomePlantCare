@@ -51,6 +51,7 @@
 
                 <!-- Plant Name -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/plantNameLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -66,6 +67,7 @@
 
                 <!-- Description -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/plantDescriptionLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -89,6 +91,7 @@
                     <TableRow>
                         <!-- Light Requirement -->
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/lightRequirementLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
@@ -105,6 +108,7 @@
 
                         <!-- Water Requirement -->
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/waterRequirementLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -124,6 +128,7 @@
                     <TableRow>
                         <!-- Soil Requirement -->
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/soilRequirementLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
@@ -141,6 +146,7 @@
 
                         <!-- Weather Requirement -->
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/weatherRequirementLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"

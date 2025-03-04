@@ -11,6 +11,10 @@ import com.project.homeplantcare.data.models.DiseaseItem;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentAddDiseasesBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.utils.InputValidator;
+
+import java.util.Objects;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -101,13 +105,11 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
     }
 
     private boolean validateFields() {
-        return !isEmpty(binding.etDiseaseName.getText().toString()) &&
-                !isEmpty(binding.etDiseaseSymptoms.getText().toString()) &&
-                !isEmpty(binding.etDiseaseRemedies.getText().toString());
-    }
+        boolean isValidName = InputValidator.validateField(binding.tilDiseaseName, Objects.requireNonNull(binding.etDiseaseName.getText()).toString(), "Name is required");
+        boolean isValidSymptoms = InputValidator.validateField(binding.tilDiseaseSymptoms, Objects.requireNonNull(binding.etDiseaseSymptoms.getText()).toString(), "Symptoms are required");
+        boolean isValidRemedies = InputValidator.validateField(binding.tilDiseaseRemedies, Objects.requireNonNull(binding.etDiseaseRemedies.getText()).toString(), "Remedies are required");
 
-    private boolean isEmpty(String value) {
-        return value == null || value.trim().isEmpty();
+        return isValidName && isValidSymptoms && isValidRemedies;
     }
 
     private void showToast(String message) {

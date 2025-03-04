@@ -25,6 +25,7 @@ import com.project.homeplantcare.databinding.DialogDiseaseSelectionBinding;
 import com.project.homeplantcare.databinding.FragmentAddPlantAdminBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.utils.DialogUtils;
+import com.project.homeplantcare.utils.InputValidator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,18 +101,24 @@ public class AddPlaintAdminFragment extends BaseFragment<FragmentAddPlantAdminBi
 
     private void setupListeners() {
         binding.save.setOnClickListener(v -> {
-            if (plantId != null) {
-                // Update plant logic
-                viewModel.updatePlant(plantId, getPlantFromForm());
+            if (validateFields()) {
+                if (plantId != null) {
+                    viewModel.updatePlant(plantId, getPlantFromForm());
+                } else {
+                    viewModel.addPlant(getPlantFromForm());
+                }
             } else {
-                // Add new plant logic
-                viewModel.addPlant(getPlantFromForm());
+                showToast("Please fill all required fields.");
             }
         });
 
         binding.btnUploadImage.setOnClickListener(v -> openGallery());
 
         binding.btnSelectDiseases.setOnClickListener(v -> showDiseaseSelectionDialog());
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     private PlantItem getPlantFromForm() {
@@ -197,6 +204,17 @@ public class AddPlaintAdminFragment extends BaseFragment<FragmentAddPlantAdminBi
             dialog.dismiss();
         });
     }
+    private boolean validateFields() {
+        boolean isValidName = InputValidator.validateField(binding.plantNameLayout, binding.etPlantName.getText().toString(), "Plant name is required");
+        boolean isValidDescription = InputValidator.validateField(binding.plantDescriptionLayout, binding.etPlantDescription.getText().toString(), "Description is required");
+        boolean isValidLight = InputValidator.validateField(binding.lightRequirementLayout, binding.etLightRequirement.getText().toString(), "Light requirement is required");
+        boolean isValidWater = InputValidator.validateField(binding.waterRequirementLayout, binding.etWaterRequirement.getText().toString(), "Water requirement is required");
+        boolean isValidSoil = InputValidator.validateField(binding.soilRequirementLayout, binding.etSoilRequirement.getText().toString(), "Soil requirement is required");
+        boolean isValidWeather = InputValidator.validateField(binding.weatherRequirementLayout, binding.etWeatherRequirement.getText().toString(), "Weather requirement is required");
+
+        return isValidName && isValidDescription && isValidLight && isValidWater && isValidSoil && isValidWeather;
+    }
+
 
     private void observeViewModel() {
         viewModel.getIsPlantSaved().observe(getViewLifecycleOwner(), isSaved -> {

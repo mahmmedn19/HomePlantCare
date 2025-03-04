@@ -112,10 +112,12 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
                 // Show loading spinner and disable the register button
                 showToast("Logging in...");  // Update toast with loading message
                 binding.progressBar.setVisibility(View.VISIBLE);
+                binding.tvInvalidEmail.setVisibility(View.GONE);
                 binding.btnRegister.setEnabled(false);
             } else if (result.getStatus() == Result.Status.SUCCESS) {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.btnRegister.setEnabled(true);
+                binding.tvInvalidEmail.setVisibility(View.GONE);
                 showToast(successMessage);
                 startActivity(new Intent(requireContext(), targetActivity));
                 requireActivity().finish();
@@ -123,7 +125,7 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
                 // Hide loading spinner and enable the register button
                 binding.progressBar.setVisibility(View.GONE);
                 binding.btnRegister.setEnabled(true);
-                showToast(result.getErrorMessage());
+                binding.tvInvalidEmail.setVisibility(View.VISIBLE);
             }
         });
     }

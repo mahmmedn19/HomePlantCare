@@ -20,6 +20,7 @@ import com.project.homeplantcare.data.models.ArticleItem;
 import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.databinding.FragmentAddArticlesBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.utils.InputValidator;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -94,10 +95,13 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
     }
 
     private boolean validateFields() {
-        return !Objects.requireNonNull(binding.etArticleTitle.getText()).toString().trim().isEmpty()
-                && !Objects.requireNonNull(binding.etContentPreview.getText()).toString().trim().isEmpty()
-                && !Objects.requireNonNull(binding.etDate.getText()).toString().trim().isEmpty();
+        boolean isValidTitle = InputValidator.validateField(binding.tilArticleTitle, Objects.requireNonNull(binding.etArticleTitle.getText()).toString(), "Title is required");
+        boolean isValidContent = InputValidator.validateField(binding.tilContentPreview, Objects.requireNonNull(binding.etContentPreview.getText()).toString(), "Content preview is required");
+        boolean isValidDate = InputValidator.validateField(binding.tilDate, Objects.requireNonNull(binding.etDate.getText()).toString(), "Date is required");
+
+        return isValidTitle && isValidContent && isValidDate;
     }
+
 
     private ArticleItem getArticleData() {
         ArticleItem item = new ArticleItem();

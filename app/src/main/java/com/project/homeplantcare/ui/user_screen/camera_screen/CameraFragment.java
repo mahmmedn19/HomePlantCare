@@ -59,7 +59,6 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
         showBackButton(false);
 
         viewModel = new ViewModelProvider(this).get(CameraViewModel.class);
-        binding.btnCapture.setOnClickListener(v -> openCamera());
         binding.btnUpload.setOnClickListener(v -> openGallery());
         binding.btnAnalyze.setOnClickListener(v -> uploadImage());
 
@@ -80,17 +79,7 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                 }
             });
 
-    private void openCamera() {
-        ImagePicker.with(this)
-                .cameraOnly()
-                .crop()
-                .compress(1024) // Compress to 1MB
-                .maxResultSize(1080, 1080)
-                .createIntent(intent -> {
-                    imagePickerLauncher.launch(intent);
-                    return null; // Java compatibility fix
-                });
-    }
+
 
     private void openGallery() {
         ImagePicker.with(this)

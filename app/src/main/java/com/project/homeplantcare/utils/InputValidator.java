@@ -23,10 +23,26 @@ public class InputValidator {
         if (isEmpty(text)) {
             setError(textInputLayout, "This field cannot be empty");
             return false;
+        } else if (text.length() < 4) {
+            setError(textInputLayout, "At least 4 char");
+            return false;
         }
         clearError(textInputLayout);
         return true;
     }
+    public static boolean validateField(TextInputLayout textInputLayout, String text, String errorMessage) {
+        if (isEmpty(text)) {
+            setError(textInputLayout, errorMessage);
+            return false;
+        } else if (text.length() < 4) {
+            setError(textInputLayout, errorMessage);
+            return false;
+        }
+        clearError(textInputLayout);
+        return true;
+    }
+
+
 
     public static boolean validateEmail(TextInputLayout emailTextInputLayout, String email) {
         if (isEmpty(email)) {
