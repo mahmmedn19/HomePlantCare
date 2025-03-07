@@ -34,16 +34,26 @@ public class InputValidator {
         if (isEmpty(text)) {
             setError(textInputLayout, errorMessage);
             return false;
-        } else if (!text.matches("^[a-zA-Z @#$%^&+=!_.*()-]+$\n")) { // Allows letters, spaces, and special characters
-            setError(textInputLayout, "Only letters are allowed");
+        }
+
+        // Remove hidden characters and trim spaces
+        text = text.replaceAll("[^\\p{Print}]", "").trim();
+
+        // Regex: Allows everything EXCEPT numbers (0-9)
+        if (text.matches(".*\\d.*")) { // Checks if there is ANY digit in the text
+            setError(textInputLayout, "Numbers are not allowed");
             return false;
-        } else if (text.length() < 4) {
+        }
+
+        if (text.length() < 4) {
             setError(textInputLayout, "At least 4 characters required");
             return false;
         }
+
         clearError(textInputLayout);
         return true;
     }
+
 
 
 
