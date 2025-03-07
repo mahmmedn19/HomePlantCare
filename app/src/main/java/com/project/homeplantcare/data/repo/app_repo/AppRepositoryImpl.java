@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -489,8 +490,6 @@ public class AppRepositoryImpl implements AppRepository {
     }
 
 
-
-
     @Override
     public LiveData<Result<PlantItem>> getPlantIdByName(String plantName) {
         MutableLiveData<Result<PlantItem>> result = new MutableLiveData<>();
@@ -750,4 +749,17 @@ public class AppRepositoryImpl implements AppRepository {
                 .addOnFailureListener(e -> result.setValue(Result.error("Failed to remove from history")));
         return result;
     }
+
+public void addFakeArticlesToFirestore() {
+    List<ArticleItem> fakeArticles = new ArrayList<>();
+
+    for (ArticleItem article : fakeArticles) {
+        if (article.getArticleId() == null || article.getArticleId().isEmpty()) {
+            article.setArticleId(UUID.randomUUID().toString()); // Assign a new random ID
+        }
+        firestore.collection("articles").document(article.getArticleId()).set(article)
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Fake article added: " + article.getTitle()))
+                .addOnFailureListener(e -> Log.e("Firestore", "Error adding fake article: " + article.getTitle(), e));
+    }
+}
 }

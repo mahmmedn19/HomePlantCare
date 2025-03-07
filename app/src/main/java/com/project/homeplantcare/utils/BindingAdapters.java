@@ -2,10 +2,12 @@ package com.project.homeplantcare.utils;
 
 
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.databinding.BindingAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.models.DiseaseItem;
 import com.project.homeplantcare.ui.plant_details.DiseasesAdapter;
 
@@ -36,6 +38,12 @@ public class BindingAdapters {
     public static void hideWhenEmptyList(View view, int listSize) {
         if (listSize == 0) view.setVisibility(View.GONE);
         else view.setVisibility(View.VISIBLE);
+    }
+
+    @BindingAdapter("statusTextColor")
+    public static void setStatusTextColor(TextView textView, boolean isBlocked) {
+        int color = isBlocked ? R.color.md_theme_error : R.color.md_theme_primary;
+        textView.setTextColor(textView.getContext().getResources().getColor(color));
     }
 /*    @BindingAdapter("userResult")
     public static void bindUserResult(TextView textView, UserResult<Integer> userResult) {

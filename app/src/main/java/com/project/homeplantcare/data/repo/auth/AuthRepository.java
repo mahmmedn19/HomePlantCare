@@ -6,6 +6,8 @@ import com.project.homeplantcare.data.models.AdminProfile;
 import com.project.homeplantcare.data.models.User;
 import com.project.homeplantcare.data.utils.Result;
 
+import java.util.List;
+
 public interface AuthRepository {
     // LOGIN ADMIN
     LiveData<Result<String>> loginAdmin(String email, String password);
@@ -28,4 +30,9 @@ public interface AuthRepository {
     LiveData<Result<User>> getUserProfile();
     LiveData<Result<String>> updateUserProfile(String newName);
     LiveData<Result<String>> updateUserPassword(String oldPassword, String newPassword);
+
+    // User Management
+    LiveData<Result<List<User>>> getAllUsers();  // Fetch all users
+    LiveData<Result<String>> blockUser(String userId); // Block a user
+    LiveData<Result<String>> unblockUser(String userId); // Unblock a user
 }

@@ -11,12 +11,16 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.project.homeplantcare.data.models.AdminProfile;
 import com.project.homeplantcare.data.models.User;
 import com.project.homeplantcare.data.utils.Result;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -80,12 +84,20 @@ public class AuthRepositoryImpl implements AuthRepository {
                     })
                     .addOnFailureListener(e -> result.setValue(Result.error("Failed to check admin: " + e.getMessage())));
         } else {
-            // If user is not an admin, check in the 'users' collection
+            // Check if the user is in the 'users' collection
             db.collection("user").whereEqualTo("email", email).get()
                     .addOnSuccessListener(userSnapshot -> {
                         if (!userSnapshot.isEmpty()) {
-                            // User is a regular user
-                            result.setValue(Result.success("User login successful."));
+                            // Extract user document
+                            DocumentSnapshot userDoc = userSnapshot.getDocuments().get(0);
+
+                            // Check if the user is blocked
+                            Boolean isBlocked = userDoc.getBoolean("isBlocked");
+                            if (isBlocked != null && isBlocked) {
+                                result.setValue(Result.error("User is blocked. Please contact support."));
+                            } else {
+                                result.setValue(Result.success("User login successful."));
+                            }
                         } else {
                             result.setValue(Result.error("User not found."));
                         }
@@ -112,7 +124,7 @@ public class AuthRepositoryImpl implements AuthRepository {
 
     private void saveUserToFirestore(String userId, String username, String email, MutableLiveData<Result<String>> result) {
         // Save user data to Firestore
-        User user = new User(username, email, userId);  // Include UID in the User object
+        User user = new User(username, email, userId,false);  // Include UID in the User object
         db.collection("user").document(userId)  // Use userId as document ID
                 .set(user)
                 .addOnSuccessListener(aVoid -> result.setValue(Result.success("User registered and data saved successfully!")))
@@ -251,7 +263,50 @@ public class AuthRepositoryImpl implements AuthRepository {
 
         return result;
     }
+    @Override
+    public LiveData<Result<List<User>>> getAllUsers() {
+        MutableLiveData<Result<List<User>>> resultLiveData = new MutableLiveData<>();
+        resultLiveData.setValue(Result.loading());
 
+        db.collection("user")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<User> userList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        User user = document.toObject(User.class);
+                        userList.add(user);
+                    }
+                    resultLiveData.setValue(Result.success(userList));
+                })
+                .addOnFailureListener(e -> resultLiveData.setValue(Result.error("Failed to fetch users: " + e.getMessage())));
+
+        return resultLiveData;
+    }
+
+    @Override
+    public LiveData<Result<String>> blockUser(String userId) {
+        MutableLiveData<Result<String>> resultLiveData = new MutableLiveData<>();
+        resultLiveData.setValue(Result.loading());
+
+        db.collection("user").document(userId)
+                .update("isBlocked", true)
+                .addOnSuccessListener(aVoid -> resultLiveData.setValue(Result.success("User blocked successfully.")))
+                .addOnFailureListener(e -> resultLiveData.setValue(Result.error("Failed to block user: " + e.getMessage())));
+
+        return resultLiveData;
+    }
+
+    @Override
+    public LiveData<Result<String>> unblockUser(String userId) {
+        MutableLiveData<Result<String>> resultLiveData = new MutableLiveData<>();
+        resultLiveData.setValue(Result.loading());
+        db.collection("user").document(userId)
+                .update("isBlocked", false)
+                .addOnSuccessListener(aVoid -> resultLiveData.setValue(Result.success("User unblocked successfully.")))
+                .addOnFailureListener(e -> resultLiveData.setValue(Result.error("Failed to unblock user: " + e.getMessage())));
+
+        return resultLiveData;
+    }
     private String getFirebaseAuthErrorMessage(Exception e) {
         if (e instanceof FirebaseAuthUserCollisionException) {
             return "This email is already registered.";
