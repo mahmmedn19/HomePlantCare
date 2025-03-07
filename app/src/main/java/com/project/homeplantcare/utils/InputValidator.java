@@ -16,7 +16,7 @@ public class InputValidator {
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$";
     private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
     // Chars only and 4-20 characters long
-    private static final String USERNAME_REGEX  = "^[a-zA-Z]{4,20}$";
+    private static final String USERNAME_REGEX  = "^[a-zA-Z]+$"; // Only letters allowed, no numbers or special characters
     private static final Map<EditText, TextWatcher> textWatcherMap = new HashMap<>();
 
     public static boolean validateData(TextInputLayout textInputLayout, String text) {
@@ -34,8 +34,11 @@ public class InputValidator {
         if (isEmpty(text)) {
             setError(textInputLayout, errorMessage);
             return false;
+        } else if (!text.matches("^[a-zA-Z @#$%^&+=!_.*()-]+$\n")) { // Allows letters, spaces, and special characters
+            setError(textInputLayout, "Only letters are allowed");
+            return false;
         } else if (text.length() < 4) {
-            setError(textInputLayout, "At least 4 char");
+            setError(textInputLayout, "At least 4 characters required");
             return false;
         }
         clearError(textInputLayout);
@@ -87,13 +90,17 @@ public class InputValidator {
         if (isEmpty(name)) {
             setError(nameTextInputLayout, "Name field cannot be empty");
             return false;
+        } else if (name.length() < 4 || name.length() > 20) {
+            setError(nameTextInputLayout, "Name must be between 4 and 20 letters");
+            return false;
         } else if (!isValidUsernameFormat(name)) {
-            setError(nameTextInputLayout, "Name can only contain 4 letters");
+            setError(nameTextInputLayout, "Name can only contain letters");
             return false;
         }
         clearError(nameTextInputLayout);
         return true;
     }
+
 
     private static boolean isEmpty(String input) {
         return TextUtils.isEmpty(input);
