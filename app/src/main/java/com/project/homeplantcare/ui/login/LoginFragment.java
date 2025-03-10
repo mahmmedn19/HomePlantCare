@@ -126,6 +126,7 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.btnRegister.setEnabled(true);
                 binding.tvInvalidEmail.setVisibility(View.VISIBLE);
+                binding.tvInvalidEmail.setText(result.getErrorMessage());
             }
         });
     }
@@ -133,6 +134,4 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
     private void showToast(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
-
-
 }
