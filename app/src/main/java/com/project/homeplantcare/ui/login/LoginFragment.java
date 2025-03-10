@@ -43,43 +43,7 @@ public class LoginFragment extends BaseFragment<FragmentLoginBinding> {
         return viewModel;
     }
 
-    @Override
-    protected void setup() {
-        super.setup();
-        setToolbarVisibility(true);
-        setToolbarTitle("Login");
-        showBackButton(true);
 
-        // Initialize real-time validation on email and password fields
-        InputValidator.clearErrorOnTextChange(binding.emailInputLayout);
-        InputValidator.clearErrorOnTextChange(binding.passwordInputLayout);
-
-        binding.cbAdmin.setChecked(true);
-
-        binding.tvForgotPassword.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_forgetPasswordFragment)
-        );
-
-        binding.cbUser.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                binding.cbAdmin.setChecked(false);
-                binding.btnRegister.setVisibility(View.VISIBLE);
-            }
-        });
-
-        binding.cbAdmin.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                binding.cbUser.setChecked(false);
-                binding.btnRegister.setVisibility(View.GONE);
-            }
-        });
-
-        binding.btnLogin.setOnClickListener(v -> handleLogin());
-
-        binding.btnRegister.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_registerFragment)
-        );
-    }
 
     private void handleLogin() {
         String email = Objects.requireNonNull(binding.etEmail.getText()).toString().trim();
