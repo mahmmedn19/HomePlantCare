@@ -86,6 +86,7 @@ public class AddLinkFragment extends BaseFragment<FragmentAddLinkBinding> {
     }
     private void updateNetworkBaseUrl(String newBaseUrl) {
         // ✅ Reinitialize Retrofit when AI link changes
+        NetworkModule.BASE_URL = newBaseUrl;
         NetworkModule.refreshRetrofitInstance(newBaseUrl);
     }
 }

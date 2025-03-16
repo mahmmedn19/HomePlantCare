@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Tool
 
     private void updateNetworkBaseUrl(String newBaseUrl) {
         // ✅ Reinitialize Retrofit when AI link changes
+        NetworkModule.BASE_URL = newBaseUrl;
         NetworkModule.refreshRetrofitInstance(newBaseUrl);
     }
 }

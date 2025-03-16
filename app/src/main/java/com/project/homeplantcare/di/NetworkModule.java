@@ -23,30 +23,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetworkModule {
 
     private static Retrofit retrofitInstance;
+    public static String BASE_URL = "https://default-url.com"; // ✅ Default base URL (Change this as needed)
 
     @Provides
     @Singleton
-    public static Retrofit provideRetrofit(@ApplicationContext Context context, GsonConverterFactory gson, OkHttpClient okHttpClient) {
-        String baseUrl = SharedPrefUtils.getAiLink(context);
-        return getRetrofitInstance(baseUrl, gson, okHttpClient);
-    }
-    public static synchronized void refreshRetrofitInstance(String newBaseUrl) {
-        retrofitInstance = new Retrofit.Builder()
-                .baseUrl(newBaseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(new OkHttpClient.Builder().build())
+    public static Retrofit provideRetrofit(GsonConverterFactory gson, OkHttpClient okHttpClient) {
+        return new Retrofit.Builder()
+                .baseUrl(BASE_URL) // ✅ Uses dynamically updated BASE_URL
+                .addConverterFactory(gson)
+                .client(okHttpClient)
                 .build();
     }
-
-    private static synchronized Retrofit getRetrofitInstance(String baseUrl, GsonConverterFactory gson, OkHttpClient okHttpClient) {
-        if (retrofitInstance == null) {
-            retrofitInstance = new Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .addConverterFactory(gson)
-                    .client(okHttpClient)
-                    .build();
+    public static synchronized void refreshRetrofitInstance(String newBaseUrl) {
+        if (newBaseUrl != null && !newBaseUrl.isEmpty() && !newBaseUrl.equals(BASE_URL)) {
+            BASE_URL = newBaseUrl; // ✅ Update static base URL
         }
-        return retrofitInstance;
     }
     @Provides
     public static GsonConverterFactory provideGson() {
@@ -64,6 +55,27 @@ public class NetworkModule {
     public static OkHttpClient provideOkHttpClient(HttpLoggingInterceptor loggingInterceptor) {
         return new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
+                .addInterceptor(chain -> {
+                    okhttp3.Request originalRequest = chain.request();
+
+                    // ✅ Parse base URL correctly
+                    okhttp3.HttpUrl baseHttpUrl = okhttp3.HttpUrl.parse(BASE_URL);
+                    if (baseHttpUrl == null) {
+                        throw new IllegalArgumentException("Invalid Base URL: " + BASE_URL);
+                    }
+
+                    // ✅ Build a new request with the correct host
+                    okhttp3.HttpUrl newUrl = originalRequest.url().newBuilder()
+                            .scheme(baseHttpUrl.scheme()) // ✅ Keep the same scheme (http/https)
+                            .host(baseHttpUrl.host()) // ✅ Set correct host dynamically
+                            .build();
+
+                    okhttp3.Request newRequest = originalRequest.newBuilder()
+                            .url(newUrl)
+                            .build();
+
+                    return chain.proceed(newRequest);
+                })
                 .build();
     }
 
