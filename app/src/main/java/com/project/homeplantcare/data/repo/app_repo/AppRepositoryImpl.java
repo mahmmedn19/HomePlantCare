@@ -377,7 +377,7 @@ public class AppRepositoryImpl implements AppRepository {
 
         firestore.collection("ai_links").document("single_ai_link") // Use a fixed document ID
                 .set(Collections.singletonMap("link", link)) // Store as a key-value pair
-                .addOnSuccessListener(aVoid -> result.setValue(Result.success("AI link updated successfully.")))
+                .addOnSuccessListener(aVoid -> result.setValue(Result.success(link)))
                 .addOnFailureListener(e -> result.setValue(Result.error("Failed to update AI link: " + e.getMessage())));
 
         return result;

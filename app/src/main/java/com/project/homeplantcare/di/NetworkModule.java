@@ -22,18 +22,32 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
+    private static Retrofit retrofitInstance;
+
     @Provides
     @Singleton
     public static Retrofit provideRetrofit(@ApplicationContext Context context, GsonConverterFactory gson, OkHttpClient okHttpClient) {
-        String baseUrl = SharedPrefUtils.getAiLink(context); // ✅ Get AI Link from SharedPreferences
-
-        return new Retrofit.Builder()
-                .baseUrl(baseUrl) // ✅ Use AI Link as Base URL
-                .addConverterFactory(gson)
-                .client(okHttpClient)
+        String baseUrl = SharedPrefUtils.getAiLink(context);
+        return getRetrofitInstance(baseUrl, gson, okHttpClient);
+    }
+    public static synchronized void refreshRetrofitInstance(String newBaseUrl) {
+        retrofitInstance = new Retrofit.Builder()
+                .baseUrl(newBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(new OkHttpClient.Builder().build())
                 .build();
     }
 
+    private static synchronized Retrofit getRetrofitInstance(String baseUrl, GsonConverterFactory gson, OkHttpClient okHttpClient) {
+        if (retrofitInstance == null) {
+            retrofitInstance = new Retrofit.Builder()
+                    .baseUrl(baseUrl)
+                    .addConverterFactory(gson)
+                    .client(okHttpClient)
+                    .build();
+        }
+        return retrofitInstance;
+    }
     @Provides
     public static GsonConverterFactory provideGson() {
         return GsonConverterFactory.create(new GsonBuilder().create());

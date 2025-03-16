@@ -124,7 +124,7 @@ public class AuthRepositoryImpl implements AuthRepository {
 
     private void saveUserToFirestore(String userId, String username, String email, MutableLiveData<Result<String>> result) {
         // Save user data to Firestore
-        User user = new User(username, email, userId,false);  // Include UID in the User object
+        User user = new User(username, email, userId);  // Include UID in the User object
         db.collection("user").document(userId)  // Use userId as document ID
                 .set(user)
                 .addOnSuccessListener(aVoid -> result.setValue(Result.success("User registered and data saved successfully!")))
@@ -283,30 +283,7 @@ public class AuthRepositoryImpl implements AuthRepository {
         return resultLiveData;
     }
 
-    @Override
-    public LiveData<Result<String>> blockUser(String userId) {
-        MutableLiveData<Result<String>> resultLiveData = new MutableLiveData<>();
-        resultLiveData.setValue(Result.loading());
 
-        db.collection("user").document(userId)
-                .update("isBlocked", true)
-                .addOnSuccessListener(aVoid -> resultLiveData.setValue(Result.success("User blocked successfully.")))
-                .addOnFailureListener(e -> resultLiveData.setValue(Result.error("Failed to block user: " + e.getMessage())));
-
-        return resultLiveData;
-    }
-
-    @Override
-    public LiveData<Result<String>> unblockUser(String userId) {
-        MutableLiveData<Result<String>> resultLiveData = new MutableLiveData<>();
-        resultLiveData.setValue(Result.loading());
-        db.collection("user").document(userId)
-                .update("isBlocked", false)
-                .addOnSuccessListener(aVoid -> resultLiveData.setValue(Result.success("User unblocked successfully.")))
-                .addOnFailureListener(e -> resultLiveData.setValue(Result.error("Failed to unblock user: " + e.getMessage())));
-
-        return resultLiveData;
-    }
     private String getFirebaseAuthErrorMessage(Exception e) {
         if (e instanceof FirebaseAuthUserCollisionException) {
             return "This email is already registered.";

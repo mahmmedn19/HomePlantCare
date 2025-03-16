@@ -17,7 +17,7 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class ManageUserFragment extends BaseFragment<FragmentManageUserBinding> implements ManageUserAdapter.UserAdminInteractionListener {
+public class ManageUserFragment extends BaseFragment<FragmentManageUserBinding>  {
 
     private UserViewModel userViewModel;
     private ManageUserAdapter userAdapter;
@@ -63,7 +63,7 @@ public class ManageUserFragment extends BaseFragment<FragmentManageUserBinding> 
                     binding.emptyStateLayout.setVisibility(View.VISIBLE);
                 } else {
                     binding.recyclerViewUsers.setVisibility(View.VISIBLE);
-                    userAdapter = new ManageUserAdapter(users, this);
+                    userAdapter = new ManageUserAdapter(users);
                     binding.recyclerViewUsers.setAdapter(userAdapter);
                 }
                 binding.progressBar.setVisibility(View.GONE);
@@ -74,40 +74,6 @@ public class ManageUserFragment extends BaseFragment<FragmentManageUserBinding> 
         });
     }
 
-    @Override
-    public void onBlockUserClicked(User user) {
-        userViewModel.blockUser(user.getUid()).observe(getViewLifecycleOwner(), result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
-                int position = getUserPosition(user);
-                if (position != -1) {
-                    user.setBlocked(true);  // Update the model
-                    userAdapter.notifyItemChanged(position); // Notify UI
-                }
-            }
-        });
-    }
 
-    @Override
-    public void onUnblockUserClicked(User user) {
-        userViewModel.unblockUser(user.getUid()).observe(getViewLifecycleOwner(), result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
-                int position = getUserPosition(user);
-                if (position != -1) {
-                    user.setBlocked(false);  // Update the model
-                    userAdapter.notifyItemChanged(position); // Notify UI
-                }
-            }
-        });
-    }
-
-    private int getUserPosition(User user) {
-        List<User> userList = userAdapter.getUserList();
-        for (int i = 0; i < userList.size(); i++) {
-            if (userList.get(i).getUid().equals(user.getUid())) {
-                return i;
-            }
-        }
-        return -1;
-    }
 
 }

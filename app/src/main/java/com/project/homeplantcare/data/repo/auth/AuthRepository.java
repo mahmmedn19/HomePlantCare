@@ -33,6 +33,5 @@ public interface AuthRepository {
 
     // User Management
     LiveData<Result<List<User>>> getAllUsers();  // Fetch all users
-    LiveData<Result<String>> blockUser(String userId); // Block a user
-    LiveData<Result<String>> unblockUser(String userId); // Unblock a user
+
 }

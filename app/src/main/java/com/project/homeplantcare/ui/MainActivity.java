@@ -18,6 +18,7 @@ import androidx.navigation.NavController;
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.ActivityMainBinding;
+import com.project.homeplantcare.di.NetworkModule;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.utils.SharedPrefUtils;
 
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Tool
                 Log.d("AI_LINK", aiLink);
                 if (aiLink != null) {
                     SharedPrefUtils.saveAiLink(this, aiLink); // ✅ Save AI link to SharedPreferences
+                    updateNetworkBaseUrl(aiLink);
                 }
             }
         });
@@ -104,5 +106,10 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Tool
     protected void onStart() {
         super.onStart();
         viewModel.fetchAILink(); // ✅ Always fetch AI link on start
+    }
+
+    private void updateNetworkBaseUrl(String newBaseUrl) {
+        // ✅ Reinitialize Retrofit when AI link changes
+        NetworkModule.refreshRetrofitInstance(newBaseUrl);
     }
 }

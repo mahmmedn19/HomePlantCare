@@ -10,7 +10,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentAddLinkBinding;
+import com.project.homeplantcare.di.NetworkModule;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.utils.SharedPrefUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -55,6 +57,7 @@ public class AddLinkFragment extends BaseFragment<FragmentAddLinkBinding> {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 viewModel.url.setValue(s.toString());
                 binding.urlInputLayout.setError(null);
+
             }
 
             @Override
@@ -67,6 +70,8 @@ public class AddLinkFragment extends BaseFragment<FragmentAddLinkBinding> {
             if (viewModel.validateUrl()) {
                 viewModel.addAILink().observe(getViewLifecycleOwner(), result -> {
                     if (result.getStatus() == Result.Status.SUCCESS) {
+                        updateNetworkBaseUrl(viewModel.url.getValue());
+                        SharedPrefUtils.saveAiLink(requireContext(), viewModel.url.getValue());
                         Toast.makeText(getContext(), "URL is valid and added successfully", Toast.LENGTH_SHORT).show();
                     } else if (result.getStatus() == Result.Status.ERROR) {
                         Toast.makeText(getContext(), "Error: " + result.getErrorMessage(), Toast.LENGTH_SHORT).show();
@@ -78,5 +83,9 @@ public class AddLinkFragment extends BaseFragment<FragmentAddLinkBinding> {
                 binding.urlInputLayout.setError("Invalid URL format");
             }
         });
+    }
+    private void updateNetworkBaseUrl(String newBaseUrl) {
+        // ✅ Reinitialize Retrofit when AI link changes
+        NetworkModule.refreshRetrofitInstance(newBaseUrl);
     }
 }

@@ -48,26 +48,8 @@
                     android:textSize="14sp"
                     android:textColor="@android:color/darker_gray"/>
 
-                <TextView
-                    android:id="@+id/txtStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{user.isBlocked ? `Blocked` : `Active`}"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    app:statusTextColor="@{user.isBlocked}"
-                    />
             </LinearLayout>
 
-            <!-- Options Button -->
-            <ImageView
-                android:id="@+id/btnOptions"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_more"
-                android:padding="8dp"
-                android:contentDescription="More Options"
-                android:background="?attr/selectableItemBackgroundBorderless"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>

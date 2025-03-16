@@ -25,12 +25,4 @@ public class UserViewModel extends ViewModel {
     public LiveData<Result<List<User>>> getAllUsers() {
         return authRepository.getAllUsers();
     }
-
-    public LiveData<Result<String>> blockUser(String userId) {
-        return authRepository.blockUser(userId);
-    }
-
-    public LiveData<Result<String>> unblockUser(String userId) {
-        return authRepository.unblockUser(userId);
-    }
 }
