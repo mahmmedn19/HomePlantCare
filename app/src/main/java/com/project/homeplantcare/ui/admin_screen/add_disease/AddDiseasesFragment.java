@@ -1,18 +1,27 @@
 package com.project.homeplantcare.ui.admin_screen.add_disease;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.widget.Toast;
-import android.view.View;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.Observer;
 import androidx.navigation.Navigation;
+
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.models.DiseaseItem;
+import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentAddDiseasesBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
 import com.project.homeplantcare.utils.InputValidator;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -22,6 +31,7 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
 
     private AddDiseasesViewModel viewModel;
     private String diseaseId;
+    private Bitmap selectedBitmap;
 
     @Override
     protected String getTAG() {
@@ -53,6 +63,7 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
 
     private void setupToolbar() {
         setToolbarVisibility(true);
+        binding.btnUploadImage.setOnClickListener(v -> openGallery());
         setToolbarTitle(diseaseId != null ? "Edit Disease" : "Add Disease");
         binding.btnSave.setText(diseaseId != null ? "Update Disease" : "Save Disease");
         showBackButton(true);
@@ -61,8 +72,6 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
             viewModel.getDiseaseById(diseaseId).observe(getViewLifecycleOwner(), result -> {
                 if (result.getStatus() == Result.Status.SUCCESS && result.getData() != null) {
                     populateFields(result.getData());
-                } else {
-                    showToast("Error: " + result.getErrorMessage());
                 }
             });
         }
@@ -75,7 +84,16 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
                 diseaseItem.setName(binding.etDiseaseName.getText().toString());
                 diseaseItem.setSymptoms(binding.etDiseaseSymptoms.getText().toString());
                 diseaseItem.setRemedies(binding.etDiseaseRemedies.getText().toString());
-
+                if (selectedBitmap != null) {
+                    String encodedImage = ImageUtils.encodeImageToBase64(selectedBitmap);
+                    diseaseItem.setImageResId(encodedImage);
+                } else if (diseaseId != null) {
+                    // Preserve the existing image if updating without a new image
+                    DiseaseItem existingDisease = Objects.requireNonNull(viewModel.getDiseaseById(diseaseId).getValue()).getData();
+                    if (existingDisease != null) {
+                        diseaseItem.setImageResId(existingDisease.getImageResId());
+                    }
+                }
                 if (diseaseId == null) {
                     viewModel.addDisease(diseaseItem);
                 } else {
@@ -102,6 +120,10 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
         binding.etDiseaseName.setText(disease.getName());
         binding.etDiseaseSymptoms.setText(disease.getSymptoms());
         binding.etDiseaseRemedies.setText(disease.getRemedies());
+        if (disease.getImageResId() != null && !disease.getImageResId().isEmpty()) {
+            Bitmap decodedBitmap = ImageUtils.decodeBase64ToImage(disease.getImageResId());
+            binding.imgPreview.setImageBitmap(decodedBitmap);
+        }
     }
 
     private boolean validateFields() {
@@ -111,6 +133,25 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
 
         return isValidName && isValidSymptoms && isValidRemedies;
     }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagePickerLauncher.launch(intent);
+    }
+
+    private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Uri imageUri = result.getData().getData();
+                    try {
+                        selectedBitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
+                        binding.imgPreview.setImageBitmap(selectedBitmap);
+                    } catch (IOException e) {
+                        Toast.makeText(requireContext(), "Failed to load image", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
 
     private void showToast(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();

@@ -1,7 +1,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="disease"
             type="com.project.homeplantcare.data.models.DiseaseItem" />
@@ -13,59 +15,76 @@
         android:layout_margin="8dp"
         app:cardElevation="4dp">
 
+        <!-- Horizontal Layout -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="12dp">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <!-- Disease Name -->
-            <TextView
-                android:id="@+id/tv_disease_name"
+            <!-- Image -->
+            <ImageView
+                android:id="@+id/imgDisease"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_margin="8dp"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/upload_image" />
+
+            <!-- Vertical Layout -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{`Disease Name: ` + disease.name}"
-                tools:text="Fixed Name: disease.name"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/md_theme_onPrimaryFixedVariant" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="12dp">
 
-            <!-- Disease Symptoms -->
-            <TextView
-                android:id="@+id/tv_disease_symptoms"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{`Disease Symptoms: ` + disease.symptoms}"
-                tools:text="Disease Symptoms: disease.symptoms"
-                android:textSize="14sp"
-                android:layout_marginTop="8dp"
-                android:textColor="@color/green_2"
-                android:maxLines="2"
-                />
+                <!-- Disease Name -->
+                <TextView
+                    android:id="@+id/tv_disease_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{`Disease Name: ` + disease.name}"
+                    android:textColor="@color/md_theme_onPrimaryFixedVariant"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    tools:text="Fixed Name: disease.name" />
 
-            <!-- Disease Remedies -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Disease Remedies"
-                android:textSize="14sp"
-                android:textColor="@color/md_theme_onPrimaryFixedVariant" />
+                <!-- Disease Symptoms -->
+                <TextView
+                    android:id="@+id/tv_disease_symptoms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:maxLines="2"
+                    android:text="@{`Disease Symptoms: ` + disease.symptoms}"
+                    android:textColor="@color/green_2"
+                    android:textSize="14sp"
+                    tools:text="Disease Symptoms: disease.symptoms" />
+
+                <!-- Disease Remedies -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Disease Remedies"
+                    android:textColor="@color/md_theme_onPrimaryFixedVariant"
+                    android:textSize="14sp" />
 
 
-            <!-- Disease Remedies -->
-            <TextView
-                android:id="@+id/tv_disease_remedies"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{disease.remedies}"
-                tools:text="disease.remedies"
-                android:textSize="14sp"
-                android:textColor="@color/green_2"
-                android:maxLines="2"
-                />
+                <!-- Disease Remedies -->
+                <TextView
+                    android:id="@+id/tv_disease_remedies"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:maxLines="2"
+                    android:text="@{disease.remedies}"
+                    android:textColor="@color/green_2"
+                    android:textSize="14sp"
+                    tools:text="disease.remedies" />
 
+            </LinearLayout>
         </LinearLayout>
+
+
     </androidx.cardview.widget.CardView>
 </layout>

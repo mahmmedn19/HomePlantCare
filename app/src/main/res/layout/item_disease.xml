@@ -16,57 +16,73 @@
         android:layout_margin="8dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="4dp">
-
+        <!-- Horizontal Layout -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="12dp">
-            <!-- Horizontal Layout -->
+            android:orientation="horizontal">
+
+            <!-- Image -->
+            <ImageView
+                android:id="@+id/imgDisease"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_margin="8dp"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/upload_image" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <!-- Disease Name -->
-                <TextView
-                    android:layout_width="0dp"
+                android:orientation="vertical"
+                android:padding="12dp">
+                <!-- Horizontal Layout -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="@color/md_theme_primary"
-                    android:text="@{disease.name}"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="Powdery Mildew" />
+                    android:orientation="horizontal">
 
-                <!-- More Options -->
-                <ImageView
-                    android:id="@+id/btnMoreOptions"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="end"
-                    app:tint="@color/md_theme_primary"
-                    android:src="@drawable/ic_more" />
+                    <!-- Disease Name -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@{disease.name}"
+                        android:textColor="@color/md_theme_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="Powdery Mildew" />
+
+                    <!-- More Options -->
+                    <ImageView
+                        android:id="@+id/btnMoreOptions"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="end"
+                        android:src="@drawable/ic_more"
+                        app:tint="@color/md_theme_primary" />
+                </LinearLayout>
+
+                <!-- Symptoms -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@{disease.symptoms}"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
+                    tools:text="White powdery spots on leaves" />
+
+                <!-- Remedies -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@{disease.remedies}"
+                    android:textSize="14sp"
+                    tools:text="Apply fungicide, remove infected leaves" />
+
             </LinearLayout>
-
-            <!-- Symptoms -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@{disease.symptoms}"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="14sp"
-                tools:text="White powdery spots on leaves" />
-
-            <!-- Remedies -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{disease.remedies}"
-                android:textSize="14sp"
-                tools:text="Apply fungicide, remove infected leaves" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

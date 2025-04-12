@@ -1,5 +1,6 @@
 package com.project.homeplantcare.ui.admin_screen.manage_diseases;
 
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,8 +9,9 @@ import android.widget.PopupMenu;
 import androidx.annotation.NonNull;
 
 import com.project.homeplantcare.R;
-import com.project.homeplantcare.databinding.ItemDiseaseBinding;
 import com.project.homeplantcare.data.models.DiseaseItem;
+import com.project.homeplantcare.data.utils.ImageUtils;
+import com.project.homeplantcare.databinding.ItemDiseaseBinding;
 import com.project.homeplantcare.ui.base.BaseAdapter;
 
 import java.util.ArrayList;
@@ -33,6 +35,20 @@ public class DiseaseItemAdapter extends BaseAdapter<DiseaseItem, ItemDiseaseBind
     public void onBindViewHolder(@NonNull BaseViewHolder<ItemDiseaseBinding> holder, int position, DiseaseItem diseaseItem) {
         ItemDiseaseBinding binding = holder.binding;
         binding.setDisease(diseaseItem);
+
+        // Decode Base64 string to Bitmap and set to ImageView
+        String base64Image = diseaseItem.getImageResId();
+        if (base64Image != null && !base64Image.isEmpty()) {
+            try {
+                Bitmap bitmap = ImageUtils.decodeBase64ToImage(base64Image);
+                binding.imgDisease.setImageBitmap(bitmap);
+            } catch (IllegalArgumentException e) {
+                // Handle invalid Base64 string (set a placeholder image)
+                binding.imgDisease.setImageResource(R.drawable.upload_image);
+            }
+        } else {
+            binding.imgDisease.setImageResource(R.drawable.upload_image);
+        }
 
         // Handle More Options Click
         binding.btnMoreOptions.setOnClickListener(view -> showPopupMenu(view, diseaseItem));

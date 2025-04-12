@@ -15,7 +15,7 @@ import com.project.homeplantcare.ui.base.BaseAdapter;
 
 import java.util.List;
 
-public class ArticlesAdapter extends BaseAdapter<ArticleItem, ItemManageArticleBinding> {
+public class  ArticlesAdapter extends BaseAdapter<ArticleItem, ItemManageArticleBinding> {
 
     private final ArticleInteractionListener listener;
     private List<ArticleItem> itemList;
@@ -44,10 +44,10 @@ public class ArticlesAdapter extends BaseAdapter<ArticleItem, ItemManageArticleB
                 binding.imageArticle.setImageBitmap(bitmap);
             } catch (IllegalArgumentException e) {
                 // Handle invalid Base64 string (set a placeholder image)
-                binding.imageArticle.setImageResource(R.drawable.hoya4);
+                binding.imageArticle.setImageResource(R.drawable.upload_image);
             }
         } else {
-            binding.imageArticle.setImageResource(R.drawable.hoya4);
+            binding.imageArticle.setImageResource(R.drawable.upload_image);
         }
 
 
