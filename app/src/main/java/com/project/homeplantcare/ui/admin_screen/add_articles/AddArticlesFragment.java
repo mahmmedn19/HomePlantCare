@@ -97,7 +97,7 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
     private boolean validateFields() {
         boolean isValidTitle = InputValidator.validateField(binding.tilArticleTitle, Objects.requireNonNull(binding.etArticleTitle.getText()).toString(), "Title is required");
         boolean isValidContent = InputValidator.validateField(binding.tilContentPreview, Objects.requireNonNull(binding.etContentPreview.getText()).toString(), "Content preview is required");
-        boolean isValidDate = InputValidator.validateField(binding.tilDate, Objects.requireNonNull(binding.etDate.getText()).toString(), "Date is required");
+        boolean isValidDate = InputValidator.validateData(binding.tilDate, Objects.requireNonNull(binding.etDate.getText()).toString());
 
         return isValidTitle && isValidContent && isValidDate;
     }
@@ -126,8 +126,9 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
 
     private void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
+
         DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
-                (DatePicker view, int year, int month, int dayOfMonth) -> {
+                (view, year, month, dayOfMonth) -> {
                     String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
                     binding.etDate.setText(selectedDate);
                 },
@@ -135,8 +136,14 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
+
+        // منع اختيار أي تاريخ غير اليوم الحالي
+        datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+        datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
+
         datePickerDialog.show();
     }
+
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);

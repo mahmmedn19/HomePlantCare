@@ -16,7 +16,7 @@ public class InputValidator {
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$";
     private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
     // Chars only and 4-20 characters long
-    private static final String USERNAME_REGEX  = "^[a-zA-Z]+$"; // Only letters allowed, no numbers or special characters
+    private static final String USERNAME_REGEX = "^[a-zA-Z]+$"; // Only letters allowed, no numbers or special characters
     private static final Map<EditText, TextWatcher> textWatcherMap = new HashMap<>();
 
     public static boolean validateData(TextInputLayout textInputLayout, String text) {
@@ -30,18 +30,10 @@ public class InputValidator {
         clearError(textInputLayout);
         return true;
     }
+
     public static boolean validateField(TextInputLayout textInputLayout, String text, String errorMessage) {
         if (isEmpty(text)) {
             setError(textInputLayout, errorMessage);
-            return false;
-        }
-
-        // Remove hidden characters and trim spaces
-        text = text.replaceAll("[^\\p{Print}]", "").trim();
-
-        // Regex: Allows everything EXCEPT numbers (0-9)
-        if (text.matches(".*\\d.*")) { // Checks if there is ANY digit in the text
-            setError(textInputLayout, "Numbers are not allowed");
             return false;
         }
 
@@ -50,11 +42,24 @@ public class InputValidator {
             return false;
         }
 
+        // Remove hidden characters and trim spaces
+        text = text.replaceAll("[^\\p{Print}]", "").trim();
+
+        // Must contain at least one English letter
+        if (!text.matches(".*[a-zA-Z].*")) {
+            setError(textInputLayout, "Must contain at least one English letter");
+            return false;
+        }
+
+        // Must NOT contain any Arabic letters
+        if (text.matches(".*[\\u0600-\\u06FF].*")) {
+            setError(textInputLayout, "Arabic letters are not allowed");
+            return false;
+        }
+
         clearError(textInputLayout);
         return true;
     }
-
-
 
 
     public static boolean validateEmail(TextInputLayout emailTextInputLayout, String email) {
