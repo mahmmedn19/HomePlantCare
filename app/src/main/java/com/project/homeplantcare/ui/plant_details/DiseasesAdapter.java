@@ -10,21 +10,17 @@ import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.databinding.ItemDiseaseCardBinding;
 import com.project.homeplantcare.ui.base.BaseAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DiseasesAdapter extends BaseAdapter<DiseaseItem, ItemDiseaseCardBinding> {
 
-    private List<DiseaseItem> diseaseList;
 
     public DiseasesAdapter(List<DiseaseItem> itemList) {
-        super(itemList);
-        this.diseaseList = itemList;
+        super(new ArrayList<>(itemList));
     }
 
-    public void setDiseases(List<DiseaseItem> diseases) {
-        this.diseaseList = diseases;
-        notifyDataSetChanged(); // Notify adapter about the data change
-    }
+
 
     @Override
     public ItemDiseaseCardBinding createBinding(LayoutInflater inflater, ViewGroup parent, boolean attachToParent) {
@@ -51,5 +47,12 @@ public class DiseasesAdapter extends BaseAdapter<DiseaseItem, ItemDiseaseCardBin
         }
         binding.executePendingBindings();
     }
+
+    public void updateData(List<DiseaseItem> newList) {
+        items.clear(); // `items` موجودة في BaseAdapter
+        items.addAll(newList);
+        notifyDataSetChanged();
+    }
+
 
 }

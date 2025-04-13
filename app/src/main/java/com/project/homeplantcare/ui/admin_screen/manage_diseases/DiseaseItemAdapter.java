@@ -46,7 +46,7 @@ public class DiseaseItemAdapter extends BaseAdapter<DiseaseItem, ItemDiseaseBind
                 // Handle invalid Base64 string (set a placeholder image)
                 binding.imgDisease.setImageResource(R.drawable.upload_image);
             }
-        } else {
+         } else {
             binding.imgDisease.setImageResource(R.drawable.upload_image);
         }
 

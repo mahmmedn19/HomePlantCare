@@ -129,15 +129,14 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
             if (diseases != null && !diseases.isEmpty()) {
                 binding.recyclerDiseases.setVisibility(View.VISIBLE);
                 binding.tvNoDiseases.setVisibility(View.GONE);
-                diseaseList.clear();
-                diseaseList.addAll(diseases);
-                diseasesAdapter.notifyDataSetChanged();
+                diseasesAdapter.updateData(diseases); // استخدم الدالة الجديدة
             } else {
                 binding.recyclerDiseases.setVisibility(View.GONE);
                 binding.tvNoDiseases.setVisibility(View.VISIBLE);
             }
         });
     }
+
 
     private void checkFavoriteState(String plantId) {
         String userId = AuthUtils.getCurrentUserId();
@@ -256,10 +255,11 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
     }
 
     private void setupDiseasesRecyclerView() {
-        diseasesAdapter = new DiseasesAdapter(diseaseList);
+        diseasesAdapter = new DiseasesAdapter(new ArrayList<>()); // استخدم قائمة فاضية
         binding.recyclerDiseases.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerDiseases.setAdapter(diseasesAdapter);
     }
+
 
     private void showToast(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();

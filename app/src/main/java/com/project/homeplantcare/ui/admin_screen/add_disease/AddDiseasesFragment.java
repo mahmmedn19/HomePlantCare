@@ -32,6 +32,7 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
     private AddDiseasesViewModel viewModel;
     private String diseaseId;
     private Bitmap selectedBitmap;
+    private DiseaseItem existingDisease;
 
     @Override
     protected String getTAG() {
@@ -84,16 +85,14 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
                 diseaseItem.setName(binding.etDiseaseName.getText().toString());
                 diseaseItem.setSymptoms(binding.etDiseaseSymptoms.getText().toString());
                 diseaseItem.setRemedies(binding.etDiseaseRemedies.getText().toString());
+
                 if (selectedBitmap != null) {
                     String encodedImage = ImageUtils.encodeImageToBase64(selectedBitmap);
                     diseaseItem.setImageResId(encodedImage);
-                } else if (diseaseId != null) {
-                    // Preserve the existing image if updating without a new image
-                    DiseaseItem existingDisease = Objects.requireNonNull(viewModel.getDiseaseById(diseaseId).getValue()).getData();
-                    if (existingDisease != null) {
-                        diseaseItem.setImageResId(existingDisease.getImageResId());
-                    }
+                } else if (existingDisease != null && existingDisease.getImageResId() != null) {
+                    diseaseItem.setImageResId(existingDisease.getImageResId());
                 }
+
                 if (diseaseId == null) {
                     viewModel.addDisease(diseaseItem);
                 } else {
@@ -117,6 +116,7 @@ public class AddDiseasesFragment extends BaseFragment<FragmentAddDiseasesBinding
     }
 
     private void populateFields(DiseaseItem disease) {
+        existingDisease = disease; // ✅ خزّن المرض وقت التحميل
         binding.etDiseaseName.setText(disease.getName());
         binding.etDiseaseSymptoms.setText(disease.getSymptoms());
         binding.etDiseaseRemedies.setText(disease.getRemedies());

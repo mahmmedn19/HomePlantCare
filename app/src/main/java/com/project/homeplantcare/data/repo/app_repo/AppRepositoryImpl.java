@@ -1,6 +1,5 @@
 package com.project.homeplantcare.data.repo.app_repo;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 import android.util.Pair;
 
@@ -67,39 +66,64 @@ public class AppRepositoryImpl implements AppRepository {
         MutableLiveData<Result<List<PlantItem>>> result = new MutableLiveData<>();
         result.postValue(Result.loading());
 
-        firestore.collection("plants").get()
-                .addOnSuccessListener(querySnapshot -> {
-                    if (querySnapshot.isEmpty()) {
-                        result.postValue(Result.success(Collections.emptyList())); // Return empty list if no plants
-                        return;
-                    }
+        // Step 1: Fetch all diseases
+        firestore.collection("diseases").get().addOnSuccessListener(diseaseSnapshot -> {
+            List<DiseaseItem> allDiseases = diseaseSnapshot.toObjects(DiseaseItem.class);
 
-                    List<PlantItem> plants = new ArrayList<>();
-                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                        try {
-                            PlantItem plantItem = document.toObject(PlantItem.class);
-                            if (plantItem != null) {
-                                plantItem.setPlantId(document.getId()); // Ensure ID is set
-                                if (plantItem.getDiseases() == null) {
-                                    plantItem.setDiseases(new ArrayList<>()); // Prevent NullPointerException
-                                }
-                                plants.add(plantItem);
+            // Step 2: Fetch all plants
+            firestore.collection("plants").get().addOnSuccessListener(querySnapshot -> {
+                if (querySnapshot.isEmpty()) {
+                    result.postValue(Result.success(Collections.emptyList()));
+                    return;
+                }
+
+                List<PlantItem> plants = new ArrayList<>();
+                for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                    try {
+                        PlantItem plantItem = document.toObject(PlantItem.class);
+                        if (plantItem != null) {
+                            plantItem.setPlantId(document.getId());
+
+                            if (plantItem.getDiseases() == null) {
+                                plantItem.setDiseases(new ArrayList<>());
                             } else {
-                                Log.e("Firestore", "Null object parsed from document: " + document.getId());
+                                // Merge disease data with full details (including images)
+                                plantItem.setDiseases(
+                                        mergePlantDiseasesWithFullDetails(plantItem.getDiseases(), allDiseases)
+                                );
                             }
-                        } catch (Exception e) {
-                            Log.e("Firestore", "Error parsing plant document: " + document.getId(), e);
-                        }
-                    }
 
-                    result.postValue(Result.success(plants)); // Update LiveData with the parsed list
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Failed to fetch plants", e);
-                    result.postValue(Result.error("Failed to load plants: " + e.getMessage()));
-                });
+                            plants.add(plantItem);
+                        }
+                    } catch (Exception e) {
+                        Log.e("Firestore", "Error parsing plant document: " + document.getId(), e);
+                    }
+                }
+
+                result.postValue(Result.success(plants));
+            }).addOnFailureListener(e -> {
+                result.postValue(Result.error("Failed to load plants: " + e.getMessage()));
+            });
+
+        }).addOnFailureListener(e -> {
+            result.postValue(Result.error("Failed to load diseases: " + e.getMessage()));
+        });
 
         return result;
+    }
+
+    private List<DiseaseItem> mergePlantDiseasesWithFullDetails(List<DiseaseItem> plantDiseases, List<DiseaseItem> allDiseases) {
+        List<DiseaseItem> enrichedDiseases = new ArrayList<>();
+        for (DiseaseItem plantDisease : plantDiseases) {
+            for (DiseaseItem fullDisease : allDiseases) {
+                if (plantDisease.getDiseaseId() != null &&
+                        plantDisease.getDiseaseId().equals(fullDisease.getDiseaseId())) {
+                    enrichedDiseases.add(fullDisease); // Use full version with image
+                    break;
+                }
+            }
+        }
+        return enrichedDiseases;
     }
 
 
@@ -750,16 +774,16 @@ public class AppRepositoryImpl implements AppRepository {
         return result;
     }
 
-public void addFakeArticlesToFirestore() {
-    List<ArticleItem> fakeArticles = new ArrayList<>();
+    public void addFakeArticlesToFirestore() {
+        List<ArticleItem> fakeArticles = new ArrayList<>();
 
-    for (ArticleItem article : fakeArticles) {
-        if (article.getArticleId() == null || article.getArticleId().isEmpty()) {
-            article.setArticleId(UUID.randomUUID().toString()); // Assign a new random ID
+        for (ArticleItem article : fakeArticles) {
+            if (article.getArticleId() == null || article.getArticleId().isEmpty()) {
+                article.setArticleId(UUID.randomUUID().toString()); // Assign a new random ID
+            }
+            firestore.collection("articles").document(article.getArticleId()).set(article)
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "Fake article added: " + article.getTitle()))
+                    .addOnFailureListener(e -> Log.e("Firestore", "Error adding fake article: " + article.getTitle(), e));
         }
-        firestore.collection("articles").document(article.getArticleId()).set(article)
-                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Fake article added: " + article.getTitle()))
-                .addOnFailureListener(e -> Log.e("Firestore", "Error adding fake article: " + article.getTitle(), e));
     }
-}
 }

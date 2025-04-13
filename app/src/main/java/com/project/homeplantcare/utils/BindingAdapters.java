@@ -55,12 +55,5 @@ public class BindingAdapters {
             textView.setText("تحميل...");
         }
     }*/
-@BindingAdapter("diseasesList")
-public static void bindDiseases(RecyclerView recyclerView, List<DiseaseItem> diseaseList) {
-    DiseasesAdapter adapter = (DiseasesAdapter) recyclerView.getAdapter();
-    if (adapter != null) {
-        adapter.setDiseases(diseaseList); // Update the adapter with the new list
-    }
-}
 
 }
