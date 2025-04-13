@@ -27,7 +27,8 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBinding> {
+public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBinding> implements DiseasesAdapter.DiseaseInteractionListener {
+
 
     private PlantDetailsViewModel viewModel;
     private DiseasesAdapter diseasesAdapter;
@@ -108,8 +109,7 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
             if (result.getStatus() == Result.Status.LOADING) {
                 showFullScreenLoading(true);
                 binding.llDetailsContainer.setVisibility(View.GONE);  // Hide all UI components
-            }
-            else if (result.getStatus() == Result.Status.SUCCESS) {
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
                 new android.os.Handler().postDelayed(() -> {
                     showFullScreenLoading(false);
                     binding.setPlant(result.getData());
@@ -236,6 +236,7 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
             binding.addToHistory.setColorFilter(ContextCompat.getColor(requireContext(), R.color.md_theme_primary));
         }
     }
+
     private void showFullScreenLoading(boolean isLoading) {
         if (isLoading) {
             binding.fullScreenLoader.setVisibility(View.VISIBLE);
@@ -245,6 +246,7 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
             }, 1000); // 1.5 seconds delay
         }
     }
+
     private boolean isLogging() {
         if (getActivity() instanceof UserMainActivity) {
             return true;
@@ -255,7 +257,7 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
     }
 
     private void setupDiseasesRecyclerView() {
-        diseasesAdapter = new DiseasesAdapter(new ArrayList<>()); // استخدم قائمة فاضية
+        diseasesAdapter = new DiseasesAdapter(new ArrayList<>(), this); // استخدم قائمة فاضية
         binding.recyclerDiseases.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerDiseases.setAdapter(diseasesAdapter);
     }
@@ -264,4 +266,41 @@ public class PlantDetailsFragment extends BaseFragment<FragmentPlantDetailsBindi
     private void showToast(String message) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void onItemClick(DiseaseItem disease) {
+        showDiseaseDetailsDialog(disease);
+    }
+
+    private void showDiseaseDetailsDialog(DiseaseItem disease) {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_disease_details, null);
+
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        android.widget.TextView tvName = dialogView.findViewById(R.id.tvDiseaseName);
+        android.widget.TextView tvSymptoms = dialogView.findViewById(R.id.tvSymptoms);
+        android.widget.TextView tvRemedies = dialogView.findViewById(R.id.tvRemedies);
+        android.widget.ImageView imgDisease = dialogView.findViewById(R.id.imgDisease);
+
+        tvName.setText(disease.getName());
+        tvSymptoms.setText(disease.getSymptoms());
+        tvRemedies.setText(disease.getRemedies());
+
+        if (disease.getImageResId() != null && !disease.getImageResId().isEmpty()) {
+            try {
+                Bitmap bitmap = ImageUtils.decodeBase64ToImage(disease.getImageResId());
+                imgDisease.setImageBitmap(bitmap);
+            } catch (Exception e) {
+                imgDisease.setImageResource(R.drawable.upload_image);
+            }
+        } else {
+            imgDisease.setImageResource(R.drawable.upload_image);
+        }
+
+        dialog.show();
+    }
+
 }

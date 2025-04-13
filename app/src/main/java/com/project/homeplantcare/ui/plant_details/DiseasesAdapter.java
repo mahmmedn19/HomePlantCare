@@ -9,17 +9,19 @@ import com.project.homeplantcare.data.models.DiseaseItem;
 import com.project.homeplantcare.data.utils.ImageUtils;
 import com.project.homeplantcare.databinding.ItemDiseaseCardBinding;
 import com.project.homeplantcare.ui.base.BaseAdapter;
+import com.project.homeplantcare.ui.base.BaseInteractionListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DiseasesAdapter extends BaseAdapter<DiseaseItem, ItemDiseaseCardBinding> {
 
+    private final DiseaseInteractionListener listener;
 
-    public DiseasesAdapter(List<DiseaseItem> itemList) {
+    public DiseasesAdapter(List<DiseaseItem> itemList, DiseaseInteractionListener listener) {
         super(new ArrayList<>(itemList));
+        this.listener = listener;
     }
-
 
 
     @Override
@@ -45,6 +47,12 @@ public class DiseasesAdapter extends BaseAdapter<DiseaseItem, ItemDiseaseCardBin
         } else {
             binding.imgDisease.setImageResource(R.drawable.upload_image);
         }
+        // handle item click
+        binding.getRoot().setOnClickListener(view -> {
+            if (listener != null) {
+                listener.onItemClick(currentItem);
+            }
+        });
         binding.executePendingBindings();
     }
 
@@ -54,5 +62,8 @@ public class DiseasesAdapter extends BaseAdapter<DiseaseItem, ItemDiseaseCardBin
         notifyDataSetChanged();
     }
 
+    public interface DiseaseInteractionListener extends BaseInteractionListener {
+        void onItemClick(DiseaseItem disease);
+    }
 
 }
