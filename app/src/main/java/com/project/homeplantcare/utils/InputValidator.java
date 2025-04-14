@@ -57,9 +57,47 @@ public class InputValidator {
             return false;
         }
 
+        // Must NOT contain any digits
+        if (text.matches(".*\\d.*")) {
+            setError(textInputLayout, "Digits are not allowed");
+            return false;
+        }
+
         clearError(textInputLayout);
         return true;
     }
+
+    public static boolean validateFieldWithDigitsAndSpecialChars_EnglishOnly(TextInputLayout textInputLayout, String text, String errorMessage) {
+        if (isEmpty(text)) {
+            setError(textInputLayout, errorMessage);
+            return false;
+        }
+
+        if (text.length() < 4) {
+            setError(textInputLayout, "At least 4 characters required");
+            return false;
+        }
+
+        // Remove hidden characters and trim spaces
+        text = text.replaceAll("[^\\p{Print}]", "").trim();
+
+        // Must contain at least one English letter
+        if (!text.matches(".*[a-zA-Z].*")) {
+            setError(textInputLayout, "Must contain at least one English letter");
+            return false;
+        }
+
+        // Must NOT contain any Arabic letters
+        if (text.matches(".*[\\u0600-\\u06FF].*")) {
+            setError(textInputLayout, "Arabic letters are not allowed");
+            return false;
+        }
+
+        clearError(textInputLayout);
+        return true;
+    }
+
+
 
 
     public static boolean validateEmail(TextInputLayout emailTextInputLayout, String email) {

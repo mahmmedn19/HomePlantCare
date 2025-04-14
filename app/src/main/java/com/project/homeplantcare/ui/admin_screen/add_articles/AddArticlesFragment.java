@@ -96,7 +96,7 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
 
     private boolean validateFields() {
         boolean isValidTitle = InputValidator.validateField(binding.tilArticleTitle, Objects.requireNonNull(binding.etArticleTitle.getText()).toString(), "Title is required");
-        boolean isValidContent = InputValidator.validateField(binding.tilContentPreview, Objects.requireNonNull(binding.etContentPreview.getText()).toString(), "Content preview is required");
+        boolean isValidContent = InputValidator.validateFieldWithDigitsAndSpecialChars_EnglishOnly(binding.tilContentPreview, Objects.requireNonNull(binding.etContentPreview.getText()).toString(), "Content preview is required");
         boolean isValidDate = InputValidator.validateData(binding.tilDate, Objects.requireNonNull(binding.etDate.getText()).toString());
 
         return isValidTitle && isValidContent && isValidDate;
