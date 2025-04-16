@@ -2,4 +2,27 @@
     <string name="app_name">HomePlantCare</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="welcome_to_plant_care">Welcome to Plant Care</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="welcome_image">Welcome Image</string>
+    <string name="create_account">Create your account</string>
+    <string name="name">Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="already_have_account">Already have an account? Login</string>
+    <string name="app_title">Home Plant Care System</string>
+    <string name="profile_icon">Profile Icon</string>
+    <string name="search_hint">Search plants, diseases, or articles</string>
+    <string name="plants">Plants</string>
+    <string name="diseases">Diseases</string>
+    <string name="articles">Articles</string>
+    <string name="plants_section">Featured Plants</string>
+    <string name="new_articles">New Articles</string>
+    <string name="image_preview">Image Preview</string>
+    <string name="ai_analysis_description">Take a picture or upload an image to analyze the plants health and detect diseases.</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="capture">Capture</string>
+    <string name="analyze">Analyze</string>
 </resources>

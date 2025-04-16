@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.project.homeplantcare.ui.admin_screen.add_plant_admin.AddPlantViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/et_search_diseases"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search Disease..."
+            android:drawableStart="@drawable/ic_search"
+            android:padding="8dp"
+            android:background="@android:color/white"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_diseases"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="@color/white"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/item_disease_checkbox"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_confirm_selection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Confirm Selection"
+            app:backgroundTint="@color/md_theme_primary"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+</layout>

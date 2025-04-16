@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="plant"
+            type="com.project.homeplantcare.data.models.PlantItem" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Top Row: Image & Main Info -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Plant Image -->
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="80dp"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerInside"
+                    tools:src="@drawable/plant_2" />
+
+                <!-- Plant Details -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingStart="12dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{plant.name}"
+                        tools:text="Plant Name"
+                        android:textColor="@color/md_theme_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{plant.description}"
+                        tools:text="Plant Description"
+                        android:layout_marginTop="4dp"
+                        android:textSize="14sp"/>
+
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:stretchColumns="1">
+
+                    <TableRow>
+                        <!-- Light Requirement -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_light"
+                                android:layout_gravity="center_vertical"
+                                app:tint="@color/md_theme_secondary"
+                                tools:ignore="ContentDescription"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="8dp"
+                                android:text="@{plant.lightRequirements}"
+                                tools:text="Medium Light"
+                                android:textSize="12sp"/>
+                        </LinearLayout>
+
+                        <!-- Water Requirement -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_water"
+                                android:layout_gravity="center_vertical"
+                                app:tint="@color/md_theme_secondary"
+                                tools:ignore="ContentDescription"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="8dp"
+                                android:text="@{plant.waterRequirements}"
+                                tools:text="Regular Watering"
+                                android:textSize="12sp"/>
+                        </LinearLayout>
+                    </TableRow>
+                </TableLayout>
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:stretchColumns="1">
+
+                        <TableRow>
+                            <!-- Soil Type -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_solid"
+                                    android:layout_gravity="center_vertical"
+                                    tools:ignore="ContentDescription"/>
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:paddingStart="8dp"
+                                    android:text="@{plant.soilRequirements}"
+                                    tools:text="Loamy Soil"
+                                    android:textSize="12sp"/>
+                            </LinearLayout>
+
+                            <!-- Weather Requirement -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:src="@drawable/ic_weather"
+                                    app:tint="@color/md_theme_secondary"
+                                    android:layout_gravity="center_vertical"
+                                    tools:ignore="ContentDescription"/>
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:paddingStart="8dp"
+                                    android:text="@{plant.weatherRequirements}"
+                                    tools:text="Tropical Climate"
+                                    android:textSize="12sp"/>
+                            </LinearLayout>
+                        </TableRow>
+                    </TableLayout>
+                </LinearLayout>
+
+                <!-- More Options Button -->
+                <ImageView
+                    android:id="@+id/btn_options"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:tint="@color/md_theme_secondary"
+                    android:src="@drawable/ic_more"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

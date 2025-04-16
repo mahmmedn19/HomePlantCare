@@ -83,7 +83,7 @@ dependencies {
     implementation(libs.activity)
 
     implementation (libs.onboarder)
-
+    implementation ("com.github.dhaval2404:imagepicker:2.1")
 }
 hilt {
     enableAggregatingTask = true

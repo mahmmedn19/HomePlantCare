@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.project.homeplantcare.ui.home_screen.HomeFragment"
+        android:label="Home" >
+        <action
+            android:id="@+id/action_homeFragment_to_plantDetailsFragment2"
+            app:destination="@id/plantDetailsFragment2" />
+        <action
+            android:id="@+id/action_homeFragment_to_articlesDetailsFragment2"
+            app:destination="@id/articlesDetailsFragment2" />
+        <action
+            android:id="@+id/action_homeFragment_to_plantsViewAllFragment2"
+            app:destination="@id/plantsViewAllFragment2" />
+        <argument
+            android:name="plantId"
+            app:argType="string" />
+        <argument
+            android:name="articleId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="com.project.homeplantcare.ui.user_screen.camera_screen.CameraFragment"
+        android:label="Camera" >
+        <action
+            android:id="@+id/action_cameraFragment_to_plantDetailsFragment2"
+            app:destination="@id/plantDetailsFragment2" />
+        <argument
+            android:name="isAnalysis"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.project.homeplantcare.ui.user_screen.fav_screen.FavFragment"
+        android:label="Favorites" >
+        <action
+            android:id="@+id/action_favoritesFragment_to_plantDetailsFragment2"
+            app:destination="@id/plantDetailsFragment2" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.project.homeplantcare.ui.user_screen.profile.UserProfileFragment"
+        android:label="Profile" />
+    <fragment
+        android:id="@+id/plantDetailsFragment2"
+        android:name="com.project.homeplantcare.ui.plant_details.PlantDetailsFragment"
+        android:label="PlantDetailsFragment" />
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.project.homeplantcare.ui.user_screen.history.HistoryScreenFragment"
+        android:label="HistoryScreenFragment" >
+        <action
+            android:id="@+id/action_historyScreenFragment_to_plantDetailsFragment2"
+            app:destination="@id/plantDetailsFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/articlesDetailsFragment2"
+        android:name="com.project.homeplantcare.ui.articles_details.ArticlesDetailsFragment"
+        android:label="ArticlesDetailsFragment" />
+    <fragment
+        android:id="@+id/plantsViewAllFragment2"
+        android:name="com.project.homeplantcare.ui.plants_view_all.PlantsViewAllFragment"
+        android:label="PlantsViewAllFragment" >
+        <action
+            android:id="@+id/action_plantsViewAllFragment2_to_articlesDetailsFragment2"
+            app:destination="@id/articlesDetailsFragment2" />
+    </fragment>
+
+</navigation>

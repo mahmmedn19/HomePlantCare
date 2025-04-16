@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/nav_manage_plants">
+
+    <fragment
+        android:id="@+id/nav_manage_plants"
+        android:name="com.project.homeplantcare.ui.admin_screen.manage_plants.ManagePlantsFragment"
+        android:label="Manage Plants"
+        tools:layout="@layout/fragment_manage_plants" >
+        <action
+            android:id="@+id/action_nav_manage_plants_to_addPlaintAdminFragment"
+            app:destination="@id/addPlaintAdminFragment" />
+        <argument
+            android:name="plantId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_manage_diseases"
+        android:name="com.project.homeplantcare.ui.admin_screen.manage_diseases.ManageDiseasesFragment"
+        android:label="Manage Diseases"
+        tools:layout="@layout/fragment_manage_diseases" >
+        <action
+            android:id="@+id/action_nav_manage_diseases_to_nav_add_disease"
+            app:destination="@id/nav_add_disease" />
+        <argument
+            android:name="diseaseId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_manage_articles"
+        android:name="com.project.homeplantcare.ui.admin_screen.manage_articles.ManageArticlesFragment"
+        android:label="Manage Articles"
+        tools:layout="@layout/fragment_manage_articles" >
+        <action
+            android:id="@+id/action_nav_manage_articles_to_nav_add_articles"
+            app:destination="@id/nav_add_articles" />
+        <argument
+            android:name="articleId"
+            app:argType="string"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_add_articles"
+        android:name="com.project.homeplantcare.ui.admin_screen.add_articles.AddArticlesFragment"
+        android:label="Add Articles"
+        tools:layout="@layout/fragment_add_articles" />
+
+    <fragment
+        android:id="@+id/nav_add_link"
+        android:name="com.project.homeplantcare.ui.admin_screen.add_link.AddLinkFragment"
+        android:label="Add Link"
+        tools:layout="@layout/fragment_add_link" />
+    <fragment
+        android:id="@+id/addPlaintAdminFragment"
+        android:name="com.project.homeplantcare.ui.admin_screen.add_plant_admin.AddPlaintAdminFragment"
+        android:label="AddPlaintAdminFragment" />
+
+    <fragment
+        android:id="@+id/nav_add_disease"
+        android:name="com.project.homeplantcare.ui.admin_screen.add_disease.AddDiseasesFragment"
+        android:label="Add Disease"
+        tools:layout="@layout/fragment_add_diseases" />
+
+    <fragment
+        android:id="@+id/nav_manage_profile"
+        android:name="com.project.homeplantcare.ui.admin_screen.manage_profile.ManageProfileFragment"
+        android:label="Manage Profile"
+        tools:layout="@layout/fragment_manage_profile" >
+        <action
+            android:id="@+id/action_nav_manage_profile_to_nav_add_link"
+            app:destination="@id/nav_add_link" />
+        <action
+            android:id="@+id/action_nav_manage_profile_to_nav_admin_profile_details"
+            app:destination="@id/nav_admin_profile_details" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_admin_profile_details"
+        android:name="com.project.homeplantcare.ui.admin_screen.profile_details.AdminProfileDetailsFragment"
+        android:label="Admin Profile Details"
+        tools:layout="@layout/fragment_admin_profile_details" />
+    <fragment
+        android:id="@+id/nav_manage_users"
+        android:name="com.project.homeplantcare.ui.admin_screen.manage_user.ManageUserFragment"
+        android:label="ManageUserFragment"
+        />
+
+</navigation>
