@@ -10,6 +10,10 @@
     <color name="grey_300">#e0e0e0</color>
     <color name="grey_200">#EEEEEE</color>
     <color name="bg">#757575</color>
+    <color name="green_2">#91A066</color>
+    <color name="green_3">#C9DAB6</color>
+
+
 
 
     <color name="md_theme_primary">#4D662B</color>

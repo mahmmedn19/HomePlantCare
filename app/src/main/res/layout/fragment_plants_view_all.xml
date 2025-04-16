@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.plants_view_all.PlantsViewAllFragment">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_new_articles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_view_all_articles_card" />
+
+        <!-- ProgressBar for articles loading state -->
+        <android.widget.ProgressBar
+            android:id="@+id/progressBarArticles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+
+        <!-- Placeholder Image for articles when no data is available -->
+        <ImageView
+            android:id="@+id/placeholder_image_articles"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_gravity="center"
+            android:src="@drawable/no_article_found"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</layout>

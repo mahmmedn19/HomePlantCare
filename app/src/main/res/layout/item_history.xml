@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="historyItem"
+            type="com.project.homeplantcare.data.models.HistoryItem" />
+        </data>
+
+    <LinearLayout
+        android:id="@+id/layout_history_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="@android:color/white"
+        android:elevation="2dp"
+        android:layout_margin="4dp">
+
+        <!-- Plant Image -->
+        <ImageView
+            android:id="@+id/img_plant"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_plant"
+            tools:ignore="ContentDescription"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1">
+
+            <!-- Plant Name -->
+            <TextView
+                android:id="@+id/tv_plant_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{historyItem.plantName}"
+                tools:text="historyItem.plantName"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/md_theme_primary"/>
+
+            <!-- Disease Name -->
+            <TextView
+                android:id="@+id/tv_disease_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="historyItem.diseaseName"
+                android:textSize="14sp"
+                android:textColor="@android:color/holo_red_dark"/>
+
+            <!-- Date -->
+            <TextView
+                android:id="@+id/tv_analysis_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="12 Jan 2021"
+                android:textSize="12sp"
+                android:textColor="@android:color/darker_gray"/>
+
+        </LinearLayout>
+
+        <!-- Delete Button -->
+        <ImageView
+            android:id="@+id/btn_delete"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/md_theme_error"
+            android:padding="4dp"
+            android:clickable="true"
+            android:focusable="true"
+            />
+
+    </LinearLayout>
+</layout>

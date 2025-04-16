@@ -47,5 +47,28 @@ public abstract class BaseFragment<VB extends ViewDataBinding> extends Fragment 
     protected void log(Object value) {
         Log.d(getTAG(), String.valueOf(value));
     }
+
+    protected void setToolbarTitle(String title) {
+        if (getActivity() instanceof ToolbarHandler) {
+            ((ToolbarHandler) getActivity()).setToolbarTitle(title);
+        }
+    }
+
+    protected void showBackButton(boolean show) {
+        if (getActivity() instanceof ToolbarHandler) {
+            ((ToolbarHandler) getActivity()).showBackButton(show);
+        }
+    }
+    protected void setToolbarVisibility(boolean isVisible) {
+        if (getActivity() instanceof ToolbarHandler) {
+            ((ToolbarHandler) getActivity()).setToolbarVisibility(isVisible);
+        }
+    }
+
+    public interface ToolbarHandler {
+        void setToolbarTitle(String title);
+        void showBackButton(boolean show);
+        void setToolbarVisibility(boolean isVisible);
+    }
 }
 

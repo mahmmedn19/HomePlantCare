@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="article"
+            type="com.project.homeplantcare.data.models.ArticleItem" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/coordinatorLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".ui.ArticlesDetailsFragment">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Article Image -->
+                    <ImageView
+                        android:id="@+id/article_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/plant_3" />
+
+                    <!-- Article Title -->
+                    <TextView
+                        android:id="@+id/article_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@{article.title}"
+                        android:textColor="@color/md_theme_primary"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        tools:text="How to Care for Indoor Plants" />
+
+                    <!-- Article Date -->
+                    <TextView
+                        android:id="@+id/article_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@{`Date: ` + article.date}"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        tools:text="Date: Jan 20, 2024" />
+
+                    <!-- Article Content Preview -->
+                    <TextView
+                        android:id="@+id/article_content_preview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="@{article.contentPreview}"
+                        android:textColor="@android:color/black"
+                        android:textSize="16sp"
+                        tools:text="Indoor plants improve air quality..." />
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <!-- Full-Screen Loading Overlay -->
+        <FrameLayout
+            android:id="@+id/fullScreenLoader"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:background="#80000000"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:indeterminate="true" />
+        </FrameLayout>
+    </FrameLayout>
+
+</layout>
