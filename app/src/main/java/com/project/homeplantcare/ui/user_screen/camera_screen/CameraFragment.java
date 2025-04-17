@@ -5,20 +5,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
-import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.project.homeplantcare.R;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentCameraBinding;
@@ -81,7 +78,6 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
             });
 
 
-
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         imagePickerLauncher.launch(intent);
@@ -105,11 +101,16 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
             if (result.getStatus() == Result.Status.LOADING) {
                 binding.progressAnalysis.setVisibility(View.VISIBLE);
                 binding.tvAnalysisResult.setText("Analyzing...");
-            }
-            else if (result.getStatus() == Result.Status.SUCCESS) {
+            } else if (result.getStatus() == Result.Status.SUCCESS) {
                 binding.progressAnalysis.setVisibility(View.GONE);
-                String plantName = result.getData().first;
+                String fullPrediction = result.getData().first; // e.g. "Corn_Northern-Leaf-Blight"
                 boolean hasDetails = result.getData().second;
+
+                // ✅ Split the prediction at the first underscore only
+                String[] parts = fullPrediction.split("_", 2);
+                String plantName = parts.length > 0 ? parts[0] : "Unknown";
+                String diseaseName = parts.length > 1 ? parts[1].replace("-", " ") : "Unknown";
+
                 // ✅ If Plant is "Unknown", show "Not Found" dialog immediately
                 if (plantName.equalsIgnoreCase("Unknown")) {
                     showNotFoundDialog();
@@ -118,9 +119,9 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                     return;
                 }
 
-                binding.tvAnalysisResult.setText("Detected Plant: " + plantName);
+                binding.tvAnalysisResult.setText("Plant: " + plantName + "\nDisease: " + diseaseName);
                 if (hasDetails) {
-                    showNavigationDialog(plantName); // ✅ Show dialog to navigate to plant details
+                    showNavigationDialog(plantName,diseaseName); // ✅ Show dialog to navigate to plant details
                 } else {
                     showNavigationDialogNoPlantDetails(plantName); // ✅ Show dialog to search for plant details
                 }
@@ -133,16 +134,20 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
 
     }
 
-    private void showNavigationDialog(String plantName) {
+    private void showNavigationDialog(String plantName, String diseaseName) {
+        String message = "We detected the plant: " + "Plant: " + plantName + "\n Disease: " + diseaseName + "\n\nDo you want to view plant details?";
+
         DialogUtils.showConfirmationDialog(
                 requireContext(),
-                "Plant Analysis",
-                "We detected the plant: " + plantName + ". Do you want to view its details?",
+                "Plant Analysis Result",
+                message,
                 "Yes", "No",
                 (dialog, which) -> searchPlantByNameAndNavigate(plantName),
                 null
         );
     }
+
+
     // not found plant details
     private void showNavigationDialogNoPlantDetails(String plantName) {
         DialogUtils.showConfirmationDialog(
@@ -169,8 +174,7 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
         viewModel.getPlantIdByName(plantName).observe(getViewLifecycleOwner(), plantResult -> {
             if (plantResult.getStatus() == Result.Status.LOADING) {
                 binding.progressAnalysis.setVisibility(View.VISIBLE);
-            }
-            else if (plantResult.getStatus() == Result.Status.SUCCESS) {
+            } else if (plantResult.getStatus() == Result.Status.SUCCESS) {
                 binding.progressAnalysis.setVisibility(View.GONE);
                 String plantId = plantResult.getData().getPlantId();
 
@@ -179,8 +183,7 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                 bundle.putString("plantId", plantId);
                 resetImageSelection();
                 Navigation.findNavController(requireView()).navigate(R.id.action_cameraFragment_to_plantDetailsFragment2, bundle);
-            }
-            else if (plantResult.getStatus() == Result.Status.ERROR) {
+            } else if (plantResult.getStatus() == Result.Status.ERROR) {
                 binding.progressAnalysis.setVisibility(View.GONE);
             }
         });

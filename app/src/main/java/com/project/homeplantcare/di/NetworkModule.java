@@ -22,8 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    private static Retrofit retrofitInstance;
-    public static String BASE_URL = "https://default-url.com"; // ✅ Default base URL (Change this as needed)
+    public static String BASE_URL = "https://plantcareapi.loca.lt"; // ✅ Default base URL (Change this as needed)
 
     @Provides
     @Singleton

@@ -520,7 +520,8 @@ public class AppRepositoryImpl implements AppRepository {
         result.setValue(Result.loading());
 
         firestore.collection("plants")
-                .whereEqualTo("name", plantName) // Search plant by name
+                .whereGreaterThanOrEqualTo("name", plantName) // Search plant by name
+                .whereLessThanOrEqualTo("name", plantName + "\uf8ff") // Ensure it matches the name
                 .limit(1) // Limit to first match
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
