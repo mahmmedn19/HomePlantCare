@@ -49,15 +49,7 @@ public class HistoryAdapter extends BaseAdapter<HistoryItem, ItemHistoryBinding>
         binding.tvAnalysisDate.setText("Analysis date: " + analysisDate);
 
         // Display diseases
-        if (currentItem.getDiseaseName() != null && !currentItem.getDiseaseName().isEmpty()) {
-            StringBuilder diseasesText = new StringBuilder();
-            for (DiseaseItem disease : currentItem.getDiseaseName()) {
-                diseasesText.append(disease.getName()).append(", ");
-            }
-            binding.tvDiseaseName.setText(diseasesText.substring(0, diseasesText.length() - 2));
-        } else {
-            binding.tvDiseaseName.setText("No disease detected");
-        }
+        binding.tvDiseaseName.setText("Diseases: " + currentItem.getDiseaseNameString());
 
         binding.btnDelete.setOnClickListener(view -> listener.onDeleteClicked(currentItem));
         binding.layoutHistoryItem.setOnClickListener(view -> listener.onHistoryItemClicked(currentItem));

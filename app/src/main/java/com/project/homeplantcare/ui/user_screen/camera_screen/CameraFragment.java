@@ -109,7 +109,7 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                 // ✅ Split the prediction at the first underscore only
                 String[] parts = fullPrediction.split("_", 2);
                 String plantName = parts.length > 0 ? parts[0] : "Unknown";
-                String diseaseName = parts.length > 1 ? parts[1].replace("-", " ") : "Unknown";
+                String diseaseName = parts.length > 1 ? parts[1].replace("-", " ") : "no disease";
 
                 // ✅ If Plant is "Unknown", show "Not Found" dialog immediately
                 if (plantName.equalsIgnoreCase("Unknown")) {
@@ -123,7 +123,7 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                 if (hasDetails) {
                     showNavigationDialog(plantName,diseaseName); // ✅ Show dialog to navigate to plant details
                 } else {
-                    showNavigationDialogNoPlantDetails(plantName); // ✅ Show dialog to search for plant details
+                    showNavigationDialogNoPlantDetails(plantName,diseaseName); // ✅ Show dialog to search for plant details
                 }
                 // ✅ Call getPlantIdByName only if plantName is successfully received
             } else if (result.getStatus() == Result.Status.ERROR) {
@@ -135,7 +135,7 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
     }
 
     private void showNavigationDialog(String plantName, String diseaseName) {
-        String message = "We detected the plant: " + "Plant: " + plantName + "\n Disease: " + diseaseName + "\n\nDo you want to view plant details?";
+        String message = "We detected the " + "Plant: " + plantName + "\nDisease: " + diseaseName + "\n\nDo you want to view plant details?";
 
         DialogUtils.showConfirmationDialog(
                 requireContext(),
@@ -149,11 +149,11 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
 
 
     // not found plant details
-    private void showNavigationDialogNoPlantDetails(String plantName) {
+    private void showNavigationDialogNoPlantDetails(String plantName, String diseaseName) {
         DialogUtils.showConfirmationDialog(
                 requireContext(),
-                "Plant Analysis",
-                "No plant details found for: " + plantName + " try Another!",
+                "Plant Analysis Result",
+                "No plant details found for: " + plantName + "\nDisease " + diseaseName +" try Another!",
                 "Yes", "No",
                 (dialog, which) -> Toast.makeText(requireContext(), "No plant details found.", Toast.LENGTH_SHORT).show(),
                 null // Negative button will still appear but default to dismissing the dialog
