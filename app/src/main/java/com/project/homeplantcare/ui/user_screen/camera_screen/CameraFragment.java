@@ -109,8 +109,8 @@ public class CameraFragment extends BaseFragment<FragmentCameraBinding> {
                 // ✅ Split the prediction at the first underscore only
                 String[] parts = fullPrediction.split("_", 2);
                 String plantName = parts.length > 0 ? parts[0] : "Unknown";
-                String diseaseName = parts.length > 1 ? parts[1].replace("-", " ") : "no disease";
-
+                String rawDisease = parts.length > 1 ? parts[1] : "Unknown";
+                String diseaseName = rawDisease.equalsIgnoreCase("healthy") ? "No disease detected plant is healthy" : rawDisease.replace("-", " ");
                 // ✅ If Plant is "Unknown", show "Not Found" dialog immediately
                 if (plantName.equalsIgnoreCase("Unknown")) {
                     showNotFoundDialog();

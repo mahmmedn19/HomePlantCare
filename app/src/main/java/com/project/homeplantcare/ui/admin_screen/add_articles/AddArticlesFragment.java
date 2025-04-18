@@ -1,12 +1,11 @@
 package com.project.homeplantcare.ui.admin_screen.add_articles;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.widget.DatePicker;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -64,8 +63,10 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
         } else {
             setToolbarTitle("Add Article");
             binding.btnSaveArticle.setText("Save Article");
+            binding.etDate.setText("Date: " + getTodayDate()); // ✅ Set date automatically
         }
 
+        setupArticleTypeSpinner(); // ✅ Article type dropdown
         showBackButton(true);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
@@ -79,7 +80,6 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
     }
 
     private void setupListeners() {
-        binding.etDate.setOnClickListener(v -> showDatePicker());
         binding.btnUploadImage.setOnClickListener(v -> openGallery());
         binding.btnSaveArticle.setOnClickListener(v -> {
             if (validateFields()) {
@@ -97,24 +97,21 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
     private boolean validateFields() {
         boolean isValidTitle = InputValidator.validateField(binding.tilArticleTitle, Objects.requireNonNull(binding.etArticleTitle.getText()).toString(), "Title is required");
         boolean isValidContent = InputValidator.validateFieldWithDigitsAndSpecialChars_EnglishOnly(binding.tilContentPreview, Objects.requireNonNull(binding.etContentPreview.getText()).toString(), "Content preview is required");
-        boolean isValidDate = InputValidator.validateData(binding.tilDate, Objects.requireNonNull(binding.etDate.getText()).toString());
 
-        return isValidTitle && isValidContent && isValidDate;
+        return isValidTitle && isValidContent;
     }
-
 
     private ArticleItem getArticleData() {
         ArticleItem item = new ArticleItem();
         item.setTitle(Objects.requireNonNull(binding.etArticleTitle.getText()).toString().trim());
         item.setContentPreview(Objects.requireNonNull(binding.etContentPreview.getText()).toString().trim());
-        item.setDate(Objects.requireNonNull(binding.etDate.getText()).toString().trim());
+        item.setDate(getTodayDate()); // ✅ Always today
+        item.setArticleType(binding.spinnerArticleType.getSelectedItem().toString()); // ✅ Get selected type
 
-        // If a new image is selected, encode it
         if (selectedBitmap != null) {
             String encodedImage = ImageUtils.encodeImageToBase64(selectedBitmap);
             item.setImageResId(encodedImage);
         } else if (articleId != null) {
-            // Preserve the existing image if updating without a new image
             ArticleItem existingArticle = viewModel.getArticleItemLiveData().getValue();
             if (existingArticle != null) {
                 item.setImageResId(existingArticle.getImageResId());
@@ -124,26 +121,20 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
         return item;
     }
 
-    private void showDatePicker() {
-        Calendar calendar = Calendar.getInstance();
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
-                (view, year, month, dayOfMonth) -> {
-                    String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
-                    binding.etDate.setText(selectedDate);
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-        );
-
-        // منع اختيار أي تاريخ غير اليوم الحالي
-        datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
-        datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
-
-        datePickerDialog.show();
+    private void setupArticleTypeSpinner() {
+        String[] types = {"General", "Seasonal", "Educational", "Awareness", "Other"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, types);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinnerArticleType.setAdapter(adapter);
     }
 
+    private String getTodayDate() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        return day + "/" + month + "/" + year;
+    }
 
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -176,7 +167,17 @@ public class AddArticlesFragment extends BaseFragment<FragmentAddArticlesBinding
     private void populateArticleData(ArticleItem article) {
         binding.etArticleTitle.setText(article.getTitle());
         binding.etContentPreview.setText(article.getContentPreview());
-        binding.etDate.setText(article.getDate());
+        binding.etDate.setText("Date: " + article.getDate());
+
+
+        // Set article type in spinner
+        String[] types = {"General", "Seasonal", "Educational", "Awareness", "Other"};
+        for (int i = 0; i < types.length; i++) {
+            if (types[i].equalsIgnoreCase(article.getArticleType())) {
+                binding.spinnerArticleType.setSelection(i);
+                break;
+            }
+        }
 
         if (article.getImageResId() != null && !article.getImageResId().isEmpty()) {
             Bitmap decodedBitmap = ImageUtils.decodeBase64ToImage(article.getImageResId());

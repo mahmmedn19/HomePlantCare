@@ -47,9 +47,10 @@ public class HistoryAdapter extends BaseAdapter<HistoryItem, ItemHistoryBinding>
 
         // Set analysis date
         binding.tvAnalysisDate.setText("Analysis date: " + analysisDate);
+        String diseaseName = currentItem.getDiseaseNameString().equalsIgnoreCase("healthy") ? "No disease detected plant is healthy" : currentItem.getDiseaseNameString();
 
         // Display diseases
-        binding.tvDiseaseName.setText("Diseases: " + currentItem.getDiseaseNameString());
+        binding.tvDiseaseName.setText("Diseases: " + diseaseName);
 
         binding.btnDelete.setOnClickListener(view -> listener.onDeleteClicked(currentItem));
         binding.layoutHistoryItem.setOnClickListener(view -> listener.onHistoryItemClicked(currentItem));

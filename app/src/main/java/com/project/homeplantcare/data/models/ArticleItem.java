@@ -5,6 +5,7 @@ public class ArticleItem {
     private String title;
     private String contentPreview;
     private String date;
+    private String articleType;
     private String imageResId;
 
     // Empty constructor
@@ -12,19 +13,21 @@ public class ArticleItem {
     }
 
     // Constructor with all fields
-    public ArticleItem(String articleId, String title, String contentPreview, String date, String imageResId) {
+    public ArticleItem(String articleId, String title, String contentPreview, String date, String articleType,String imageResId) {
         this.articleId = articleId;
         this.title = title;
         this.contentPreview = contentPreview;
         this.date = date;
+        this.articleType = articleType;
         this.imageResId = imageResId;
     }
 
     // Constructor without articleId (for new articles)
-    public ArticleItem(String title, String contentPreview, String date, String imageResId) {
+    public ArticleItem(String title, String contentPreview, String date, String articleType, String imageResId) {
         this.title = title;
         this.contentPreview = contentPreview;
         this.date = date;
+        this.articleType = articleType;
         this.imageResId = imageResId;
     }
 
@@ -59,6 +62,13 @@ public class ArticleItem {
 
     public void setDate(String date) {
         this.date = date;
+    }
+    public String getArticleType() {
+        return articleType;
+    }
+
+    public void setArticleType(String articleType) {
+        this.articleType = articleType;
     }
 
     public String getImageResId() {
