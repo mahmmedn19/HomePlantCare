@@ -50,9 +50,6 @@ public class AdminProfileDetailsFragment extends BaseFragment<FragmentAdminProfi
         binding.etAdminName.setFocusable(false);
         binding.etAdminName.setClickable(false);
 
-        binding.btnSaveProfile.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "You cannot change the admin name", Toast.LENGTH_SHORT).show()
-        );
     }
 
     private void observeAdminProfile() {
