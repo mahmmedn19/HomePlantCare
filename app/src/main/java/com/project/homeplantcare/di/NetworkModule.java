@@ -22,8 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    private static Retrofit retrofitInstance;
-    public static String BASE_URL = "https://default-url.com"; // ✅ Default base URL (Change this as needed)
+    public static String BASE_URL = "https://plantcareapi.loca.lt"; // ✅ Default base URL (Change this as needed)
 
     @Provides
     @Singleton
@@ -66,8 +65,9 @@ public class NetworkModule {
 
                     // ✅ Build a new request with the correct host
                     okhttp3.HttpUrl newUrl = originalRequest.url().newBuilder()
-                            .scheme(baseHttpUrl.scheme()) // ✅ Keep the same scheme (http/https)
-                            .host(baseHttpUrl.host()) // ✅ Set correct host dynamically
+                            .scheme(baseHttpUrl.scheme()) // http or https
+                            .host(baseHttpUrl.host())
+                            .port(baseHttpUrl.port()) // ✅ Add port (optional if you're using custom ports)
                             .build();
 
                     okhttp3.Request newRequest = originalRequest.newBuilder()
@@ -76,6 +76,9 @@ public class NetworkModule {
 
                     return chain.proceed(newRequest);
                 })
+                .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS) // ✅ Connection timeout
+                .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)    // ✅ Server response wait time
+                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)   // ✅ Client send data wait time
                 .build();
     }
 

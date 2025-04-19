@@ -450,7 +450,10 @@ public class AppRepositoryImpl implements AppRepository {
                     }
 
                     // ✅ Successfully received prediction
-                    String plantName = response.body().getPredictedClass();
+                    String predictedClass = response.body().getPredictedClass();
+                    String[] parts = predictedClass.split("_", 2);
+                    String plantName = parts.length > 0 ? parts[0] : "Unknown";
+                    String diseaseName = parts.length > 1 ? parts[1].replace("-", " ") : "no disease";
                     if (plantName.equalsIgnoreCase("Unknown")) {
                         result.setValue(Result.success(new Pair<>(plantName, false))); // ✅ Return plantName + Not Saved
                         return;
@@ -468,7 +471,7 @@ public class AppRepositoryImpl implements AppRepository {
                         if (plantIdResult.getStatus() == Result.Status.SUCCESS) {
                             String plantId = plantIdResult.getData().getPlantId();
                             if (plantId == null || plantId.isEmpty()) {
-                                result.setValue(Result.success(new Pair<>(plantName, false))); // ✅ Return plantName + Not Saved
+                                result.setValue(Result.success(new Pair<>(predictedClass, false))); // ✅ Return plantName + Not Saved
                                 return;
                             }
 
@@ -480,6 +483,7 @@ public class AppRepositoryImpl implements AppRepository {
                             analysisData.put("imageUrl", imageBase64);
                             analysisData.put("analysisDate", analysisDate);
                             analysisData.put("plantName", plantName);
+                            analysisData.put("diseaseName", diseaseName);
                             analysisData.put("plantId", plantId);
 
                             // ✅ Save analysis result to Firestore
@@ -489,12 +493,12 @@ public class AppRepositoryImpl implements AppRepository {
                                     .document(plantId)
                                     .set(analysisData)
                                     .addOnSuccessListener(aVoid -> {
-                                        Log.d("UploadImage", "🔥 Analysis saved for " + plantName);
-                                        result.setValue(Result.success(new Pair<>(plantName, true))); // ✅ Return plantName + Saved
+                                        Log.d("UploadImage", "Analysis saved for " + plantName);
+                                        result.setValue(Result.success(new Pair<>(predictedClass, true))); // ✅ Return plantName + Saved
                                     })
                                     .addOnFailureListener(e -> {
-                                        Log.e("UploadImage", "❌ Failed to save analysis: " + e.getMessage());
-                                        result.setValue(Result.success(new Pair<>(plantName, false))); // ✅ Return plantName + Not Saved
+                                        Log.e("UploadImage", "Failed to save analysis: " + e.getMessage());
+                                        result.setValue(Result.success(new Pair<>(predictedClass, false))); // ✅ Return plantName + Not Saved
                                     });
                         }
                     });
@@ -520,7 +524,8 @@ public class AppRepositoryImpl implements AppRepository {
         result.setValue(Result.loading());
 
         firestore.collection("plants")
-                .whereEqualTo("name", plantName) // Search plant by name
+                .whereGreaterThanOrEqualTo("name", plantName) // Search plant by name
+                .whereLessThanOrEqualTo("name", plantName + "\uf8ff") // Ensure it matches the name
                 .limit(1) // Limit to first match
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -580,23 +585,22 @@ public class AppRepositoryImpl implements AppRepository {
                     getLatestAnalysisResult(userId, plantId).observeForever(analysisResult -> {
                         if (analysisResult.getStatus() == Result.Status.SUCCESS) {
                             ResultApi analysisData = analysisResult.getData();
-                            if (analysisData == null) {
-                                result.setValue(Result.error("Failed to retrieve analysis data"));
-                                return;
-                            }
+                            String plantName = analysisData.getPlantName();
+                            String diseaseName = analysisData.getDiseaseName();
 
                             // Step 4: Prepare and Save History Entry
                             Map<String, Object> historyData = new HashMap<>();
                             historyData.put("plantId", plantItem.getPlantId());
-                            historyData.put("plantName", plantItem.getName());
-                            historyData.put("diseases", plantItem.getDiseases());
+                            historyData.put("plantName", plantName);
+                            historyData.put("diseaseName", diseaseName);
                             historyData.put("analysisDate", analysisData.getAnalysisDate());
                             historyData.put("imageUrl", analysisData.getImageUrl());
-                            historyData.put("result", analysisData.getResult());
                             historyData.put("timestamp", System.currentTimeMillis());
 
+                            String historyId = UUID.randomUUID().toString(); // Generate a unique ID for the history entry
+
                             firestore.collection("user").document(userId)
-                                    .collection("history").document(plantId)
+                                    .collection("history").document(historyId) // Use the unique ID
                                     .set(historyData)
                                     .addOnSuccessListener(aVoid -> result.setValue(Result.success("History saved successfully.")))
                                     .addOnFailureListener(e -> result.setValue(Result.error("Failed to save history: " + e.getMessage())));
@@ -652,21 +656,20 @@ public class AppRepositoryImpl implements AppRepository {
                         String plantId = document.getString("plantId");
                         String analysisDate = document.getString("analysisDate");
                         String imageUrl = document.getString("imageUrl");
+                        String diseaseName = document.getString("diseaseName");
 
-                        // Fetch plant details from Firestore
                         firestore.collection("plants").document(plantId)
                                 .get()
                                 .addOnSuccessListener(plantDoc -> {
                                     if (plantDoc.exists()) {
                                         String plantName = plantDoc.getString("name");
-                                        List<DiseaseItem> diseases = Objects.requireNonNull(plantDoc.toObject(PlantItem.class)).getDiseases();
 
                                         // Create a HistoryItem object
                                         HistoryItem historyItem = new HistoryItem(
                                                 document.getId(),
                                                 plantId,
                                                 plantName,
-                                                diseases,
+                                                diseaseName,
                                                 analysisDate,
                                                 imageUrl
                                         );
