@@ -67,9 +67,20 @@
                 android:text="@{article.date}"
                 tools:text="12 Jan 2024"
                 android:textSize="12sp"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@color/green_2"
                 android:layout_marginTop="4dp"/>
 
+            <TextView
+                android:id="@+id/article_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@{`Article Type: ` + article.articleType}"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@id/tv_article_date"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="Article Type: General" />
             <!-- Content Preview -->
             <TextView
                 android:layout_width="match_parent"

@@ -21,8 +21,6 @@ public interface AuthRepository {
     // Get Admin Profile
     LiveData<Result<AdminProfile>> getAdminProfile();
 
-    // Update Admin Profile
-    LiveData<Result<String>> updateAdminProfile(String newName);
 
     LiveData<Result<String>> sendPasswordResetEmail(String email);
 

@@ -57,9 +57,20 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@{`Date: ` + article.date}"
-                        android:textColor="@android:color/darker_gray"
+                        android:textColor="@color/bg"
                         android:textSize="14sp"
                         tools:text="Date: Jan 20, 2024" />
+
+                    <!-- Article Type -->
+                    <TextView
+                        android:id="@+id/article_type"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@{`Article Type: ` + article.articleType}"
+                        android:textColor="@android:color/darker_gray"
+                        android:textSize="14sp"
+                        tools:text="Article Type: General" />
 
                     <!-- Article Content Preview -->
                     <TextView

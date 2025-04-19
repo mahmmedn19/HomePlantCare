@@ -42,10 +42,7 @@ public class ManageProfileFragment extends BaseFragment<FragmentManageProfileBin
         setToolbarTitle("Manage Profile");
         showBackButton(false);
 
-        binding.aiLinkLayout.setOnClickListener(v -> {
-            // Navigate to Manage Links Fragment
-            Navigation.findNavController(v).navigate(R.id.action_nav_manage_profile_to_nav_add_link);
-        });
+
         binding.manageProfileLayout.setOnClickListener(v -> {
             // Navigate to Profile Details Fragment
             Navigation.findNavController(v).navigate(R.id.action_nav_manage_profile_to_nav_admin_profile_details);

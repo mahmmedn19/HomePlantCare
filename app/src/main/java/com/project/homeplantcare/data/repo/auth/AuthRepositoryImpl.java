@@ -156,22 +156,6 @@ public class AuthRepositoryImpl implements AuthRepository {
         return liveData;
     }
 
-    @Override
-    public LiveData<Result<String>> updateAdminProfile(String newName) {
-        MutableLiveData<Result<String>> liveData = new MutableLiveData<>();
-        liveData.setValue(Result.loading());
-
-        FirebaseUser currentUser = auth.getCurrentUser();
-        assert currentUser != null;
-        String uid = currentUser.getUid();
-        db.collection("admin")
-                .document(uid)  // Assuming adminId uniquely identifies the admin document
-                .update("adminName", newName)
-                .addOnSuccessListener(aVoid -> liveData.setValue(Result.success("Profile updated successfully")))
-                .addOnFailureListener(e -> liveData.setValue(Result.error("Failed to update profile: " + e.getMessage())));
-
-        return liveData;
-    }
 
     @Override
     public LiveData<Result<String>> sendPasswordResetEmail(String email) {
