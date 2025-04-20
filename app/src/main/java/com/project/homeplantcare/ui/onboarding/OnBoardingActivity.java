@@ -39,8 +39,7 @@ public class OnBoardingActivity extends AppCompatActivity {
                 String aiLink = result.getData();
                 Log.d("AI_LINK", aiLink);
                 if (aiLink != null) {
-                    SharedPrefUtils.saveAiLink(this, aiLink); // ✅ Save AI link to SharedPreferences
-                    updateNetworkBaseUrl(aiLink);
+                    SharedPrefUtils.saveAiLink(this, aiLink);
                 }
             }
         });
@@ -54,10 +53,5 @@ public class OnBoardingActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
-    }
-    private void updateNetworkBaseUrl(String newBaseUrl) {
-        // ✅ Reinitialize Retrofit when AI link changes
-        NetworkModule.BASE_URL = newBaseUrl;
-        NetworkModule.refreshRetrofitInstance(newBaseUrl);
     }
 }

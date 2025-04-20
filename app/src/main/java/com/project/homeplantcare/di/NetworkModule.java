@@ -1,84 +1,77 @@
 package com.project.homeplantcare.di;
 
-import android.content.Context;
 
 import com.google.gson.GsonBuilder;
 import com.project.homeplantcare.data.repo.network.ApiService;
-import com.project.homeplantcare.utils.SharedPrefUtils;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
-import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import java.util.concurrent.TimeUnit;
 
 @Module
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    public static String BASE_URL = "https://plantcareapi.loca.lt"; // ✅ Default base URL (Change this as needed)
+    private static final String baseUrl = "https://plantcareapi.loca.lt"; // Default base URL
+
 
     @Provides
-    @Singleton
-    public static Retrofit provideRetrofit(GsonConverterFactory gson, OkHttpClient okHttpClient) {
-        return new Retrofit.Builder()
-                .baseUrl(BASE_URL) // ✅ Uses dynamically updated BASE_URL
-                .addConverterFactory(gson)
-                .client(okHttpClient)
-                .build();
-    }
-    public static synchronized void refreshRetrofitInstance(String newBaseUrl) {
-        if (newBaseUrl != null && !newBaseUrl.isEmpty() && !newBaseUrl.equals(BASE_URL)) {
-            BASE_URL = newBaseUrl; // ✅ Update static base URL
-        }
-    }
-    @Provides
-    public static GsonConverterFactory provideGson() {
+    public static GsonConverterFactory provideGsonConverterFactory() {
         return GsonConverterFactory.create(new GsonBuilder().create());
     }
 
     @Provides
     public static HttpLoggingInterceptor provideHttpLoggingInterceptor() {
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        return loggingInterceptor;
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        return interceptor;
     }
 
     @Provides
-    public static OkHttpClient provideOkHttpClient(HttpLoggingInterceptor loggingInterceptor) {
+    public static OkHttpClient provideOkHttpClient(HttpLoggingInterceptor interceptor) {
         return new OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
+                .addInterceptor(interceptor)
                 .addInterceptor(chain -> {
-                    okhttp3.Request originalRequest = chain.request();
+                    Request originalRequest = chain.request();
+                    HttpUrl dynamicBaseUrl = HttpUrl.parse(baseUrl);
 
-                    // ✅ Parse base URL correctly
-                    okhttp3.HttpUrl baseHttpUrl = okhttp3.HttpUrl.parse(BASE_URL);
-                    if (baseHttpUrl == null) {
-                        throw new IllegalArgumentException("Invalid Base URL: " + BASE_URL);
+                    if (dynamicBaseUrl == null) {
+                        throw new IllegalArgumentException("Invalid base URL: " + baseUrl);
                     }
 
-                    // ✅ Build a new request with the correct host
-                    okhttp3.HttpUrl newUrl = originalRequest.url().newBuilder()
-                            .scheme(baseHttpUrl.scheme()) // http or https
-                            .host(baseHttpUrl.host())
-                            .port(baseHttpUrl.port()) // ✅ Add port (optional if you're using custom ports)
+                    HttpUrl updatedUrl = originalRequest.url().newBuilder()
+                            .scheme(dynamicBaseUrl.scheme())
+                            .host(dynamicBaseUrl.host())
+                            .port(dynamicBaseUrl.port())
                             .build();
 
-                    okhttp3.Request newRequest = originalRequest.newBuilder()
-                            .url(newUrl)
-                            .build();
-
+                    Request newRequest = originalRequest.newBuilder().url(updatedUrl).build();
                     return chain.proceed(newRequest);
                 })
-                .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS) // ✅ Connection timeout
-                .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)    // ✅ Server response wait time
-                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)   // ✅ Client send data wait time
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    public static Retrofit provideRetrofit(GsonConverterFactory gsonFactory, OkHttpClient okHttpClient) {
+        return new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(gsonFactory)
+                .client(okHttpClient)
                 .build();
     }
 

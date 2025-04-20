@@ -70,7 +70,6 @@ public class AddLinkFragment extends BaseFragment<FragmentAddLinkBinding> {
             if (viewModel.validateUrl()) {
                 viewModel.addAILink().observe(getViewLifecycleOwner(), result -> {
                     if (result.getStatus() == Result.Status.SUCCESS) {
-                        updateNetworkBaseUrl(viewModel.url.getValue());
                         SharedPrefUtils.saveAiLink(requireContext(), viewModel.url.getValue());
                         Toast.makeText(getContext(), "URL is valid and added successfully", Toast.LENGTH_SHORT).show();
                     } else if (result.getStatus() == Result.Status.ERROR) {
@@ -84,9 +83,5 @@ public class AddLinkFragment extends BaseFragment<FragmentAddLinkBinding> {
             }
         });
     }
-    private void updateNetworkBaseUrl(String newBaseUrl) {
-        // ✅ Reinitialize Retrofit when AI link changes
-        NetworkModule.BASE_URL = newBaseUrl;
-        NetworkModule.refreshRetrofitInstance(newBaseUrl);
-    }
+
 }
