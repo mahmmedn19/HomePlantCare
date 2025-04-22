@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
 
-    private static final String baseUrl = "https://plantcareapi.loca.lt"; // Default base URL
+    private static final String baseUrl = "https://plantcare.ngrok.io"; // Default base URL
 
 
     @Provides
