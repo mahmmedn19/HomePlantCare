@@ -47,16 +47,7 @@ public class MainActivity extends AppCompatActivity implements BaseFragment.Tool
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        // ✅ Fetch AI link and observe the LiveData
-        viewModel.getSingleAILink().observe(this, result -> {
-            if (Objects.requireNonNull(result.getStatus()) == Result.Status.SUCCESS) {
-                String aiLink = result.getData();
-                Log.d("AI_LINK", aiLink);
-                if (aiLink != null) {
-                    SharedPrefUtils.saveAiLink(this, aiLink); // ✅ Save AI link to SharedPreferences
-                }
-            }
-        });
+
         setSupportActionBar(binding.toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
         // Change back button icon dynamically

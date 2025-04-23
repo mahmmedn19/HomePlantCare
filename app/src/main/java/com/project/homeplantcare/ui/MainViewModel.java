@@ -19,7 +19,6 @@ public class MainViewModel extends ViewModel {
     @Inject
     public MainViewModel(AppRepository aiRepository) {
         this.aiRepository = aiRepository;
-        fetchAILink(); // Auto-fetch on ViewModel creation
     }
 
     public void fetchAILink() {
