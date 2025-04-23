@@ -43,11 +43,6 @@ public class ManageProfileFragment extends BaseFragment<FragmentManageProfileBin
         showBackButton(false);
 
 
-        binding.manageProfileLayout.setOnClickListener(v -> {
-            // Navigate to Profile Details Fragment
-            Navigation.findNavController(v).navigate(R.id.action_nav_manage_profile_to_nav_admin_profile_details);
-        });
-
         binding.btnLogout.setOnClickListener(v -> {
             // Logout
             DialogUtils.showConfirmationDialog(

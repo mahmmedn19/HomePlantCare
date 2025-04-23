@@ -43,46 +43,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/userProfileImage" />
 
-        <!-- Manage Profile Button -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/manageProfileCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="12dp"
-            app:cardCornerRadius="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/userName"
-            app:strokeColor="@color/md_theme_primary">
-
-            <LinearLayout
-                android:id="@+id/manageProfileLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:contentDescription="Manage Profile"
-                    android:src="@drawable/ic_profile"
-                    app:tint="@color/md_theme_primary" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Manage Profile"
-                    android:textColor="@color/md_theme_primary"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
 
         <!-- Logout Button -->
@@ -96,7 +56,7 @@
             android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/manageProfileCard" />
+            app:layout_constraintTop_toBottomOf="@id/userName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
