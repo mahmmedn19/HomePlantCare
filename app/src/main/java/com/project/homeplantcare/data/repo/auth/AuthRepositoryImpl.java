@@ -247,25 +247,7 @@ public class AuthRepositoryImpl implements AuthRepository {
 
         return result;
     }
-    @Override
-    public LiveData<Result<List<User>>> getAllUsers() {
-        MutableLiveData<Result<List<User>>> resultLiveData = new MutableLiveData<>();
-        resultLiveData.setValue(Result.loading());
 
-        db.collection("user")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<User> userList = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        User user = document.toObject(User.class);
-                        userList.add(user);
-                    }
-                    resultLiveData.setValue(Result.success(userList));
-                })
-                .addOnFailureListener(e -> resultLiveData.setValue(Result.error("Failed to fetch users: " + e.getMessage())));
-
-        return resultLiveData;
-    }
 
 
     private String getFirebaseAuthErrorMessage(Exception e) {

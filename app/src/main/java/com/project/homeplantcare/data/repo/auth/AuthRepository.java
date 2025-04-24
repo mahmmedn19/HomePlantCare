@@ -29,7 +29,4 @@ public interface AuthRepository {
     LiveData<Result<String>> updateUserProfile(String newName);
     LiveData<Result<String>> updateUserPassword(String oldPassword, String newPassword);
 
-    // User Management
-    LiveData<Result<List<User>>> getAllUsers();  // Fetch all users
-
 }
