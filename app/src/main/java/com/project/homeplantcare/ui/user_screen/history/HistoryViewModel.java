@@ -31,7 +31,7 @@ public class HistoryViewModel extends ViewModel {
         return historyLiveData;
     }
 
-    public LiveData<Result<String>> removeFromHistory(String userId, String plantId) {
-        return appRepository.removeFromHistory(userId, plantId);
+    public LiveData<Result<String>> removeFromHistory(String userId, String historyId) {
+        return appRepository.removeFromHistory(userId, historyId);
     }
 }

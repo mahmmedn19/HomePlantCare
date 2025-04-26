@@ -15,6 +15,7 @@ import com.project.homeplantcare.data.utils.AuthUtils;
 import com.project.homeplantcare.data.utils.Result;
 import com.project.homeplantcare.databinding.FragmentHistoryScreenBinding;
 import com.project.homeplantcare.ui.base.BaseFragment;
+import com.project.homeplantcare.utils.DialogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,11 +116,18 @@ public class HistoryScreenFragment extends BaseFragment<FragmentHistoryScreenBin
             return;
         }
 
-        viewModel.removeFromHistory(userId, item.getPlantId()).observe(getViewLifecycleOwner(), result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
-                showToast("Removed from history");
-                fetchHistory();
-            }
-        });
+        DialogUtils.showConfirmationDialog(
+                requireContext(),
+                "Confirm Deletion",
+                "Are you sure you want to delete this history item?",
+                "Yes",
+                "No",
+                (dialog, which) -> viewModel.removeFromHistory(userId, item.getHistoryId()).observe(getViewLifecycleOwner(), result -> {
+                    if (result.getStatus() == Result.Status.SUCCESS) {
+                        showToast("Removed from history");
+                        fetchHistory();
+                    }
+                })
+        );
     }
 }

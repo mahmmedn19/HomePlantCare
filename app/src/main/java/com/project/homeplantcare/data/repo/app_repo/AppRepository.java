@@ -70,7 +70,7 @@ public interface AppRepository {
 
     LiveData<Result<String>> addToHistory(String userId, String plantId);
 
-    LiveData<Result<String>> removeFromHistory(String userId, String plantId);
+    LiveData<Result<String>> removeFromHistory(String userId, String historyId);
 
     LiveData<Result<List<HistoryItem>>> getUserHistory(String userId);
 

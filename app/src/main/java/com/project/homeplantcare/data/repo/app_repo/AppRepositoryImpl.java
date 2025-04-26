@@ -587,9 +587,12 @@ public class AppRepositoryImpl implements AppRepository {
                             ResultApi analysisData = analysisResult.getData();
                             String plantName = analysisData.getPlantName();
                             String diseaseName = analysisData.getDiseaseName();
+                            String historyId = UUID.randomUUID().toString(); // Generate a unique ID for the history entry
+
 
                             // Step 4: Prepare and Save History Entry
                             Map<String, Object> historyData = new HashMap<>();
+                            historyData.put("historyId", historyId);
                             historyData.put("plantId", plantItem.getPlantId());
                             historyData.put("plantName", plantName);
                             historyData.put("diseaseName", diseaseName);
@@ -597,7 +600,6 @@ public class AppRepositoryImpl implements AppRepository {
                             historyData.put("imageUrl", analysisData.getImageUrl());
                             historyData.put("timestamp", System.currentTimeMillis());
 
-                            String historyId = UUID.randomUUID().toString(); // Generate a unique ID for the history entry
 
                             firestore.collection("user").document(userId)
                                     .collection("history").document(historyId) // Use the unique ID
@@ -767,15 +769,20 @@ public class AppRepositoryImpl implements AppRepository {
 
 
     @Override
-    public LiveData<Result<String>> removeFromHistory(String userId, String plantId) {
+    public LiveData<Result<String>> removeFromHistory(String userId, String historyId) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
+        result.setValue(Result.loading());
+
         firestore.collection("user").document(userId)
-                .collection("history").document(plantId)
+                .collection("history").document(historyId) // Use document ID directly here
                 .delete()
-                .addOnSuccessListener(aVoid -> result.setValue(Result.success("Removed from history")))
-                .addOnFailureListener(e -> result.setValue(Result.error("Failed to remove from history")));
+                .addOnSuccessListener(aVoid -> result.setValue(Result.success("History entry removed successfully")))
+                .addOnFailureListener(e -> result.setValue(Result.error("Failed to remove history entry: " + e.getMessage())));
+
         return result;
     }
+
+
 
     public void addFakeArticlesToFirestore() {
         List<ArticleItem> fakeArticles = new ArrayList<>();
